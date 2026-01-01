@@ -1,0 +1,200 @@
+@startuml Diagrama_Clases_Sistema_Docentes
+!theme plain
+hide circle
+skinparam linetype ortho
+
+' ===================================
+' CLASES (Modelos del Proyecto)
+' ===================================
+package "Modelos" {
+    class User {
+        +name : string
+        +email : string
+        +projects()
+        +tasks()
+        +hasRole()
+    }
+
+    class Profile {
+        +position : string
+        +phone : string
+        +avatar : string
+    }
+
+    class Role {
+        +name : string
+        +guard_name : string
+    }
+
+    class Project {
+        +title : string
+        +status : string
+        +completion_percentage : int
+        +team()
+        +tasks()
+    }
+
+    class Category {
+        +name : string
+        +description : string
+        +projects()
+    }
+
+    class Task {
+        +title : string
+        +status : string
+        +priority : string
+        +assignees()
+    }
+
+    class Innovation {
+        +title : string
+        +status : string
+        +impact_score : int
+    }
+
+    class InnovationType {
+        +name : string
+    }
+
+    class Meeting {
+        +title : string
+        +scheduled_at : datetime
+    }
+
+    class Evaluation {
+        +impact_score : int
+        +comments : text
+    }
+
+    class Resource {
+        +name : string
+        +unit_cost : decimal
+    }
+    
+    class ResourceType {
+        +name : string
+    }
+
+    class Attachment {
+        +filename : string
+        +path : string
+    }
+    
+    class Comment {
+        +content : text
+    }
+    
+    class Message {
+        +content : text
+    }
+    
+    class Notification {
+        +data : json
+    }
+    
+    class ForumTopic {
+        +title : string
+    }
+    
+    class ForumPost {
+        +content : text
+    }
+}
+
+' ===================================
+' CLASES PIVOTE (Tablas Intermedias)
+' ===================================
+package "Pivotes (Tablas Intermedias)" {
+    class ProjectUser_Pivot << (P, #ADD1B2) >> {
+        +project_id
+        +user_id
+        +role
+    }
+
+    class TaskUser_Pivot << (P, #ADD1B2) >> {
+        +task_id
+        +user_id
+    }
+
+    class MeetingUser_Pivot << (P, #ADD1B2) >> {
+        +meeting_id
+        +user_id
+        +attendance
+    }
+    
+    class ProjectResource_Pivot << (P, #ADD1B2) >> {
+        +project_id
+        +resource_id
+        +quantity
+    }
+    
+    class ModelHasRoles_Pivot << (P, #ADD1B2) >> {
+        +role_id
+        +model_id
+    }
+}
+
+' ===================================
+' RELACIONES
+' ===================================
+
+' Usuario y Perfil (Composición)
+User "1" *-- "1" Profile : has
+
+' Roles (Usuario tiene Roles via Pivote)
+User ..> ModelHasRoles_Pivot
+Role ..> ModelHasRoles_Pivot
+
+' Proyectos
+User "1" --> "*" Project : creates
+Category "1" -- "*" Project : classifies
+
+' Equipo de Proyecto (Many-to-Many via Pivote)
+Project "1" ..> "*" ProjectUser_Pivot
+User "1" ..> "*" ProjectUser_Pivot
+
+' Tareas
+Project "1" *-- "*" Task : contains
+Task "*" --> "1" User : assigned_to (main)
+' Tareas Asignados (Many-to-Many via Pivote)
+Task "1" ..> "*" TaskUser_Pivot
+User "1" ..> "*" TaskUser_Pivot
+
+' Innovación
+User "1" --> "*" Innovation : proposes
+InnovationType "1" -- "*" Innovation : classifies
+
+' Evaluaciones
+Project "1" *-- "*" Evaluation : has
+User "1" --> "*" Evaluation : evaluates
+
+' Reuniones
+Project "1" o-- "*" Meeting : schedules
+Meeting "1" ..> "*" MeetingUser_Pivot
+User "1" ..> "*" MeetingUser_Pivot
+
+' Recursos
+ResourceType "1" -- "*" Resource : type
+Project "1" ..> "*" ProjectResource_Pivot
+Resource "1" ..> "*" ProjectResource_Pivot
+
+' Adjuntos
+Project *-- Attachment
+Task *-- Attachment
+Innovation *-- Attachment
+
+' Comunicación
+Project *-- Comment
+User --> Comment : writes
+
+User --> Message : sends
+User --> Message : receives
+
+User --> Notification : receives
+
+User --> ForumTopic : starts
+ForumTopic *-- ForumPost
+User --> ForumPost : writes
+
+@enduml
