@@ -1,0 +1,51 @@
+name: Calidad y Pruebas (CI)
+
+on:
+  push:
+    branches: [ "master", "main" ]
+  pull_request:
+    branches: [ "master", "main" ]
+
+jobs:
+  laravel-tests:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+    
+    - uses: actions/checkout@v4
+
+    - name: Copiar .env
+      run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+
+    - name: Instalar Dependencias
+      run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+
+    - name: Generar Key
+      run: php artisan key:generate
+
+    - name: Directorio de Permisos
+      run: chmod -R 777 storage bootstrap/cache
+
+    - name: Crear Base de Datos (SQLite)
+      run: |
+        mkdir -p database
+        touch database/database.sqlite
+
+    - name: Ejecutar Migraciones
+      env:
+        DB_CONNECTION: sqlite
+        DB_DATABASE: database/database.sqlite
+      run: php artisan migrate --force
+
+    - name: Ejecutar Tests (PHPUnit)
+      env:
+        DB_CONNECTION: sqlite
+        DB_DATABASE: database/database.sqlite
+      run: php artisan test
+
+    - name: Análisis Estático (Larastan)
+      run: ./vendor/bin/phpstan analyse --memory-limit=2G

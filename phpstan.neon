@@ -1,0 +1,19 @@
+includes:
+    - ./vendor/larastan/larastan/extension.neon
+
+parameters:
+
+    paths:
+        - app/
+
+    # Level 9 is the highest level (robust). Level 5 is good for existing projects.
+    level: 5
+
+    ignoreErrors:
+        # - '#Unsafe usage of new static#'
+
+    excludePaths:
+        - ./*/*/FileToBeExcluded.php
+
+    checkOctaneCompatibility: true
+    checkModelProperties: true
