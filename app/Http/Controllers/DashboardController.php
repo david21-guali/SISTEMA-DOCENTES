@@ -36,8 +36,11 @@ class DashboardController extends Controller
 
         // Proyectos por mes (últimos 6 meses)
         // Proyectos por mes (Año actual completo)
+        $isSqlite = DB::getDriverName() === 'sqlite';
+        $monthExpression = $isSqlite ? "strftime('%m', created_at)" : "MONTH(created_at)";
+
         $monthlyData = Project::select(
-                DB::raw('MONTH(created_at) as month'),
+                DB::raw("CAST($monthExpression AS UNSIGNED) as month"),
                 DB::raw('count(*) as total')
             )
             ->whereYear('created_at', date('Y'))
