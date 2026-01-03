@@ -24,9 +24,16 @@ class TaskControllerTest extends TestCase
     public function test_user_can_view_tasks_index()
     {
         $this->actingAs($this->user);
-        $response = $this->get(route('tasks.index'));
+        $response = $this->get(route('tasks.index', ['status' => 'atrasada']));
         $response->assertStatus(200);
         $response->assertViewIs('app.back.tasks.index');
+    }
+
+    public function test_user_can_view_task_create_form()
+    {
+        $this->actingAs($this->user);
+        $response = $this->get(route('tasks.create'));
+        $response->assertStatus(200);
     }
 
     public function test_user_can_create_task()
@@ -60,6 +67,41 @@ class TaskControllerTest extends TestCase
         
         $response->assertStatus(200);
         $response->assertViewHas('task', $task);
+    }
+
+    public function test_user_can_view_task_edit_form()
+    {
+        $task = Task::factory()->create([
+            'project_id' => $this->project->id,
+            'assigned_to' => $this->profile->id
+        ]);
+        
+        $this->actingAs($this->user);
+        $response = $this->get(route('tasks.edit', $task));
+        $response->assertStatus(200);
+    }
+
+    public function test_user_can_update_task()
+    {
+        $task = Task::factory()->create([
+            'project_id' => $this->project->id,
+            'assigned_to' => $this->profile->id
+        ]);
+        
+        $this->actingAs($this->user);
+        
+        $response = $this->put(route('tasks.update', $task), [
+            'project_id' => $this->project->id,
+            'title' => 'Updated Task Title',
+            'description' => 'Updated Description',
+            'assignees' => [$this->user->id],
+            'due_date' => now()->addDays(10)->format('Y-m-d'),
+            'status' => 'en_progreso',
+            'priority' => 'alta',
+        ]);
+        
+        $response->assertRedirect();
+        $this->assertDatabaseHas('tasks', ['title' => 'Updated Task Title', 'status' => 'en_progreso']);
     }
 
     public function test_user_can_update_task_status()

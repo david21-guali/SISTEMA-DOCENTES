@@ -79,4 +79,70 @@ class ModelMethodTest extends TestCase
         $project = Project::factory()->create(['profile_id' => $profile->id]);
         $this->assertEquals(1, $profile->projects()->count());
     }
+
+    public function test_attachment_helpers()
+    {
+        $attachment = new \App\Models\Attachment([
+            'filename' => 'test.pdf',
+            'original_name' => 'test.pdf',
+            'mime_type' => 'application/pdf',
+            'size' => 1024 * 1024
+        ]);
+
+        $this->assertTrue($attachment->isPdf());
+        $this->assertFalse($attachment->isImage());
+        $this->assertEquals('1 MB', $attachment->human_size);
+        $this->assertStringContainsString('fa-file-pdf', $attachment->icon);
+    }
+
+    public function test_comment_relations()
+    {
+        $user = User::factory()->create();
+        $project = Project::factory()->create(['profile_id' => $user->profile->id]);
+        
+        $comment = Comment::create([
+            'project_id' => $project->id,
+            'profile_id' => $user->profile->id,
+            'content' => 'Top level'
+        ]);
+
+        $this->assertEquals($project->id, $comment->project->id);
+        $this->assertEquals($user->profile->id, $comment->profile->id);
+        $this->assertNull($comment->parent);
+        $this->assertEquals(0, $comment->replies->count());
+    }
+
+    public function test_profile_more_relations()
+    {
+        $user = User::factory()->create();
+        $profile = $user->profile;
+        
+        $innovation = Innovation::factory()->create(['profile_id' => $profile->id]);
+        $this->assertEquals(1, $profile->innovations->count());
+        
+        $meeting = Meeting::factory()->create(['created_by' => $profile->id]);
+        $this->assertEquals(1, $profile->createdMeetings->count());
+        
+        $profile->meetings()->attach($meeting->id, ['attendance' => 'confirmada']);
+        $this->assertEquals(1, $profile->meetings->count());
+    }
+
+    public function test_message_and_innovation_type_relations()
+    {
+        $sender = User::factory()->create();
+        $receiver = User::factory()->create();
+        
+        $message = \App\Models\Message::create([
+            'sender_id' => $sender->profile->id,
+            'receiver_id' => $receiver->profile->id,
+            'content' => 'Hi',
+        ]);
+
+        $this->assertEquals($sender->profile->id, $message->sender->id);
+        $this->assertEquals($receiver->profile->id, $message->receiver->id);
+
+        $type = InnovationType::factory()->create();
+        Innovation::factory()->create(['innovation_type_id' => $type->id]);
+        $this->assertEquals(1, $type->innovations->count());
+    }
 }
