@@ -4,8 +4,25 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Carbon\Carbon;
 
+/**
+ * App\Models\Meeting
+ *
+ * @property int $id
+ * @property int|null $project_id
+ * @property int|null $created_by
+ * @property \Illuminate\Support\Carbon|null $meeting_date
+ * @property string|null $status
+ * @property-read \Illuminate\Database\Eloquent\Collection|Profile[] $participants
+ * @property-read Profile|null $creator
+ * @property-read string $status_color
+ * @property-read string $status_label
+ * @property-read bool $is_upcoming
+ * @property-read bool $is_past
+ */
 class Meeting extends Model
 {
     use HasFactory;
@@ -28,17 +45,17 @@ class Meeting extends Model
     /**
      * Relaciones
      */
-    public function project()
+    public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
     }
 
-    public function creator()
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(Profile::class, 'created_by');
     }
 
-    public function participants()
+    public function participants(): BelongsToMany
     {
         return $this->belongsToMany(Profile::class, 'meeting_profile', 'meeting_id', 'profile_id')
                     ->withPivot('attendance')

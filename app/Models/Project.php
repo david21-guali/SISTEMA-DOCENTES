@@ -32,12 +32,12 @@ class Project extends Model
     /**
      * Relaciones
      */
-    public function category()
+    public function category(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Category::class);
     }
 
-    public function profile()
+    public function profile(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Profile::class);
     }
@@ -49,12 +49,12 @@ class Project extends Model
                     ->withTimestamps();
     }
 
-    public function tasks()
+    public function tasks(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Task::class);
     }
 
-    public function evaluations()
+    public function evaluations(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Evaluation::class);
     }
@@ -64,7 +64,7 @@ class Project extends Model
         return $this->morphMany(Attachment::class, 'attachable');
     }
 
-    public function latestEvaluation()
+    public function latestEvaluation(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(Evaluation::class)->latestOfMany();
     }

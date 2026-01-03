@@ -28,12 +28,12 @@ class Innovation extends Model
     /**
      * Relaciones
      */
-    public function profile()
+    public function profile(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Profile::class);
     }
 
-    public function innovationType()
+    public function innovationType(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(InnovationType::class);
     }

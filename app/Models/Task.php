@@ -34,18 +34,18 @@ class Task extends Model
         return $this->belongsTo(Project::class);
     }
 
-    public function assignedProfile()
+    public function assignedProfile(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Profile::class, 'assigned_to');
     }
 
-    public function assignees()
+    public function assignees(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
         return $this->belongsToMany(Profile::class, 'task_profile')
                     ->withTimestamps();
     }
 
-    public function attachments()
+    public function attachments(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(Attachment::class, 'attachable');
     }
