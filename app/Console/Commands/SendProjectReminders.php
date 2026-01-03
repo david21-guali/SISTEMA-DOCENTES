@@ -58,8 +58,9 @@ class SendProjectReminders extends Command
             
             $this->line("{$urgency} {$project->title} (finaliza en {$daysUntilDue} días)");
             
-            if ($project->profile && $project->profile->user) {
-                $user = $project->profile->user;
+            $profile = $project->profile;
+            if ($profile instanceof \App\Models\Profile && $profile->user) {
+                $user = $profile->user;
                 $user->notify(new ProjectDeadlineApproaching($project, $daysUntilDue));
                 $notificationsSent++;
                 $this->line("  ✅ Recordatorio enviado a: {$user->name}");

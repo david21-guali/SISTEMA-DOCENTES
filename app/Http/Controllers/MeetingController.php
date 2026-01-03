@@ -210,17 +210,15 @@ class MeetingController extends Controller
         ]);
 
         // Actualizar participantes
-        /** @var \Illuminate\Support\Collection<int, int> $participantsCollection */
-        $participantsCollection = collect($validated['participants']);
-        
-        $participants = $participantsCollection->mapWithKeys(function (int $userId) use ($meeting) {
+        $participants = [];
+        foreach ($validated['participants'] as $userId) {
             // Mantener el estado de asistencia si ya existía
             $existing = $meeting->participants->find($userId);
             /** @var \App\Models\Profile|null $existing */
             /** @phpstan-ignore-next-line */
             $attendance = $existing ? $existing->pivot->attendance : 'pendiente';
-            return [$userId => ['attendance' => $attendance]];
-        });
+            $participants[$userId] = ['attendance' => $attendance];
+        }
         $meeting->participants()->sync($participants);
 
         return redirect()->route('meetings.show', $meeting)
