@@ -104,7 +104,10 @@ class ResourceControllerTest extends TestCase
         $user->assignRole('docente');
         
         $path = Storage::disk('public')->put('resources/manual.pdf', 'content');
-        $resource = Resource::factory()->create(['file_path' => 'resources/manual.pdf']);
+        $resource = Resource::factory()->create([
+            'name' => 'Resource',
+            'file_path' => 'resources/manual.pdf'
+        ]);
 
         $response = $this->actingAs($user)
             ->get(route('resources.download', $resource));
