@@ -6,6 +6,23 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 
+/**
+ * App\Models\Task
+ *
+ * @property int $id
+ * @property int $project_id
+ * @property string $title
+ * @property string $description
+ * @property int $assigned_to
+ * @property \Illuminate\Support\Carbon|null $due_date
+ * @property string $status
+ * @property string $priority
+ * @property \Illuminate\Support\Carbon|null $completion_date
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Project $project
+ * @property-read \App\Models\Profile $assignedProfile
+ */
 class Task extends Model
 {
     use HasFactory;

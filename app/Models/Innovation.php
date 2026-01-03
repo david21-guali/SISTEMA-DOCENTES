@@ -13,6 +13,11 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $innovation_type_id
  * @property string $title
  * @property string $description
+ * @property string $methodology
+ * @property string $expected_results
+ * @property string $actual_results
+ * @property string $status
+ * @property int|null $impact_score
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Profile $profile
