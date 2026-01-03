@@ -28,7 +28,6 @@ class CommentController extends Controller
         // Notify project owner if someone else comments
         // Project owner is via profile now
         if ($project->profile->user_id !== Auth::id()) {
-            /** @var \App\Models\User $user */
             $user = $project->profile->user;
             $user->notify(new \App\Notifications\NewCommentAdded($comment));
         }

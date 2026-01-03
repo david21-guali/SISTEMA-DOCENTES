@@ -49,7 +49,7 @@ class InnovationsExport implements FromCollection, WithHeadings, WithMapping, Wi
             $innovation->id,
             $innovation->title,
             $innovation->innovationType->name,
-            $innovation->user?->name ?? 'N/A',
+            $innovation->user->name ?? 'N/A',
             ucfirst(str_replace('_', ' ', $innovation->status)),
             $innovation->impact_score ? $innovation->impact_score . '/10' : '-',
             $innovation->evidence_files ? count($innovation->evidence_files) : 0,

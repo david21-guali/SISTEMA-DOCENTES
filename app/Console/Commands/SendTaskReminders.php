@@ -58,7 +58,6 @@ class SendTaskReminders extends Command
             $this->line("{$urgency} {$task->title} (vence en {$daysUntilDue} días)");
             
             if ($task->assignedProfile && $task->assignedProfile->user) {
-                /** @var \App\Models\User $user */
                 $user = $task->assignedProfile->user;
                 $user->notify(new TaskDeadlineApproaching($task, $daysUntilDue));
                 $notificationsSent++;

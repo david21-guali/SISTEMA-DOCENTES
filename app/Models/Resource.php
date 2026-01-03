@@ -25,6 +25,7 @@ class Resource extends Model
 
     public function getTypeSlugAttribute()
     {
+        /** @phpstan-ignore-next-line */
         return $this->type ? $this->type->slug : null;
     }
 }

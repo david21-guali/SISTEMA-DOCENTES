@@ -236,7 +236,9 @@ class ProjectController extends Controller
 
         if ($oldStatus !== $newStatus) {
             // Notify the project owner (via User relation on Profile)
-            $project->profile->user->notify(new \App\Notifications\ProjectStatusChanged($project, $oldStatus, $newStatus));
+            /** @var \App\Models\User $user */
+            $user = $project->profile->user;
+            $user->notify(new \App\Notifications\ProjectStatusChanged($project, $oldStatus, $newStatus));
         }
 
         return redirect()->route('projects.index')
