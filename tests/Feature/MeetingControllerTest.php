@@ -85,10 +85,16 @@ class MeetingControllerTest extends TestCase
         $meeting = Meeting::factory()->create(['created_by' => $this->profile->id]);
         $this->actingAs($this->user);
         
+        $otherUser = User::factory()->create();
+        
         $response = $this->put(route('meetings.update', $meeting), [
             'title' => 'Updated Title',
+            'description' => 'Updated Desc',
+            'project_id' => $this->project->id,
             'meeting_date' => now()->addDays(2)->format('Y-m-d H:i:s'),
-            'status' => 'pendiente'
+            'location' => 'Online',
+            'status' => 'pendiente',
+            'participants' => [$otherUser->id]
         ]);
         
         $response->assertRedirect();
@@ -101,11 +107,12 @@ class MeetingControllerTest extends TestCase
         $this->actingAs($this->user);
         
         $response = $this->post(route('meetings.cancel', $meeting), [
-            'rejection_reason' => 'Busy'
+            'cancellation_reason' => 'Busy'
         ]);
         
         $response->assertRedirect();
-        $this->assertDatabaseHas('meetings', ['status' => 'cancelada']);
+        $meeting->refresh();
+        $this->assertEquals('cancelada', $meeting->status);
     }
 
     public function test_user_can_delete_meeting()

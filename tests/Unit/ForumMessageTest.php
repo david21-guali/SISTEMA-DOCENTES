@@ -37,10 +37,10 @@ class ForumMessageTest extends TestCase
             'sender_id' => $sender->profile->id,
             'receiver_id' => $receiver->profile->id,
             'content' => 'Hello',
-            'is_read' => false
+            'read_at' => null
         ]);
 
         $this->assertEquals($sender->profile->id, $message->sender_id);
-        $this->assertFalse($message->is_read);
+        $this->assertNull($message->read_at);
     }
 }

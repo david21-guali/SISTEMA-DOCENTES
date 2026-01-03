@@ -112,7 +112,7 @@ class InnovationControllerTest extends TestCase
         ]);
         
         $this->actingAs($this->user);
-        $response = $this->delete(route('innovations.evidence.destroy', [$innovation, $attachment->id]));
+        $response = $this->delete(route('innovations.attachments.delete', [$innovation, $attachment->id]));
         
         $response->assertRedirect();
         $this->assertDatabaseMissing('attachments', ['id' => $attachment->id]);

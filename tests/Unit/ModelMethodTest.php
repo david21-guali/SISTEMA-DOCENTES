@@ -6,6 +6,9 @@ use App\Models\Innovation;
 use App\Models\Meeting;
 use App\Models\Profile;
 use App\Models\User;
+use App\Models\Project;
+use App\Models\Comment;
+use App\Models\Evaluation;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
