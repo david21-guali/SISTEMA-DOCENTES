@@ -343,7 +343,6 @@ class TaskController extends Controller
         /** @var \App\Models\Project $project */
         $project = Project::find($projectId);
         if ($project) {
-            /** @phpstan-ignore-next-line */
             $project->recalculateProgress();
         }
 

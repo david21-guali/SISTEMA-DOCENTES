@@ -58,7 +58,6 @@ class SendProjectReminders extends Command
             $this->line("{$urgency} {$project->title} (finaliza en {$daysUntilDue} días)");
             
             if ($project->profile && $project->profile->user) {
-                /** @phpstan-ignore-next-line */
                 $user = $project->profile->user;
                 $user->notify(new ProjectDeadlineApproaching($project, $daysUntilDue));
                 $notificationsSent++;
