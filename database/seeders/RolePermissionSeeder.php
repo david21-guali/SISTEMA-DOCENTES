@@ -55,17 +55,17 @@ class RolePermissionSeeder extends Seeder
         ];
 
         foreach ($permissions as $permission) {
-            Permission::create(['name' => $permission]);
+            Permission::firstOrCreate(['name' => $permission]);
         }
 
         // Crear roles y asignar permisos
 
         // 1. Rol: Admin (todos los permisos)
-        $adminRole = Role::create(['name' => 'admin']);
+        $adminRole = Role::firstOrCreate(['name' => 'admin']);
         $adminRole->givePermissionTo(Permission::all());
 
         // 2. Rol: Coordinador (supervisión y evaluación)
-        $coordinadorRole = Role::create(['name' => 'coordinador']);
+        $coordinadorRole = Role::firstOrCreate(['name' => 'coordinador']);
         $coordinadorRole->givePermissionTo([
             'view-projects',
             'edit-projects',
@@ -81,7 +81,7 @@ class RolePermissionSeeder extends Seeder
         ]);
 
         // 3. Rol: Docente (crear y gestionar sus proyectos)
-        $docenteRole = Role::create(['name' => 'docente']);
+        $docenteRole = Role::firstOrCreate(['name' => 'docente']);
         $docenteRole->givePermissionTo([
             'view-projects',
             'create-projects',
