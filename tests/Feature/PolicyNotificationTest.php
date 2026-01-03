@@ -81,7 +81,7 @@ class PolicyNotificationTest extends TestCase
             new ProjectDeadlineApproaching($project, 5),
             new ProjectStatusChanged($project, 'planificacion', 'en_progreso'),
             new TaskAssigned($task),
-            new TaskDeadlineApproaching($task),
+            new TaskDeadlineApproaching($task, 5),
         ];
 
         foreach ($notifications as $notification) {
