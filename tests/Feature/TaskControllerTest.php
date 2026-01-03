@@ -69,6 +69,57 @@ class TaskControllerTest extends TestCase
         $response->assertViewHas('task', $task);
     }
 
+    public function test_task_creation_validation_failures()
+    {
+        $this->actingAs($this->user);
+        
+        // Test date out of range
+        $response = $this->post(route('tasks.store'), [
+            'project_id' => $this->project->id,
+            'title' => 'Invalid Date Task',
+            'description' => 'Test',
+            'assignees' => [$this->user->id],
+            'due_date' => now()->addYears(1)->format('Y-m-d'), // Far into the future
+            'priority' => 'media',
+        ]);
+        $response->assertSessionHasErrors('due_date');
+
+        // Test non-team member assignment
+        $project = Project::factory()->create(); // Different creator, empty team
+        $response = $this->post(route('tasks.store'), [
+            'project_id' => $project->id,
+            'title' => 'Invalid Assignee Task',
+            'description' => 'Test',
+            'assignees' => [$this->user->id],
+            'due_date' => now()->addDays(1)->format('Y-m-d'),
+            'priority' => 'media',
+        ]);
+        $response->assertSessionHas('swal_error');
+    }
+
+    public function test_task_creation_with_attachments()
+    {
+        $this->actingAs($this->user);
+        \Illuminate\Support\Facades\Storage::fake('public');
+        
+        $file = \Illuminate\Http\UploadedFile::fake()->create('document.pdf', 100);
+
+        $response = $this->post(route('tasks.store'), [
+            'project_id' => $this->project->id,
+            'title' => 'Task with File',
+            'description' => 'Test Description',
+            'assignees' => [$this->user->id],
+            'due_date' => now()->addDays(7)->format('Y-m-d'),
+            'priority' => 'media',
+            'attachments' => [$file],
+        ]);
+        
+        $response->assertRedirect();
+        $this->assertDatabaseHas('tasks', ['title' => 'Task with File']);
+        $task = Task::where('title', 'Task with File')->first();
+        $this->assertEquals(1, $task->attachments->count());
+    }
+
     public function test_user_can_view_task_edit_form()
     {
         $task = Task::factory()->create([

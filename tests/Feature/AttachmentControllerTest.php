@@ -92,4 +92,60 @@ class AttachmentControllerTest extends TestCase
         $response->assertStatus(302);
         $this->assertDatabaseMissing('attachments', ['id' => $attachment->id]);
     }
+
+    public function test_user_cannot_delete_others_attachment()
+    {
+        Storage::fake('public');
+        $user = User::factory()->create();
+        $otherUser = User::factory()->create();
+        
+        $attachment = Attachment::create([
+            'filename' => 'other.pdf',
+            'original_name' => 'other.pdf',
+            'mime_type' => 'application/pdf',
+            'size' => 50,
+            'path' => 'attachments/projects/1/other.pdf',
+            'uploaded_by' => $otherUser->profile->id,
+            'attachable_id' => 1,
+            'attachable_type' => Project::class,
+        ]);
+
+        $response = $this->actingAs($user)
+            ->delete(route('attachments.destroy', $attachment));
+
+        $response->assertStatus(302);
+        $response->assertSessionHas('error');
+        $this->assertDatabaseHas('attachments', ['id' => $attachment->id]);
+    }
+
+    public function test_ajax_upload_and_delete()
+    {
+        Storage::fake('public');
+        $user = User::factory()->create();
+        $project = Project::factory()->create();
+
+        $file = UploadedFile::fake()->create('ajax.pdf', 100);
+
+        // AJAX Upload
+        $response = $this->actingAs($user)
+            ->postJson(route('attachments.store', ['type' => 'project', 'id' => $project->id]), [
+                'files' => [$file]
+            ]);
+
+        $response->assertStatus(200);
+        $response->assertJson(['success' => true]);
+        
+        $attachment = Attachment::latest()->first();
+
+        // AJAX Delete Success
+        $response = $this->actingAs($user)
+            ->deleteJson(route('attachments.destroy', $attachment));
+        $response->assertStatus(200);
+        $response->assertJson(['success' => true]);
+
+        // AJAX Delete Failure (already deleted)
+        $response = $this->actingAs($user)
+            ->deleteJson(route('attachments.destroy', $attachment));
+        $response->assertStatus(404);
+    }
 }

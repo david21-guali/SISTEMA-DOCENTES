@@ -42,6 +42,36 @@ class AuthenticationTest extends TestCase
         $this->assertGuest();
     }
 
+    public function test_users_cannot_authenticate_with_missing_fields(): void
+    {
+        $response = $this->post('/login', [
+            'email' => '',
+            'password' => '',
+        ]);
+
+        $response->assertSessionHasErrors(['email', 'password']);
+    }
+
+    public function test_users_cannot_authenticate_with_rate_limiting()
+    {
+        $user = User::factory()->create();
+        
+        // Brute force attempt (standard Laravel limit is 5)
+        for ($i = 0; $i < 6; $i++) {
+            $this->post('/login', [
+                'email' => $user->email,
+                'password' => 'wrong',
+            ]);
+        }
+
+        $response = $this->post('/login', [
+            'email' => $user->email,
+            'password' => 'wrong',
+        ]);
+
+        $response->assertSessionHasErrors('email'); // Should have rate limit error
+    }
+
     public function test_users_can_logout(): void
     {
         $user = User::factory()->create();

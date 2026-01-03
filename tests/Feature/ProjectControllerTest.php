@@ -28,6 +28,44 @@ class ProjectControllerTest extends TestCase
         $response->assertViewIs('app.back.projects.index');
     }
 
+    public function test_project_index_filtering_for_admin()
+    {
+        $admin = User::factory()->create();
+        $admin->assignRole('admin');
+        
+        $this->actingAs($admin);
+        $response = $this->get(route('projects.index'));
+        $response->assertStatus(200);
+        $response->assertViewHas('projects');
+    }
+
+    public function test_project_store_with_attachments()
+    {
+        $this->actingAs($this->user);
+        Storage::fake('public');
+        $category = \App\Models\Category::factory()->create();
+        
+        $file = UploadedFile::fake()->create('project.pdf', 200);
+
+        $projectData = [
+            'title' => 'Project with Attachments',
+            'description' => 'Test',
+            'objectives' => 'Test',
+            'category_id' => $category->id,
+            'start_date' => now()->format('Y-m-d'),
+            'end_date' => now()->addMonth()->format('Y-m-d'),
+            'impact_description' => 'Test',
+            'team_members' => [$this->user->id],
+            'attachments' => [$file],
+        ];
+
+        $response = $this->post(route('projects.store'), $projectData);
+        $response->assertRedirect();
+        
+        $project = Project::where('title', 'Project with Attachments')->first();
+        $this->assertEquals(1, $project->attachments->count());
+    }
+
     public function test_user_can_create_project()
     {
         $this->actingAs($this->user);
@@ -93,5 +131,38 @@ class ProjectControllerTest extends TestCase
         
         $response->assertRedirect(route('projects.index'));
         $this->assertDatabaseMissing('projects', ['id' => $project->id]);
+    }
+
+    public function test_upload_final_report()
+    {
+        $this->actingAs($this->user);
+        \Illuminate\Support\Facades\Storage::fake('public');
+        
+        $project = Project::factory()->create(['profile_id' => $this->profile->id]);
+        $file = \Illuminate\Http\UploadedFile::fake()->create('report.pdf', 500);
+
+        $response = $this->post(route('projects.upload-report', $project), [
+            'file' => $file,
+        ]);
+        
+        $response->assertRedirect();
+        $response->assertSessionHas('success');
+        
+        $this->assertDatabaseHas('resources', ['name' => 'Informe Final - ' . $project->title]);
+    }
+
+    public function test_unauthorized_report_upload()
+    {
+        $otherUser = User::factory()->create();
+        $this->actingAs($otherUser);
+        
+        $project = Project::factory()->create();
+        $file = \Illuminate\Http\UploadedFile::fake()->create('hacker_report.pdf', 500);
+
+        $response = $this->post(route('projects.upload-report', $project), [
+            'file' => $file,
+        ]);
+        
+        $response->assertStatus(403);
     }
 }
