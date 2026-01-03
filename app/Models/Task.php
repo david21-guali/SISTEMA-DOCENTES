@@ -29,7 +29,7 @@ class Task extends Model
     /**
      * Relaciones
      */
-    public function project()
+    public function project(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Project::class);
     }

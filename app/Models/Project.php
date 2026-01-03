@@ -42,7 +42,7 @@ class Project extends Model
         return $this->belongsTo(Profile::class);
     }
 
-    public function team()
+    public function team(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
         return $this->belongsToMany(Profile::class, 'project_profile')
                     ->withPivot('role')
@@ -146,7 +146,7 @@ class Project extends Model
             $this->completion_percentage = 0;
         } else {
             $completedTasks = $this->tasks()->where('status', 'completada')->count();
-            $this->completion_percentage = round(($completedTasks / $totalTasks) * 100);
+            $this->completion_percentage = (int) round(($completedTasks / $totalTasks) * 100);
         }
         
         // Si llega a 100% y no está finalizado, opcionalmente podríamos sugerir/cambiar estado, 

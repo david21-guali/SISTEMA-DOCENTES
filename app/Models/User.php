@@ -25,7 +25,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
 
 
-    public function profile()
+    public function profile(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(Profile::class);
     }

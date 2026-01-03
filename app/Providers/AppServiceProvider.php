@@ -23,7 +23,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         // Forzar HTTPS siempre (Solución para error 'Action Unauthorized' en emails)
-        if($this->app->environment('production') || true) { // Forzamos siempre por seguridad en hosting
+        // Forzar HTTPS en producción
+        if($this->app->environment('production')) {
             \Illuminate\Support\Facades\URL::forceScheme('https');
         }
 
