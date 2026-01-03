@@ -70,16 +70,16 @@ class PolicyNotificationTest extends TestCase
         $comment = Comment::create(['project_id' => $project->id, 'profile_id' => $user->profile->id, 'content' => 'Test']);
 
         $notifications = [
-            new AdminPasswordResetRequest('token'),
+            new AdminPasswordResetRequest($user),
             new MeetingCancellation($meeting),
             new MeetingInvitation($meeting),
             new MeetingReminder($meeting),
-            new MeetingResponse($meeting, 'confirmada'),
+            new MeetingResponse($meeting, $user, 'confirmada'),
             new NewCommentAdded($comment),
             new PasswordResetByAdmin('password'),
             new ProjectAssigned($project),
             new ProjectDeadlineApproaching($project),
-            new ProjectStatusChanged($project),
+            new ProjectStatusChanged($project, 'planificacion', 'en_progreso'),
             new TaskAssigned($task),
             new TaskDeadlineApproaching($task),
         ];

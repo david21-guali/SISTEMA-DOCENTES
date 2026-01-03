@@ -130,6 +130,8 @@ class AttachmentControllerTest extends TestCase
         $response = $this->actingAs($user)
             ->postJson(route('attachments.store', ['type' => 'project', 'id' => $project->id]), [
                 'files' => [$file]
+            ], [
+                'X-Requested-With' => 'XMLHttpRequest'
             ]);
 
         $response->assertStatus(200);
@@ -139,13 +141,17 @@ class AttachmentControllerTest extends TestCase
 
         // AJAX Delete Success
         $response = $this->actingAs($user)
-            ->deleteJson(route('attachments.destroy', $attachment));
+            ->deleteJson(route('attachments.destroy', $attachment), [], [
+                'X-Requested-With' => 'XMLHttpRequest'
+            ]);
         $response->assertStatus(200);
         $response->assertJson(['success' => true]);
 
         // AJAX Delete Failure (already deleted)
         $response = $this->actingAs($user)
-            ->deleteJson(route('attachments.destroy', $attachment));
+            ->deleteJson(route('attachments.destroy', $attachment), [], [
+                'X-Requested-With' => 'XMLHttpRequest'
+            ]);
         $response->assertStatus(404);
     }
 }
