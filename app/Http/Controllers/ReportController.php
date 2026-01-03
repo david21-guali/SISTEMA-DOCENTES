@@ -121,14 +121,15 @@ class ReportController extends Controller
                 $q->where('name', 'LIKE', '%docente%')
                   ->orWhere('name', 'LIKE', '%admin%');
             })
-            ->with(['roles', 'profile']) // Eager load roles and profile
+            ->with(['roles', 'profile.assignedTasks', 'profile.comments'])
             ->get()
             ->map(function($user) {
-                $user->assigned_tasks_count = $user->profile ? $user->profile->assignedTasks()->count() : 0;
-                $user->comments_count = $user->profile ? $user->profile->comments()->count() : 0;
+                // Store counts in custom attributes (not readonly properties)
+                $user->tasks_count = $user->profile ? $user->profile->assignedTasks->count() : 0;
+                $user->user_comments_count = $user->profile ? $user->profile->comments->count() : 0;
                 return $user;
             })
-            ->sortByDesc('assigned_tasks_count');
+            ->sortByDesc('tasks_count');
 
         // 2. Otros usuarios (para detectar por qué no salen)
         $teacherIds = $teachers->pluck('id');
