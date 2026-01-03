@@ -92,8 +92,8 @@ class ModelMethodTest extends TestCase
 
         $this->assertTrue($attachment->isPdf());
         $this->assertFalse($attachment->isImage());
-        $this->assertStringContainsString('1 MB', $attachment->human_size);
-        $this->assertStringContainsString('fa-file-pdf', $attachment->icon);
+        $this->assertEquals('1 MB', $attachment->human_size);
+        $this->assertEquals('fas fa-file-pdf text-danger', $attachment->icon);
     }
 
     public function test_comment_relations()
