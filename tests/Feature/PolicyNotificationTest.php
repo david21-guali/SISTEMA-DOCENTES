@@ -78,7 +78,7 @@ class PolicyNotificationTest extends TestCase
             new NewCommentAdded($comment),
             new PasswordResetByAdmin('password'),
             new ProjectAssigned($project),
-            new ProjectDeadlineApproaching($project),
+            new ProjectDeadlineApproaching($project, 5),
             new ProjectStatusChanged($project, 'planificacion', 'en_progreso'),
             new TaskAssigned($task),
             new TaskDeadlineApproaching($task),

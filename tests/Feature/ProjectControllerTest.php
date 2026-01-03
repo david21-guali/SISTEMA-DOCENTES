@@ -143,7 +143,7 @@ class ProjectControllerTest extends TestCase
         $project = Project::factory()->create(['profile_id' => $this->profile->id]);
         $file = \Illuminate\Http\UploadedFile::fake()->create('report.pdf', 500);
 
-        $response = $this->post(route('projects.upload-report', $project), [
+        $response = $this->post(route('projects.uploadReport', $project), [
             'file' => $file,
         ]);
         
@@ -161,7 +161,7 @@ class ProjectControllerTest extends TestCase
         $project = Project::factory()->create();
         $file = \Illuminate\Http\UploadedFile::fake()->create('hacker_report.pdf', 500);
 
-        $response = $this->post(route('projects.upload-report', $project), [
+        $response = $this->post(route('projects.uploadReport', $project), [
             'file' => $file,
         ]);
         
