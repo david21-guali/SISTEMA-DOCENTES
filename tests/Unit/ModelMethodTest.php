@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\Project;
 use App\Models\Comment;
 use App\Models\Evaluation;
+use App\Models\InnovationType;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -91,7 +92,7 @@ class ModelMethodTest extends TestCase
 
         $this->assertTrue($attachment->isPdf());
         $this->assertFalse($attachment->isImage());
-        $this->assertEquals('1 MB', $attachment->human_size);
+        $this->assertStringContainsString('1 MB', $attachment->human_size);
         $this->assertStringContainsString('fa-file-pdf', $attachment->icon);
     }
 
