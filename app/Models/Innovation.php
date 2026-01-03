@@ -64,7 +64,7 @@ class Innovation extends Model
      */
     public function getUserAttribute()
     {
-        return $this->profile?->user;
+        return $this->profile->user ?? null;
     }
 
     /**

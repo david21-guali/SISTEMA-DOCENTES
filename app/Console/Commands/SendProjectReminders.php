@@ -58,9 +58,11 @@ class SendProjectReminders extends Command
             $this->line("{$urgency} {$project->title} (finaliza en {$daysUntilDue} días)");
             
             if ($project->profile && $project->profile->user) {
-                $project->profile->user->notify(new ProjectDeadlineApproaching($project, $daysUntilDue));
+                /** @var \App\Models\User $user */
+                $user = $project->profile->user;
+                $user->notify(new ProjectDeadlineApproaching($project, $daysUntilDue));
                 $notificationsSent++;
-                $this->line("  ✅ Recordatorio enviado a: {$project->profile->user->name}");
+                $this->line("  ✅ Recordatorio enviado a: {$user->name}");
                 
                 // Evitar rate limit de Mailtrap (Too many emails per second)
                 sleep(1);

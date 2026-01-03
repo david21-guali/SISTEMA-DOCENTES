@@ -20,7 +20,7 @@ class TasksExport implements FromCollection, WithHeadings, WithMapping, WithStyl
 
     public function collection()
     {
-        $query = Task::with(['project', 'assignedUser']);
+        $query = Task::with(['project', 'assignedProfile.user']);
 
         if (isset($this->filters['status'])) {
             $query->where('status', $this->filters['status']);

@@ -20,7 +20,7 @@ class InnovationsExport implements FromCollection, WithHeadings, WithMapping, Wi
 
     public function collection()
     {
-        $query = Innovation::with(['user', 'innovationType']);
+        $query = Innovation::with(['profile.user', 'innovationType']);
 
         if (isset($this->filters['status'])) {
             $query->where('status', $this->filters['status']);
@@ -49,7 +49,7 @@ class InnovationsExport implements FromCollection, WithHeadings, WithMapping, Wi
             $innovation->id,
             $innovation->title,
             $innovation->innovationType->name,
-            $innovation->user->name,
+            $innovation->user?->name ?? 'N/A',
             ucfirst(str_replace('_', ' ', $innovation->status)),
             $innovation->impact_score ? $innovation->impact_score . '/10' : '-',
             $innovation->evidence_files ? count($innovation->evidence_files) : 0,

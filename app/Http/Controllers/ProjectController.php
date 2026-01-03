@@ -199,7 +199,6 @@ class ProjectController extends Controller
             'budget' => 'nullable|numeric|min:0|max:9999999.99',
             'impact_description' => 'nullable|string',
             'completion_percentage' => 'nullable|integer|min:0|max:100',
-            'completion_percentage' => 'nullable|integer|min:0|max:100',
             'team_members' => 'required|array|min:1',
             'team_members.*' => 'exists:users,id',
         ]);

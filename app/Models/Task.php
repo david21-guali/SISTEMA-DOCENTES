@@ -55,7 +55,7 @@ class Task extends Model
      */
    public function getAssignedUserAttribute()
     {
-        return $this->assignedProfile?->user;
+        return $this->assignedProfile->user ?? null;
     }
 
     /**
