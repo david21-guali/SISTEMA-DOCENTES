@@ -33,4 +33,47 @@ class ModelMethodTest extends TestCase
         $this->assertFalse($meeting->is_past);
         $this->assertNotNull($meeting->formatted_date);
     }
+
+    public function test_comment_scopes()
+    {
+        $user = User::factory()->create();
+        $project = Project::factory()->create(['profile_id' => $user->profile->id]);
+        
+        $comment = \App\Models\Comment::create([
+            'project_id' => $project->id,
+            'profile_id' => $user->profile->id,
+            'content' => 'Top level'
+        ]);
+
+        \App\Models\Comment::create([
+            'project_id' => $project->id,
+            'profile_id' => $user->profile->id,
+            'content' => 'Reply',
+            'parent_id' => $comment->id
+        ]);
+
+        $this->assertEquals(1, \App\Models\Comment::topLevel()->count());
+    }
+
+    public function test_evaluation_helpers()
+    {
+        $evaluation = new \App\Models\Evaluation([
+            'innovation_score' => 4,
+            'relevance_score' => 5,
+            'final_score' => 9.0
+        ]);
+
+        $this->assertEquals(4.5, $evaluation->average_rubric_score);
+        $this->assertEquals('success', $evaluation->score_color);
+    }
+
+    public function test_profile_attributes()
+    {
+        $user = User::factory()->create(['name' => 'John Doe']);
+        $profile = $user->profile;
+        $this->assertEquals('John Doe', $profile->name);
+        
+        $project = Project::factory()->create(['profile_id' => $profile->id]);
+        $this->assertEquals(1, $profile->projects()->count());
+    }
 }

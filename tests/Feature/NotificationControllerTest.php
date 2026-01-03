@@ -88,4 +88,23 @@ class NotificationControllerTest extends TestCase
         $response->assertStatus(302);
         $this->assertEquals(0, $user->notifications()->count());
     }
+
+    public function test_user_can_delete_all_read_notifications()
+    {
+        $user = User::factory()->create();
+        $user->assignRole('docente');
+        
+        $user->notifications()->create([
+            'id' => 'read-id',
+            'type' => 'test',
+            'data' => [],
+            'read_at' => now(),
+        ]);
+
+        $response = $this->actingAs($user)
+            ->delete(route('notifications.destroyAllRead'));
+
+        $response->assertStatus(302);
+        $this->assertEquals(0, $user->readNotifications()->count());
+    }
 }

@@ -58,4 +58,63 @@ class InnovationControllerTest extends TestCase
         $response->assertStatus(200);
         $response->assertViewHas('innovation', $innovation);
     }
+
+    public function test_user_can_view_best_practices()
+    {
+        Innovation::factory()->count(3)->create(['status' => 'completada', 'impact_score' => 9]);
+        $this->actingAs($this->user);
+        $response = $this->get(route('innovations.best-practices'));
+        $response->assertStatus(200);
+    }
+
+    public function test_user_can_update_innovation()
+    {
+        $innovation = Innovation::factory()->create(['profile_id' => $this->profile->id]);
+        $type = \App\Models\InnovationType::factory()->create();
+        $this->actingAs($this->user);
+        
+        $response = $this->put(route('innovations.update', $innovation), [
+            'title' => 'Updated Title',
+            'description' => 'Updated Desc',
+            'innovation_type_id' => $type->id,
+            'methodology' => 'Updated Meth',
+            'expected_results' => 'Updated Exp',
+            'actual_results' => 'Updated Act',
+            'status' => 'en_implementacion',
+            'impact_score' => 9,
+        ]);
+        
+        $response->assertRedirect();
+        $this->assertDatabaseHas('innovations', ['title' => 'Updated Title']);
+    }
+
+    public function test_user_can_delete_innovation()
+    {
+        $innovation = Innovation::factory()->create(['profile_id' => $this->profile->id]);
+        $this->actingAs($this->user);
+        
+        $response = $this->delete(route('innovations.destroy', $innovation));
+        
+        $response->assertRedirect();
+        $this->assertDatabaseMissing('innovations', ['id' => $innovation->id]);
+    }
+
+    public function test_user_can_delete_evidence()
+    {
+        $innovation = Innovation::factory()->create(['profile_id' => $this->profile->id]);
+        $attachment = $innovation->attachments()->create([
+            'filename' => 'test.pdf',
+            'original_name' => 'test.pdf',
+            'mime_type' => 'application/pdf',
+            'size' => 100,
+            'path' => 'test.pdf',
+            'uploaded_by' => $this->profile->id,
+        ]);
+        
+        $this->actingAs($this->user);
+        $response = $this->delete(route('innovations.evidence.destroy', [$innovation, $attachment->id]));
+        
+        $response->assertRedirect();
+        $this->assertDatabaseMissing('attachments', ['id' => $attachment->id]);
+    }
 }

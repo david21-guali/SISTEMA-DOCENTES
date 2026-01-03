@@ -71,4 +71,51 @@ class MeetingControllerTest extends TestCase
             'attendance' => 'confirmada'
         ]);
     }
+
+    public function test_user_can_view_meeting_details()
+    {
+        $meeting = Meeting::factory()->create(['created_by' => $this->profile->id]);
+        $this->actingAs($this->user);
+        $response = $this->get(route('meetings.show', $meeting));
+        $response->assertStatus(200);
+    }
+
+    public function test_user_can_update_meeting()
+    {
+        $meeting = Meeting::factory()->create(['created_by' => $this->profile->id]);
+        $this->actingAs($this->user);
+        
+        $response = $this->put(route('meetings.update', $meeting), [
+            'title' => 'Updated Title',
+            'meeting_date' => now()->addDays(2)->format('Y-m-d H:i:s'),
+            'status' => 'pendiente'
+        ]);
+        
+        $response->assertRedirect();
+        $this->assertDatabaseHas('meetings', ['title' => 'Updated Title']);
+    }
+
+    public function test_user_can_cancel_meeting()
+    {
+        $meeting = Meeting::factory()->create(['created_by' => $this->profile->id]);
+        $this->actingAs($this->user);
+        
+        $response = $this->post(route('meetings.cancel', $meeting), [
+            'rejection_reason' => 'Busy'
+        ]);
+        
+        $response->assertRedirect();
+        $this->assertDatabaseHas('meetings', ['status' => 'cancelada']);
+    }
+
+    public function test_user_can_delete_meeting()
+    {
+        $meeting = Meeting::factory()->create(['created_by' => $this->profile->id]);
+        $this->actingAs($this->user);
+        
+        $response = $this->delete(route('meetings.destroy', $meeting));
+        
+        $response->assertRedirect();
+        $this->assertDatabaseMissing('meetings', ['id' => $meeting->id]);
+    }
 }
