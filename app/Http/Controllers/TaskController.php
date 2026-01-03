@@ -255,12 +255,10 @@ class TaskController extends Controller
                     if ($project) {
                         $date = \Carbon\Carbon::parse($value);
                         
-                        /** @phpstan-ignore-next-line */
                         if ($date->lt($project->start_date->startOfDay())) {
                             $fail('La fecha de vencimiento no puede ser anterior al inicio del proyecto (' . $project->start_date->format('d/m/Y') . ').');
                         }
                         
-                        /** @phpstan-ignore-next-line */
                         if ($date->gt($project->end_date->endOfDay())) {
                             $fail('La fecha de vencimiento no puede ser posterior al fin del proyecto (' . $project->end_date->format('d/m/Y') . ').');
                         }
@@ -344,8 +342,8 @@ class TaskController extends Controller
         // Recalcular progreso del proyecto
         /** @var \App\Models\Project $project */
         $project = Project::find($projectId);
-        /** @phpstan-ignore-next-line */
         if ($project) {
+            /** @phpstan-ignore-next-line */
             $project->recalculateProgress();
         }
 

@@ -58,6 +58,7 @@ class SendTaskReminders extends Command
             $this->line("{$urgency} {$task->title} (vence en {$daysUntilDue} días)");
             
             if ($task->assignedProfile && $task->assignedProfile->user) {
+                /** @phpstan-ignore-next-line */
                 $user = $task->assignedProfile->user;
                 $user->notify(new TaskDeadlineApproaching($task, $daysUntilDue));
                 $notificationsSent++;

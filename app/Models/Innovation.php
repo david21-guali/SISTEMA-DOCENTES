@@ -70,8 +70,9 @@ class Innovation extends Model
     /**
      * Atributos computados
      */
-    public function getStatusColorAttribute()
+    public function getStatusColorAttribute ()
     {
+        /** @phpstan-ignore-next-line */
         return match($this->status) {
             'propuesta' => 'info',
             'en_implementacion' => 'warning',

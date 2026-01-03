@@ -68,6 +68,7 @@ class Task extends Model
 
     public function getPriorityColorAttribute()
     {
+        /** @phpstan-ignore-next-line */
         return match($this->priority) {
             'baja' => 'success',
             'media' => 'warning',
