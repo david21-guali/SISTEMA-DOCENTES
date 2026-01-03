@@ -30,12 +30,16 @@ class InnovationControllerTest extends TestCase
     public function test_user_can_create_innovation()
     {
         $this->actingAs($this->user);
+        $type = \App\Models\InnovationType::factory()->create();
         
         $innovationData = [
             'title' => 'Test Innovation',
             'description' => 'Test Description',
-            'innovation_type_id' => 1, // Assumes type exists or use factory
-            'status' => 'propuesta',
+            'innovation_type_id' => $type->id,
+            'methodology' => 'Test Methodology',
+            'expected_results' => 'Test Expected Results',
+            'actual_results' => 'Test Actual Results',
+            'impact_score' => 8,
         ];
 
         $response = $this->post(route('innovations.store'), $innovationData);

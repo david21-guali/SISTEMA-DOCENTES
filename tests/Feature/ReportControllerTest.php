@@ -29,14 +29,14 @@ class ReportControllerTest extends TestCase
     public function test_user_can_view_projects_report()
     {
         $this->actingAs($this->user);
-        $response = $this->get(route('reports.projects'));
+        $response = $this->get(route('reports.projects.pdf'));
         $response->assertStatus(200);
     }
 
     public function test_user_can_view_tasks_report()
     {
         $this->actingAs($this->user);
-        $response = $this->get(route('reports.tasks'));
+        $response = $this->get(route('reports.tasks.pdf'));
         $response->assertStatus(200);
     }
 }

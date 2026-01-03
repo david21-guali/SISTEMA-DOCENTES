@@ -77,7 +77,7 @@ class ReportController extends Controller
 
         $tasks = $query->get();
 
-        $pdf = Pdf::loadView('reports.tasks-pdf', compact('tasks'));
+        $pdf = Pdf::loadView('app.back.reports.tasks-pdf', compact('tasks'));
         return $pdf->download('tareas-' . date('Y-m-d') . '.pdf');
     }
 

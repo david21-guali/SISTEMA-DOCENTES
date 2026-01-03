@@ -16,8 +16,9 @@ class MeetingControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        $this->seed(\Database\Seeders\RolePermissionSeeder::class);
         $this->user = User::factory()->create();
-        $this->profile = Profile::factory()->create(['user_id' => $this->user->id]);
+        $this->profile = $this->user->profile;
         $this->project = Project::factory()->create(['profile_id' => $this->profile->id]);
     }
 
@@ -61,7 +62,7 @@ class MeetingControllerTest extends TestCase
             'attendance' => 'confirmada',
         ];
 
-        $response = $this->post(route('meetings.update-attendance', $meeting), $attendanceData);
+        $response = $this->post(route('meetings.updateAttendance', $meeting), $attendanceData);
         
         $response->assertRedirect();
         $this->assertDatabaseHas('meeting_profile', [

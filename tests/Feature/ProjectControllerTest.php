@@ -17,7 +17,7 @@ class ProjectControllerTest extends TestCase
         parent::setUp();
         // Set up roles and default user if necessary, or just create a user with a profile
         $this->user = User::factory()->create();
-        $this->profile = Profile::factory()->create(['user_id' => $this->user->id]);
+        $this->profile = $this->user->profile;
     }
 
     public function test_user_can_view_projects_index()
@@ -31,13 +31,17 @@ class ProjectControllerTest extends TestCase
     public function test_user_can_create_project()
     {
         $this->actingAs($this->user);
+        $category = \App\Models\Category::factory()->create();
         
         $projectData = [
             'title' => 'Test Project',
             'description' => 'Test Description',
+            'objectives' => 'Test Objectives',
+            'category_id' => $category->id,
             'start_date' => now()->format('Y-m-d'),
             'end_date' => now()->addMonth()->format('Y-m-d'),
             'status' => 'planificacion',
+            'impact_description' => 'Test Impact',
             'team_members' => [$this->user->id],
         ];
 
@@ -67,6 +71,9 @@ class ProjectControllerTest extends TestCase
         $updateData = [
             'title' => 'Updated Project Title',
             'description' => $project->description,
+            'category_id' => $project->category_id,
+            'start_date' => $project->start_date->format('Y-m-d'),
+            'end_date' => $project->end_date->format('Y-m-d'),
             'status' => 'en_progreso',
             'team_members' => [$this->user->id],
         ];

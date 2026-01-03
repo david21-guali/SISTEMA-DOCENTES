@@ -17,7 +17,7 @@ class TaskControllerTest extends TestCase
     {
         parent::setUp();
         $this->user = User::factory()->create();
-        $this->profile = Profile::factory()->create(['user_id' => $this->user->id]);
+        $this->profile = $this->user->profile;
         $this->project = Project::factory()->create(['profile_id' => $this->profile->id]);
     }
 
@@ -37,10 +37,9 @@ class TaskControllerTest extends TestCase
             'title' => 'Test Task',
             'description' => 'Test Description',
             'project_id' => $this->project->id,
-            'assigned_to' => $this->profile->id,
+            'assignees' => [$this->user->id],
             'due_date' => now()->addDays(7)->format('Y-m-d'),
             'priority' => 'media',
-            'status' => 'pendiente',
         ];
 
         $response = $this->post(route('tasks.store'), $taskData);
@@ -73,12 +72,7 @@ class TaskControllerTest extends TestCase
         
         $this->actingAs($this->user);
         
-        $updateData = [
-            'status' => 'completada',
-        ];
-
-        // Assuming there is an updateStatus or similar route, or using standard update
-        $response = $this->patch(route('tasks.update-status', $task), $updateData);
+        $response = $this->patch(route('tasks.complete', $task));
         
         $response->assertRedirect();
         $this->assertDatabaseHas('tasks', ['id' => $task->id, 'status' => 'completada']);
