@@ -52,6 +52,7 @@ class SendTaskReminders extends Command
         $notificationsSent = 0;
 
         foreach ($tasks as $task) {
+            /** @var Task $task */
             $daysUntilDue = $now->diffInDays($task->due_date, false);
             $urgency = $daysUntilDue <= 1 ? ' URGENTE' : ' Próxima';
             

@@ -52,6 +52,7 @@ class SendProjectReminders extends Command
         $notificationsSent = 0;
 
         foreach ($projects as $project) {
+            /** @var Project $project */
             $daysUntilDue = $now->diffInDays($project->end_date, false);
             $urgency = $daysUntilDue <= 3 ? '🔴 CRÍTICO' : '🟡 Próximo';
             

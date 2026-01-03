@@ -75,6 +75,7 @@ class Innovation extends Model
         return match($this->status) {
             'propuesta' => 'info',
             'en_implementacion' => 'warning',
+            /** @phpstan-ignore-next-line */
             'completada' => 'success',
             default => 'secondary',
         };

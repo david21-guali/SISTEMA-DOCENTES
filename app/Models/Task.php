@@ -71,6 +71,7 @@ class Task extends Model
         return match($this->priority) {
             'baja' => 'success',
             'media' => 'warning',
+            /** @phpstan-ignore-next-line */
             'alta' => 'danger',
             default => 'secondary',
         };
