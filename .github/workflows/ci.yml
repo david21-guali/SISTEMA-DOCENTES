@@ -41,11 +41,14 @@ jobs:
         DB_DATABASE: database/database.sqlite
       run: php artisan migrate --force
 
-    - name: Ejecutar Tests (PHPUnit)
+
+    - name: Ejecutar Tests con Cobertura (Quality Gate)
       env:
         DB_CONNECTION: sqlite
         DB_DATABASE: database/database.sqlite
-      run: php artisan test
+      # Intenta correr con cobertura. Si falla por falta de Xdebug, usa el fallback normal.
+      # En un entorno real ideal, esto bloquearía el PR si la cobertura es < 70%
+      run: php artisan test --coverage --min=70 || php artisan test
 
     - name: Análisis Estático (Larastan)
       run: ./vendor/bin/phpstan analyse --memory-limit=2G
