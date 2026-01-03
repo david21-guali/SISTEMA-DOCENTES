@@ -13,7 +13,7 @@ parameters:
         # - '#Unsafe usage of new static#'
 
     excludePaths:
-        - ./*/*/FileToBeExcluded.php
+        - resources/views/
 
     checkOctaneCompatibility: true
     checkModelProperties: true

@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \App\Models\InnovationType $innovationType
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Attachment[] $attachments
  * @property-read int|null $attachments_count
+ * @property-read \App\Models\User|null $user
  */
 class Innovation extends Model
 {
@@ -56,6 +57,14 @@ class Innovation extends Model
     public function attachments()
     {
         return $this->morphMany(Attachment::class, 'attachable');
+    }
+
+    /**
+     * Accessor: user (via profile)
+     */
+    public function getUserAttribute()
+    {
+        return $this->profile?->user;
     }
 
     /**

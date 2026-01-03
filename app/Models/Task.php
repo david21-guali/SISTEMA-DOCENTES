@@ -51,6 +51,14 @@ class Task extends Model
     }
 
     /**
+     * Accessor: assignedUser (via assignedProfile)
+     */
+   public function getAssignedUserAttribute()
+    {
+        return $this->assignedProfile?->user;
+    }
+
+    /**
      * Atributos computados
      */
     public function getIsOverdueAttribute()
