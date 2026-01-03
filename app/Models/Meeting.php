@@ -75,6 +75,11 @@ class Meeting extends Model
         };
     }
 
+    public function getFormattedDateAttribute()
+    {
+        return $this->meeting_date ? $this->meeting_date->format('d/m/Y H:i') : null;
+    }
+
     public function getStatusLabelAttribute()
     {
         return match($this->status) {

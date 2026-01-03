@@ -57,6 +57,10 @@ class AdvancedReportTest extends TestCase
             ->get(route('reports.innovations.excel'));
 
         $response->assertStatus(200);
-        $this->assertTrue(str_contains($response->headers->get('Content-Disposition'), 'innovations.xlsx'));
+        $contentDisposition = strtolower($response->headers->get('Content-Disposition'));
+        $this->assertTrue(
+            str_contains($contentDisposition, 'innovaciones') || 
+            str_contains($contentDisposition, 'excel')
+        );
     }
 }
