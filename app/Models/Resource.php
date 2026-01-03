@@ -11,12 +11,12 @@ class Resource extends Model
 
     protected $fillable = ['name', 'resource_type_id', 'description', 'cost', 'file_path'];
 
-    public function type()
+    public function type(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(ResourceType::class, 'resource_type_id');
     }
 
-    public function projects()
+    public function projects(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
         return $this->belongsToMany(Project::class)
                     ->withPivot('quantity', 'assigned_date', 'notes')
