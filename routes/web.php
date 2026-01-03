@@ -57,7 +57,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // User Management routes (Admin only)
     Route::middleware(['role:admin'])->group(function () {
         Route::resource('users', \App\Http\Controllers\UserController::class)->except(['show']);
-        Route::patch('users/{user}/role', [\App\Http\Controllers\UserController::class, 'updateRole'])->name('users.updateRole');
+        Route::post('users/{user}/role', [\App\Http\Controllers\UserController::class, 'updateRole'])->name('users.updateRole');
         Route::post('users/{user}/manual-reset', [\App\Http\Controllers\UserController::class, 'manualPasswordReset'])->name('users.manualReset');
     });
 
@@ -85,7 +85,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Forum routes
     Route::resource('forum', ForumController::class);
-    Route::post('forum/{forum}/posts', [ForumController::class, 'storePost'])->name('forum.posts.store');
+    Route::post('forum/{forum}/posts', [ForumController::class, 'storePost'])->name('forum.storePost');
 
     // Task routes
     Route::resource('tasks', TaskController::class);
