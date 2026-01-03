@@ -5,6 +5,21 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * App\Models\Innovation
+ *
+ * @property int $id
+ * @property int $profile_id
+ * @property int $innovation_type_id
+ * @property string $title
+ * @property string $description
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Profile $profile
+ * @property-read \App\Models\InnovationType $innovationType
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Attachment[] $attachments
+ * @property-read int|null $attachments_count
+ */
 class Innovation extends Model
 {
     use HasFactory;

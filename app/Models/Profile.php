@@ -31,6 +31,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property-read int|null $assigned_projects_count
  * @property-read int|null $assigned_tasks_count
  * @property-read string $name
+ * @property \Illuminate\Database\Eloquent\Relations\Pivot|null $pivot
  */
 class Profile extends Model
 {

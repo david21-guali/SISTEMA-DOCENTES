@@ -15,7 +15,7 @@ class ForumTopic extends Model
         'description',
     ];
 
-    public function profile()
+    public function profile(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Profile::class);
     }
