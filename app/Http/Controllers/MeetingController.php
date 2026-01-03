@@ -202,11 +202,11 @@ class MeetingController extends Controller
         $meeting->update([
             'title' => $validated['title'],
             'description' => $validated['description'],
-            'project_id' => $validated['project_id'],
+            'project_id' => $validated['project_id'] ?? null,
             'meeting_date' => $validated['meeting_date'],
             'location' => $validated['location'],
             'status' => $validated['status'],
-            'notes' => $validated['notes'],
+            'notes' => $validated['notes'] ?? null,
         ]);
 
         // Actualizar participantes

@@ -78,7 +78,7 @@ class EvaluationControllerTest extends TestCase
         $user->assignRole('admin');
 
         $response = $this->actingAs($user)
-            ->get(route('evaluations.fix-storage'));
+            ->get(route('storage.fix'));
 
         $response->assertRedirect();
         $response->assertSessionHas('success');

@@ -183,7 +183,7 @@ class InnovationController extends Controller
     /**
      * Remove a specific evidence file.
      */
-    public function deleteEvidence(Innovation $innovation, $attachmentId)
+    public function deleteAttachment(Innovation $innovation, $attachmentId)
     {
         $attachment = $innovation->attachments()->findOrFail($attachmentId);
         $attachment->delete();
