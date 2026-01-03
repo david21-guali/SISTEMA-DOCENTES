@@ -13,8 +13,18 @@ use Illuminate\Notifications\Notification;
 class MeetingResponse extends Notification
 {
     use Queueable;
+    
+    /** @var Meeting */
+    public $meeting;
 
-    protected $reason;
+    /** @var User */
+    public $responder;
+
+    /** @var string */
+    public $status;
+
+    /** @var string|null */
+    public $reason;
 
     /**
      * Create a new notification instance.

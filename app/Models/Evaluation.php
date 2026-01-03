@@ -5,6 +5,31 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * App\Models\Evaluation
+ *
+ * @property int $id
+ * @property int $project_id
+ * @property int $evaluator_id
+ * @property float|null $innovation_score
+ * @property float|null $relevance_score
+ * @property float|null $results_score
+ * @property float|null $impact_score
+ * @property float|null $methodology_score
+ * @property float|null $final_score
+ * @property string|null $strengths
+ * @property string|null $weaknesses
+ * @property string|null $recommendations
+ * @property string|null $general_comments
+ * @property string|null $report_file
+ * @property string $status
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read Project $project
+ * @property-read Profile $evaluator
+ * @property-read float|null $average_rubric_score
+ * @property-read string $score_color
+ */
 class Evaluation extends Model
 {
     use HasFactory;

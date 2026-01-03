@@ -175,7 +175,10 @@ class TaskController extends Controller
         }
 
         // Recalcular progreso del proyecto
-        $task->project->recalculateProgress();
+        // Recalcular progreso del proyecto
+        if ($task->project instanceof \App\Models\Project) {
+            $task->project->recalculateProgress();
+        }
 
         // Handle file attachments
         if ($request->hasFile('attachments')) {
@@ -353,7 +356,10 @@ class TaskController extends Controller
         ]);
 
         // Recalcular progreso del proyecto
-        $task->project->recalculateProgress();
+        // Recalcular progreso del proyecto
+        if ($task->project instanceof \App\Models\Project) {
+            $task->project->recalculateProgress();
+        }
 
         return back()->with('success', 'Tarea marcada como completada.');
     }

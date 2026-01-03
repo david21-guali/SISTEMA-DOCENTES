@@ -30,6 +30,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property-read \Illuminate\Database\Eloquent\Collection|Task[] $assignedTasks
  * @property-read int|null $assigned_projects_count
  * @property-read int|null $assigned_tasks_count
+ * @property-read string $name
  */
 class Profile extends Model
 {
@@ -52,6 +53,14 @@ class Profile extends Model
         'notification_preferences' => 'array',
         'is_active' => 'boolean',
     ];
+
+    /**
+     * Accessor for Name (delegates to User)
+     */
+    public function getNameAttribute(): string
+    {
+        return $this->user->name ?? 'Usuario';
+    }
 
     public function user(): BelongsTo
     {
