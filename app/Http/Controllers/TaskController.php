@@ -95,12 +95,10 @@ class TaskController extends Controller
                     if ($project) {
                         $date = \Carbon\Carbon::parse($value);
                         
-                        /** @phpstan-ignore-next-line */
                         if ($project->start_date && $date->lt($project->start_date->startOfDay())) {
                             $fail('La fecha de vencimiento no puede ser anterior al inicio del proyecto (' . $project->start_date->format('d/m/Y') . ').');
                         }
                         
-                        /** @phpstan-ignore-next-line */
                         if ($project->end_date && $date->gt($project->end_date->endOfDay())) {
                             $fail('La fecha de vencimiento no puede ser posterior al fin del proyecto (' . $project->end_date->format('d/m/Y') . ').');
                         }
@@ -134,7 +132,6 @@ class TaskController extends Controller
         
         // Include project creator (User ID of the profile owner)
         /** @var \App\Models\User|null $creatorUser */
-        /** @phpstan-ignore-next-line */
         $creatorUser = $project->profile->user; // Access user via profile
         if ($creatorUser) $teamProfileUserIds[] = $creatorUser->id;
         
@@ -290,7 +287,6 @@ class TaskController extends Controller
         
         // Include project creator
         /** @var \App\Models\User|null $creatorUser */
-        /** @phpstan-ignore-next-line */
         $creatorUser = $project->profile->user;
         if ($creatorUser) $teamProfileUserIds[] = $creatorUser->id;
         
