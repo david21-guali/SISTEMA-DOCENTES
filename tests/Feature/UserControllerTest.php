@@ -167,22 +167,21 @@ class UserControllerTest extends TestCase
 
     public function test_admin_cannot_remove_last_admin_role()
     {
+        // Clear admins and create exactly one
+        User::role('admin')->get()->each(function($u) {
+            $u->removeRole('admin');
+        });
+
         $admin = User::factory()->create();
         $admin->assignRole('admin');
-        $otherUser = User::factory()->create();
-        $otherUser->assignRole('admin');
-        
-        // At this point there are 2 admins. Let's delete one to test the "last admin" logic.
-        // Actually, the logic checks count() <= 1.
-        
-        $user = User::factory()->create();
-        $user->assignRole('admin');
-        // Now 3 admins.
         
         $this->actingAs($admin);
         
-        // We will mock the count if needed, but here we just ensure we reach the line.
-        // Let's create only one admin for the test.
+        $response = $this->postJson(route('users.updateRole', $admin), [
+            'role' => 'docente'
+        ]);
+
+        $response->assertStatus(403);
     }
 
     public function test_admin_cannot_remove_only_admin_role()

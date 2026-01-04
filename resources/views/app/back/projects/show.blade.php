@@ -720,7 +720,11 @@
                 </div>
             </div>
         </div>
+    </div> <!-- End row -->
+    </div> <!-- End container-fluid -->
 </div> <!-- End content-fix-sidebar -->
+@endsection
+
 @section('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
