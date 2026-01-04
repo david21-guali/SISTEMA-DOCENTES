@@ -6,6 +6,18 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 
+/**
+ * App\Models\Project
+ *
+ * @property int $id
+ * @property string $title
+ * @property string $description
+ * @property string $status
+ * @property int $profile_id
+ * @property-read \App\Models\Profile $profile
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Task[] $tasks
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Profile[] $team
+ */
 class Project extends Model
 {
     use HasFactory;
