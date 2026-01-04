@@ -17,3 +17,4 @@ parameters:
 
     checkOctaneCompatibility: true
     checkModelProperties: true
+    treatPhpDocTypesAsCertain: false
