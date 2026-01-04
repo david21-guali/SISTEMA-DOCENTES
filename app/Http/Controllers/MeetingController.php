@@ -215,7 +215,6 @@ class MeetingController extends Controller
             // Mantener el estado de asistencia si ya existía
             $existing = $meeting->participants->find($userId);
             /** @var \App\Models\Profile|null $existing */
-            /** @phpstan-ignore-next-line */
             $attendance = $existing ? $existing->pivot->attendance : 'pendiente';
             $participants[$userId] = ['attendance' => $attendance];
         }
@@ -320,7 +319,6 @@ class MeetingController extends Controller
         }
 
         foreach ($meeting->participants as $participant) {
-            /** @phpstan-ignore-next-line */
             if ($participant->pivot->attendance !== 'rechazada') {
                 $participant->user->notify(new MeetingReminder($meeting));
             }

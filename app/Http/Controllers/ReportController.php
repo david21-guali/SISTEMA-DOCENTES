@@ -125,9 +125,7 @@ class ReportController extends Controller
             ->get()
             ->map(function($user) {
                 // Store counts in custom attributes (not readonly properties)
-                /** @phpstan-ignore-next-line */
                 $user->tasks_count = $user->profile ? $user->profile->assignedTasks->count() : 0;
-                /** @phpstan-ignore-next-line */
                 $user->user_comments_count = $user->profile ? $user->profile->comments->count() : 0;
                 return $user;
             })

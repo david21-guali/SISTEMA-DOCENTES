@@ -237,7 +237,6 @@ class ProjectController extends Controller
         if ($oldStatus !== $newStatus) {
             // Notify the project owner (via User relation on Profile)
             /** @var \App\Models\User $user */
-            /** @phpstan-ignore-next-line */
             $user = $project->profile->user;
             $user->notify(new \App\Notifications\ProjectStatusChanged($project, $oldStatus, $newStatus));
         }

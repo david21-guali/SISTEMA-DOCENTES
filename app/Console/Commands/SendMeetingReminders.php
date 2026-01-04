@@ -55,7 +55,6 @@ class SendMeetingReminders extends Command
             
             foreach ($meeting->participants as $participant) {
                 // Solo enviar a participantes que no han rechazado
-                /** @phpstan-ignore-next-line */
                 if ($participant->pivot->attendance !== 'rechazada') {
                     $participant->notify(new MeetingReminder($meeting));
                     $notificationsSent++;
