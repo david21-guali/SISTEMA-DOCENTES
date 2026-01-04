@@ -61,5 +61,8 @@ jobs:
       # En un entorno real ideal, esto bloquearía el PR si la cobertura es < 70%
       run: php artisan test --coverage --min=70 || php artisan test
 
-    - name: Análisis Estático (Larastan)
+    - name: "🛡️ Security Check: SCA (Dependency Audit)"
+      run: composer audit
+
+    - name: "🛡️ Security Check: SAST (Análisis Estático)"
       run: ./vendor/bin/phpstan analyse --memory-limit=2G
