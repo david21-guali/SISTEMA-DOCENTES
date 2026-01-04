@@ -54,8 +54,10 @@ class SendMeetingReminders extends Command
             $this->line("📅 Procesando: {$meeting->title}");
             
             foreach ($meeting->participants as $participant) {
+                /** @var \App\Models\MeetingParticipant $pivot */
+                $pivot = $participant->pivot;
                 // Solo enviar a participantes que no han rechazado
-                if ($participant->pivot->attendance !== 'rechazada') {
+                if ($pivot->attendance !== 'rechazada') {
                     $participant->notify(new MeetingReminder($meeting));
                     $notificationsSent++;
                     $this->line("  ✅ Recordatorio enviado a: {$participant->name}");

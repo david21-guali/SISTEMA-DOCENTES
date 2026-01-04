@@ -58,6 +58,7 @@ class Meeting extends Model
     public function participants(): BelongsToMany
     {
         return $this->belongsToMany(Profile::class, 'meeting_profile', 'meeting_id', 'profile_id')
+                    ->using(MeetingParticipant::class)
                     ->withPivot('attendance')
                     ->withTimestamps();
     }

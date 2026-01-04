@@ -215,7 +215,9 @@ class MeetingController extends Controller
             // Mantener el estado de asistencia si ya existía
             $existing = $meeting->participants->find($userId);
             /** @var \App\Models\Profile|null $existing */
-            $attendance = $existing ? $existing->pivot->attendance : 'pendiente';
+            /** @var \App\Models\MeetingParticipant|null $pivot */
+            $pivot = $existing ? $existing->pivot : null;
+            $attendance = $pivot ? $pivot->attendance : 'pendiente';
             $participants[$userId] = ['attendance' => $attendance];
         }
         $meeting->participants()->sync($participants);
@@ -319,7 +321,9 @@ class MeetingController extends Controller
         }
 
         foreach ($meeting->participants as $participant) {
-            if ($participant->pivot->attendance !== 'rechazada') {
+            /** @var \App\Models\MeetingParticipant $pivot */
+            $pivot = $participant->pivot;
+            if ($pivot->attendance !== 'rechazada') {
                 $participant->user->notify(new MeetingReminder($meeting));
             }
         }
