@@ -5,12 +5,12 @@
 
     RewriteEngine On
 
-    # Forzar HTTPS
-    RewriteCond %{HTTPS} off
-    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+    # Forzar HTTPS (DESACTIVADO PARA DESARROLLO LOCAL)
+    # RewriteCond %{HTTPS} off
+    # RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
-    # Simular HTTPS para Laravel (para arreglar error 403 Action Unauthorized)
-    SetEnvIf X-Forwarded-Proto "https" HTTPS=on
+    # Simular HTTPS para Laravel (DESACTIVADO PARA LOCAL)
+    # SetEnvIf X-Forwarded-Proto "https" HTTPS=on
 
 
     # Handle Authorization Header

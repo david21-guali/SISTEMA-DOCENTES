@@ -24,10 +24,11 @@ class AppServiceProvider extends ServiceProvider
     {
         // Forzar HTTPS siempre (Solución para error 'Action Unauthorized' en emails)
         // Forzar HTTPS en producción
-        if($this->app->environment('production')) {
+/*
+        if($this->app->environment('production') && !app()->runningInConsole()) {
             \Illuminate\Support\Facades\URL::forceScheme('https');
         }
-
+*/
         // Reportes: Admin y Coordinador
         \Illuminate\Support\Facades\Gate::define('export-reports', function ($user) {
             return $user->hasRole('admin') || $user->hasRole('coordinador');
