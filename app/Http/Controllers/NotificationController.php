@@ -10,7 +10,7 @@ class NotificationController extends Controller
     /**
      * List all notifications for the authenticated user.
      */
-    public function index()
+    public function index(): \Illuminate\View\View
     {
         $notifications = Auth::user()->notifications()->paginate(15);
         return view('notifications.index', compact('notifications'));
@@ -19,7 +19,7 @@ class NotificationController extends Controller
     /**
      * Mark a specific notification as read.
      */
-    public function markAsRead($id)
+    public function markAsRead($id): \Illuminate\Http\RedirectResponse
     {
         $notification = Auth::user()->notifications()->where('id', $id)->first();
 
@@ -61,7 +61,7 @@ class NotificationController extends Controller
     /**
      * Mark all notifications as read.
      */
-    public function markAllAsRead()
+    public function markAllAsRead(): \Illuminate\Http\RedirectResponse
     {
         Auth::user()->unreadNotifications->markAsRead();
         return back()->with('success', 'Todas las notificaciones marcadas como leídas.');
@@ -69,7 +69,7 @@ class NotificationController extends Controller
     /**
      * Remove the specified notification.
      */
-    public function destroy($id)
+    public function destroy($id): \Illuminate\Http\RedirectResponse
     {
         $notification = Auth::user()->notifications()->where('id', $id)->first();
 
@@ -84,7 +84,7 @@ class NotificationController extends Controller
     /**
      * Remove all read notifications.
      */
-    public function destroyAllRead()
+    public function destroyAllRead(): \Illuminate\Http\RedirectResponse
     {
         Auth::user()->readNotifications()->delete();
         return back()->with('success', 'Todas las notificaciones leídas han sido eliminadas.');

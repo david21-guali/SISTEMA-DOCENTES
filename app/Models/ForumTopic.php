@@ -36,6 +36,11 @@ class ForumTopic extends Model
      * 
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
+    /**
+     * Get the profile that authored the topic.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\Profile, $this>
+     */
     public function profile(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Profile::class);
@@ -45,6 +50,11 @@ class ForumTopic extends Model
      * Get all posts associated with this discussion topic.
      * 
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    /**
+     * Get all posts associated with this discussion topic.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\ForumPost, $this>
      */
     public function posts(): \Illuminate\Database\Eloquent\Relations\HasMany
     {

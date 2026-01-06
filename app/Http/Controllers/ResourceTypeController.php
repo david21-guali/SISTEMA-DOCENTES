@@ -8,7 +8,7 @@ use Illuminate\Support\Str;
 
 class ResourceTypeController extends Controller
 {
-    public function store(Request $request)
+    public function store(Request $request): \Illuminate\Http\JsonResponse
     {
         // Only Admin or Docente (coordinator context) 
         // Better to restrict to Admin or check specific permission
@@ -41,7 +41,7 @@ class ResourceTypeController extends Controller
         ]);
     }
 
-    public function destroy(ResourceType $resourceType)
+    public function destroy(ResourceType $resourceType): \Illuminate\Http\JsonResponse
     {
         // Only admins can delete
         if (!auth()->user()->hasRole('admin')) {

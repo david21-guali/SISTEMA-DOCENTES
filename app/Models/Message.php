@@ -46,7 +46,12 @@ class Message extends Model
      * 
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function sender()
+    /**
+     * Get the profile that sent the message.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\Profile, $this>
+     */
+    public function sender(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Profile::class, 'sender_id');
     }
@@ -56,7 +61,12 @@ class Message extends Model
      * 
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function receiver()
+    /**
+     * Get the profile that received the message.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\Profile, $this>
+     */
+    public function receiver(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Profile::class, 'receiver_id');
     }
@@ -68,6 +78,14 @@ class Message extends Model
      * @param int $profileA
      * @param int $profileB
      * @return \Illuminate\Database\Eloquent\Builder
+     */
+    /**
+     * Scope a query to only include messages between two specific profiles.
+     * 
+     * @param \Illuminate\Database\Eloquent\Builder<Message> $query
+     * @param int $profileA
+     * @param int $profileB
+     * @return \Illuminate\Database\Eloquent\Builder<Message>
      */
     public function scopeBetween($query, int $profileA, int $profileB)
     {

@@ -40,7 +40,7 @@ class DashboardService
     /**
      * Fetch project distribution grouped by categories.
      * 
-     * @return Collection
+     * @return Collection<string, mixed>
      */
     public function getProjectsByCategory(): Collection
     {
@@ -76,7 +76,7 @@ class DashboardService
     /**
      * Aggregate recent activities from projects, tasks, and meetings.
      * 
-     * @return Collection
+     * @return Collection<int, array{type: string, icon: string, color: string, title: string, description: string, user: string, date: mixed}>
      */
     public function getActivityTimeline(): Collection
     {
@@ -94,8 +94,8 @@ class DashboardService
     /**
      * Helper to ensure all 12 months have a value (even 0).
      * 
-     * @param array $data
-     * @return array
+     * @param array<int|string, mixed> $data
+     * @return array<int, mixed>
      */
     private function fillMonthlySeries(array $data): array
     {
@@ -109,7 +109,7 @@ class DashboardService
     /**
      * Fetch projects created in the last 7 days.
      * 
-     * @return Collection
+     * @return Collection<int, array{type: string, icon: string, color: string, title: string, description: string, user: string, date: mixed}>
      */
     private function getRecentProjectsActivity(): Collection
     {
@@ -132,7 +132,7 @@ class DashboardService
     /**
      * Fetch tasks completed in the last 7 days.
      * 
-     * @return Collection
+     * @return Collection<int, array{type: string, icon: string, color: string, title: string, description: string, user: string, date: mixed}>
      */
     private function getCompletedTasksActivity(): Collection
     {
@@ -156,7 +156,7 @@ class DashboardService
     /**
      * Fetch meetings scheduled for the next 7 days.
      * 
-     * @return Collection
+     * @return Collection<int, array{type: string, icon: string, color: string, title: string, description: string, user: string, date: mixed}>
      */
     private function getUpcomingMeetingsActivity(): Collection
     {

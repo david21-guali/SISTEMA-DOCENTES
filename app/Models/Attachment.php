@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Storage;
 
 class Attachment extends Model
 {
+    /** @use HasFactory<\Database\Factories\AttachmentFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -24,7 +25,12 @@ class Attachment extends Model
     /**
      * Polymorphic relationship - can belong to Project or Task
      */
-    public function attachable()
+    /**
+     * Polymorphic relationship - can belong to Project or Task
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
+     */
+    public function attachable(): \Illuminate\Database\Eloquent\Relations\MorphTo
     {
         return $this->morphTo();
     }
@@ -32,7 +38,12 @@ class Attachment extends Model
     /**
      * Profile who uploaded the file
      */
-    public function uploader()
+    /**
+     * Profile who uploaded the file
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\Profile, $this>
+     */
+    public function uploader(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Profile::class, 'uploaded_by');
     }
@@ -40,7 +51,10 @@ class Attachment extends Model
     /**
      * Get the full URL to the file
      */
-    public function getUrlAttribute()
+    /**
+     * Get the full URL to the file
+     */
+    public function getUrlAttribute(): string
     {
         return Storage::disk('public')->url($this->path);
     }
@@ -48,7 +62,10 @@ class Attachment extends Model
     /**
      * Check if file is an image
      */
-    public function isImage()
+    /**
+     * Check if file is an image
+     */
+    public function isImage(): bool
     {
         // Check by mime type
         if ($this->mime_type && str_starts_with($this->mime_type, 'image/')) {
@@ -63,7 +80,10 @@ class Attachment extends Model
     /**
      * Check if file is a PDF
      */
-    public function isPdf()
+    /**
+     * Check if file is a PDF
+     */
+    public function isPdf(): bool
     {
         // Check by mime type
         if ($this->mime_type === 'application/pdf') {
@@ -78,7 +98,10 @@ class Attachment extends Model
     /**
      * Check if file is a Word document
      */
-    public function isWord()
+    /**
+     * Check if file is a Word document
+     */
+    public function isWord(): bool
     {
         return in_array($this->mime_type, [
             'application/msword',
@@ -89,7 +112,10 @@ class Attachment extends Model
     /**
      * Check if file is an Excel spreadsheet
      */
-    public function isExcel()
+    /**
+     * Check if file is an Excel spreadsheet
+     */
+    public function isExcel(): bool
     {
         return in_array($this->mime_type, [
             'application/vnd.ms-excel',

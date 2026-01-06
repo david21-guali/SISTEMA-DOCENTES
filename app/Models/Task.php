@@ -46,22 +46,34 @@ class Task extends Model
     /**
      * Relaciones
      */
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\Project, $this>
+     */
     public function project(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Project::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\Profile, $this>
+     */
     public function assignedProfile(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Profile::class, 'assigned_to');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<\App\Models\Profile, $this>
+     */
     public function assignees(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
         return $this->belongsToMany(Profile::class, 'task_profile')
                     ->withTimestamps();
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany<\App\Models\Attachment, $this>
+     */
     public function attachments(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(Attachment::class, 'attachable');
@@ -70,7 +82,7 @@ class Task extends Model
     /**
      * Accessor: assignedUser (via assignedProfile)
      */
-   public function getAssignedUserAttribute()
+    public function getAssignedUserAttribute(): ?User
     {
         return $this->assignedProfile->user ?? null;
     }
@@ -78,12 +90,12 @@ class Task extends Model
     /**
      * Atributos computados
      */
-    public function getIsOverdueAttribute()
+    public function getIsOverdueAttribute(): bool
     {
         return $this->due_date < now() && $this->status !== 'completada';
     }
 
-    public function getPriorityColorAttribute()
+    public function getPriorityColorAttribute(): string
     {
         return match($this->priority) {
             'baja' => 'success',
@@ -96,22 +108,38 @@ class Task extends Model
     /**
      * Scopes
      */
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<Task> $query
+     * @return \Illuminate\Database\Eloquent\Builder<Task>
+     */
     public function scopePending($query)
     {
         return $query->where('status', 'pendiente');
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<Task> $query
+     * @return \Illuminate\Database\Eloquent\Builder<Task>
+     */
     public function scopeCompleted($query)
     {
         return $query->where('status', 'completada');
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<Task> $query
+     * @return \Illuminate\Database\Eloquent\Builder<Task>
+     */
     public function scopeOverdue($query)
     {
         return $query->where('due_date', '<', now())
                      ->where('status', '!=', 'completada');
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<Task> $query
+     * @return \Illuminate\Database\Eloquent\Builder<Task>
+     */
     public function scopeInProgress($query)
     {
         return $query->where('status', 'en_progreso');

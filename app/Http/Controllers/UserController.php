@@ -27,7 +27,10 @@ class UserController extends Controller
     /**
      * Display a listing of users.
      */
-    public function index(Request $request)
+    /**
+     * Display a listing of users.
+     */
+    public function index(Request $request): \Illuminate\View\View
     {
         $users = $this->queryService->getUsers($request->all());
         $roles = $this->queryService->getRoles();
@@ -39,7 +42,10 @@ class UserController extends Controller
     /**
      * Show the form for creating a new user.
      */
-    public function create()
+    /**
+     * Show the form for creating a new user.
+     */
+    public function create(): \Illuminate\View\View
     {
         $roles = $this->queryService->getRoles();
         return view('app.back.users.create', compact('roles'));
@@ -48,7 +54,10 @@ class UserController extends Controller
     /**
      * Store a newly created user.
      */
-    public function store(\App\Http\Requests\StoreUserRequest $request)
+    /**
+     * Store a newly created user.
+     */
+    public function store(\App\Http\Requests\StoreUserRequest $request): \Illuminate\Http\RedirectResponse
     {
         $this->actionService->createUser($request->validated());
         return redirect()->route('users.index')->with('success', 'Usuario creado exitosamente.');
@@ -57,7 +66,10 @@ class UserController extends Controller
     /**
      * Display the specified user.
      */
-    public function show(User $user)
+    /**
+     * Display the specified user.
+     */
+    public function show(User $user): \Illuminate\View\View
     {
         $user->load(['roles', 'profile.projects', 'profile.assignedProjects', 'profile.assignedTasks', 'profile.innovations']);
         $stats = $this->queryService->getUserProfileStats($user);
@@ -68,7 +80,10 @@ class UserController extends Controller
     /**
      * Show the form for editing a user.
      */
-    public function edit(User $user)
+    /**
+     * Show the form for editing a user.
+     */
+    public function edit(User $user): \Illuminate\View\View
     {
         $roles = $this->queryService->getRoles();
         return view('app.back.users.edit', compact('user', 'roles'));
@@ -77,7 +92,10 @@ class UserController extends Controller
     /**
      * Update the specified user.
      */
-    public function update(\App\Http\Requests\UpdateUserRequest $request, User $user)
+    /**
+     * Update the specified user.
+     */
+    public function update(\App\Http\Requests\UpdateUserRequest $request, User $user): \Illuminate\Http\RedirectResponse
     {
         $this->actionService->updateUser($user, $request->validated());
         return redirect()->route('users.index')->with('success', 'Usuario actualizado exitosamente.');
@@ -86,7 +104,10 @@ class UserController extends Controller
     /**
      * Remove the specified user.
      */
-    public function destroy(Request $request, User $user)
+    /**
+     * Remove the specified user.
+     */
+    public function destroy(Request $request, User $user): \Illuminate\Http\RedirectResponse
     {
         $request->validate(['admin_password' => ['required', 'string']]);
         $result = $this->actionService->deleteUser($user, $request->admin_password);
@@ -99,7 +120,10 @@ class UserController extends Controller
     /**
      * Update user role via AJAX.
      */
-    public function updateRole(Request $request, User $user)
+    /**
+     * Update user role via AJAX.
+     */
+    public function updateRole(Request $request, User $user): \Illuminate\Http\JsonResponse
     {
         $request->validate(['role' => ['required', 'exists:roles,name']]);
         $result = $this->mgmtService->updateRole($user, $request->role);
@@ -112,7 +136,10 @@ class UserController extends Controller
     /**
      * Reset user password by admin.
      */
-    public function manualPasswordReset(Request $request, User $user)
+    /**
+     * Reset user password by admin.
+     */
+    public function manualPasswordReset(Request $request, User $user): \Illuminate\Http\RedirectResponse
     {
         $request->validate(['password' => ['required', 'string', 'min:8']]);
         $result = $this->mgmtService->resetPassword($user, $request->password);

@@ -12,7 +12,7 @@ class CommentController extends Controller
     /**
      * Store a newly created comment in storage.
      */
-    public function store(Request $request, Project $project)
+    public function store(Request $request, Project $project): \Illuminate\Http\RedirectResponse
     {
         $validated = $request->validate([
             'content' => 'required|string|max:1000',
@@ -38,7 +38,7 @@ class CommentController extends Controller
     /**
      * Remove the specified comment from storage.
      */
-    public function destroy(Comment $comment)
+    public function destroy(Comment $comment): \Illuminate\Http\RedirectResponse
     {
         // Solo el autor o admin puede eliminar
         // Author is profile. Check if auth user profile id matches comment profile id

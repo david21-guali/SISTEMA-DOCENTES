@@ -33,7 +33,7 @@ class InnovationsExport implements FromCollection, WithHeadings, WithMapping, Wi
     /**
      * Fetch the filtered dataset for export.
      * 
-     * @return \Illuminate\Support\Collection
+     * @return \Illuminate\Support\Collection<int, \App\Models\Innovation>
      */
     public function collection()
     {
@@ -67,7 +67,7 @@ class InnovationsExport implements FromCollection, WithHeadings, WithMapping, Wi
      * Transform an individual Innovation model into an exportable array.
      * 
      * @param mixed $innovation
-     * @return array
+     * @return array<int, mixed>
      */
     public function map($innovation): array
     {

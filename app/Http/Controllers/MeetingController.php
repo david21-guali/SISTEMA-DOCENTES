@@ -26,7 +26,10 @@ class MeetingController extends Controller
     /**
      * Display a listing of the meetings.
      */
-    public function index(Request $request)
+    /**
+     * Display a listing of the meetings.
+     */
+    public function index(Request $request): \Illuminate\View\View
     {
         $meetings = $this->queryService->getMeetings($request->all());
         $projects = $this->queryService->getProjects();
@@ -38,7 +41,10 @@ class MeetingController extends Controller
     /**
      * Show the form for creating a new meeting.
      */
-    public function create(Request $request)
+    /**
+     * Show the form for creating a new meeting.
+     */
+    public function create(Request $request): \Illuminate\View\View
     {
         $projects = $this->queryService->getProjects();
         $users = $this->queryService->getEligibleUsers();
@@ -50,7 +56,10 @@ class MeetingController extends Controller
     /**
      * Store a newly created meeting in storage.
      */
-    public function store(\App\Http\Requests\StoreMeetingRequest $request)
+    /**
+     * Store a newly created meeting in storage.
+     */
+    public function store(\App\Http\Requests\StoreMeetingRequest $request): \Illuminate\Http\RedirectResponse
     {
         $meeting = $this->actionService->createMeeting($request->validated());
         return redirect()->route('meetings.show', $meeting)->with('success', 'Reunión programada.');
@@ -59,7 +68,10 @@ class MeetingController extends Controller
     /**
      * Display the specified meeting.
      */
-    public function show(Meeting $meeting)
+    /**
+     * Display the specified meeting.
+     */
+    public function show(Meeting $meeting): \Illuminate\View\View
     {
         $meeting->load(['project', 'creator.user', 'participants.user']);
         return view('app.back.meetings.show', compact('meeting'));
@@ -68,7 +80,10 @@ class MeetingController extends Controller
     /**
      * Show the form for editing the meeting.
      */
-    public function edit(Meeting $meeting)
+    /**
+     * Show the form for editing the meeting.
+     */
+    public function edit(Meeting $meeting): \Illuminate\View\View
     {
         $this->authorizeOwner($meeting);
         $projects = $this->queryService->getProjects();
@@ -80,7 +95,10 @@ class MeetingController extends Controller
     /**
      * Update the specified meeting in storage.
      */
-    public function update(\App\Http\Requests\UpdateMeetingRequest $request, Meeting $meeting)
+    /**
+     * Update the specified meeting in storage.
+     */
+    public function update(\App\Http\Requests\UpdateMeetingRequest $request, Meeting $meeting): \Illuminate\Http\RedirectResponse
     {
         $this->authorizeOwner($meeting);
         $this->actionService->updateMeeting($meeting, $request->validated());
@@ -90,7 +108,10 @@ class MeetingController extends Controller
     /**
      * Remove the specified meeting from storage.
      */
-    public function destroy(Meeting $meeting)
+    /**
+     * Remove the specified meeting from storage.
+     */
+    public function destroy(Meeting $meeting): \Illuminate\Http\RedirectResponse
     {
         $this->authorizeOwner($meeting);
         $meeting->delete();
@@ -100,7 +121,10 @@ class MeetingController extends Controller
     /**
      * Update attendance status for current user.
      */
-    public function updateAttendance(Request $request, Meeting $meeting)
+    /**
+     * Update attendance status for current user.
+     */
+    public function updateAttendance(Request $request, Meeting $meeting): \Illuminate\Http\RedirectResponse
     {
         $validated = $request->validate([
             'attendance' => 'required|in:confirmada,rechazada',
@@ -111,7 +135,7 @@ class MeetingController extends Controller
         return back()->with('success', $message);
     }
 
-    public function complete(Request $request, Meeting $meeting)
+    public function complete(Request $request, Meeting $meeting): \Illuminate\Http\RedirectResponse
     {
         $this->authorizeOwner($meeting);
         $validated = $request->validate([
@@ -124,14 +148,14 @@ class MeetingController extends Controller
         return redirect()->route('meetings.show', $meeting)->with('success', 'Completada.');
     }
 
-    public function sendReminders(Meeting $meeting)
+    public function sendReminders(Meeting $meeting): \Illuminate\Http\RedirectResponse
     {
         $this->authorizeOwner($meeting);
         $this->actionService->sendReminders($meeting);
         return back()->with('success', 'Recordatorios enviados.');
     }
 
-    public function cancel(Request $request, Meeting $meeting)
+    public function cancel(Request $request, Meeting $meeting): \Illuminate\Http\RedirectResponse
     {
         $this->authorizeOwner($meeting);
         $validated = $request->validate(['cancellation_reason' => 'required|string|max:1000']);

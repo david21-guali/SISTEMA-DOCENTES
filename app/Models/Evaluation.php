@@ -54,12 +54,18 @@ class Evaluation extends Model
     /**
      * Relaciones
      */
-    public function project()
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\Project, $this>
+     */
+    public function project(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Project::class);
     }
 
-    public function evaluator()
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\Profile, $this>
+     */
+    public function evaluator(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Profile::class, 'evaluator_id');
     }
@@ -67,7 +73,7 @@ class Evaluation extends Model
     /**
      * Atributos computados
      */
-    public function getAverageRubricScoreAttribute()
+    public function getAverageRubricScoreAttribute(): ?float
     {
         $scores = array_filter([
             $this->innovation_score,
@@ -77,10 +83,10 @@ class Evaluation extends Model
             $this->methodology_score,
         ]);
 
-        return count($scores) > 0 ? round(array_sum($scores) / count($scores), 2) : null;
+        return count($scores) > 0 ? (float) round(array_sum($scores) / count($scores), 2) : null;
     }
 
-    public function getScoreColorAttribute()
+    public function getScoreColorAttribute(): string
     {
         if (!$this->final_score) return 'secondary';
         
@@ -90,7 +96,7 @@ class Evaluation extends Model
         return 'danger';
     }
 
-    public function getIndividualScoreClass($score)
+    public function getIndividualScoreClass(float $score): string
     {
         if ($score >= 4) return 'success';
         if ($score >= 3) return 'warning';
@@ -100,11 +106,19 @@ class Evaluation extends Model
     /**
      * Scopes
      */
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder.Evaluation> $query
+     * @return \Illuminate\Database\Eloquent\Builder<Evaluation>
+     */
     public function scopeFinalized($query)
     {
         return $query->where('status', 'finalizada');
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<Evaluation> $query
+     * @return \Illuminate\Database\Eloquent\Builder<Evaluation>
+     */
     public function scopeDraft($query)
     {
         return $query->where('status', 'borrador');

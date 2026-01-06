@@ -19,28 +19,44 @@ class Comment extends Model
     /**
      * Relaciones
      */
-    public function project()
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\Project, $this>
+     */
+    public function project(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Project::class);
     }
 
-    public function profile()
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\Profile, $this>
+     */
+    public function profile(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Profile::class);
     }
 
-    public function parent()
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\Comment, $this>
+     */
+    public function parent(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Comment::class, 'parent_id');
     }
 
-    public function replies()
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\Comment, $this>
+     */
+    public function replies(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Comment::class, 'parent_id');
     }
 
     /**
      * Scopes
+     */
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<Comment> $query
+     * @return \Illuminate\Database\Eloquent\Builder<Comment>
      */
     public function scopeTopLevel($query)
     {

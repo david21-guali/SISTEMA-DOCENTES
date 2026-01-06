@@ -36,6 +36,11 @@ class ForumPost extends Model
      * 
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
+    /**
+     * Get the discussion topic this post belongs to.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\ForumTopic, $this>
+     */
     public function topic(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(ForumTopic::class, 'topic_id');
@@ -45,6 +50,11 @@ class ForumPost extends Model
      * Get the profile that authored this post.
      * 
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    /**
+     * Get the profile that authored this post.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\Profile, $this>
      */
     public function profile(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {

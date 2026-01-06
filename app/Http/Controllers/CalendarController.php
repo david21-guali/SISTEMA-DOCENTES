@@ -9,12 +9,12 @@ use Illuminate\Http\Request;
 
 class CalendarController extends Controller
 {
-    public function index()
+    public function index(): \Illuminate\View\View
     {
         return view('calendar.index');
     }
 
-    public function events(Request $request)
+    public function events(Request $request): \Illuminate\Http\JsonResponse
     {
         $events = [];
 

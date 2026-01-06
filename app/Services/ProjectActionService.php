@@ -19,8 +19,8 @@ class ProjectActionService
     /**
      * Create a new project and initialize its team and attachments.
      * 
-     * @param array $data Basic project details and team list.
-     * @param array $files Uploaded project-level documents.
+     * @param array<string, mixed> $data Basic project details and team list.
+     * @param array<int, \Illuminate\Http\UploadedFile> $files Uploaded project-level documents.
      * @return Project
      */
     public function createProject(array $data, array $files = []): Project
@@ -40,7 +40,7 @@ class ProjectActionService
      * Update project information and handle status change notifications.
      * 
      * @param Project $project
-     * @param array $data
+     * @param array<string, mixed> $data
      * @return void
      */
     public function updateProject(Project $project, array $data): void
@@ -111,7 +111,7 @@ class ProjectActionService
      * Synchronize and notify team members on project creation.
      * 
      * @param Project $project
-     * @param array $memberIds
+     * @param array<int, int> $memberIds
      * @return void
      */
     private function setupProjectTeam(Project $project, array $memberIds): void
@@ -130,7 +130,7 @@ class ProjectActionService
      * Update project team membership.
      * 
      * @param Project $project
-     * @param array $memberIds
+     * @param array<int, int> $memberIds
      * @return void
      */
     private function updateProjectTeam(Project $project, array $memberIds): void
@@ -172,7 +172,7 @@ class ProjectActionService
      * Store and associate uploaded files with the project.
      * 
      * @param Project $project
-     * @param array $files
+     * @param array<int, \Illuminate\Http\UploadedFile> $files
      * @return void
      */
     private function handleAttachments(Project $project, array $files): void

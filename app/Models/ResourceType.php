@@ -21,7 +21,10 @@ class ResourceType extends Model
 
     protected $fillable = ['name', 'slug', 'description'];
 
-    public function resources()
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\Resource, $this>
+     */
+    public function resources(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Resource::class);
     }

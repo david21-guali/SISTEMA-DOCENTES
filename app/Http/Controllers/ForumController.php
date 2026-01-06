@@ -9,18 +9,18 @@ use Illuminate\Support\Facades\Auth;
 
 class ForumController extends Controller
 {
-    public function index()
+    public function index(): \Illuminate\View\View
     {
         $topics = ForumTopic::with('profile.user')->withCount('posts')->latest()->paginate(10);
         return view('forum.index', compact('topics'));
     }
 
-    public function create()
+    public function create(): \Illuminate\View\View
     {
         return view('forum.create');
     }
 
-    public function store(Request $request)
+    public function store(Request $request): \Illuminate\Http\RedirectResponse
     {
         $request->validate(['title' => 'required', 'description' => 'required']);
 
@@ -34,7 +34,7 @@ class ForumController extends Controller
         return redirect()->route('forum.index')->with('success', 'Tema creado.');
     }
 
-    public function show(ForumTopic $forum)
+    public function show(ForumTopic $forum): \Illuminate\View\View
     {
         // Renamed variable to match route param
         $posts = $forum->posts()->with('profile.user')->oldest()->get();
@@ -43,7 +43,7 @@ class ForumController extends Controller
         return view('forum.show', compact('topic', 'posts'));
     }
 
-    public function storePost(Request $request, $forum)
+    public function storePost(Request $request, $forum): \Illuminate\Http\RedirectResponse
     {
         $request->validate(['content' => 'required']);
 
@@ -60,7 +60,7 @@ class ForumController extends Controller
         return back()->with('success', 'Respuesta publicada.');
     }
 
-    public function destroy(ForumTopic $forum)
+    public function destroy(ForumTopic $forum): \Illuminate\Http\RedirectResponse
     {
         // Solo el dueño o admin puede borrar
         if (Auth::user()->profile->id !== $forum->profile_id && !Auth::user()->hasRole('admin')) {

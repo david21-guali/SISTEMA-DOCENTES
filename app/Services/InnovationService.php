@@ -15,8 +15,8 @@ class InnovationService
     /**
      * Create a new innovation proposal and handle initial attachments.
      * 
-     * @param array $data Basic innovation details.
-     * @param array $files Uploaded evidence documents.
+     * @param array<string, mixed> $data Basic innovation details.
+     * @param array<int, \Illuminate\Http\UploadedFile> $files Uploaded evidence documents.
      * @return Innovation
      */
     public function createInnovation(array $data, array $files = []): Innovation
@@ -37,8 +37,8 @@ class InnovationService
      * Update an existing innovation and manage new evidence files.
      * 
      * @param Innovation $innovation
-     * @param array $data Updated fields.
-     * @param array $files New evidence documents.
+     * @param array<string, mixed> $data Updated fields.
+     * @param array<int, \Illuminate\Http\UploadedFile> $files New evidence documents.
      * @return void
      */
     public function updateInnovation(Innovation $innovation, array $data, array $files = []): void
@@ -79,7 +79,7 @@ class InnovationService
      * Iterate through uploaded files and link them to the innovation.
      * 
      * @param Innovation $innovation
-     * @param array $files
+     * @param array<int, \Illuminate\Http\UploadedFile> $files
      * @return void
      */
     private function processAttachments(Innovation $innovation, array $files): void

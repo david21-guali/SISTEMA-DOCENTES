@@ -9,14 +9,14 @@ use Illuminate\Support\Facades\Auth;
 
 class ChatController extends Controller
 {
-    public function index()
+    public function index(): \Illuminate\View\View
     {
         // Obtener usuarios con los que se ha hablado o todos los docentes/coords
         $users = User::where('id', '!=', Auth::id())->get();
         return view('chat.index', compact('users'));
     }
 
-    public function show(User $user)
+    public function show(User $user): \Illuminate\View\View
     {
         $myProfileId = Auth::user()->profile->id;
         $otherProfileId = $user->profile->id;
@@ -36,7 +36,7 @@ class ChatController extends Controller
         return view('chat.show', compact('user', 'messages'));
     }
 
-    public function store(Request $request, User $user)
+    public function store(Request $request, User $user): \Illuminate\Http\RedirectResponse
     {
         $request->validate(['content' => 'required']);
 

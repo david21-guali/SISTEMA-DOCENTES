@@ -29,7 +29,10 @@ class ReportController extends Controller
     /**
      * Display reports dashboard.
      */
-    public function index()
+    /**
+     * Display reports dashboard.
+     */
+    public function index(): \Illuminate\View\View
     {
         $stats = $this->reportService->getDashboardStats();
         return view('app.back.reports.index', compact('stats'));
@@ -38,7 +41,10 @@ class ReportController extends Controller
     /**
      * Export projects to PDF.
      */
-    public function projectsPdf(Request $request)
+    /**
+     * Export projects to PDF.
+     */
+    public function projectsPdf(Request $request): \Illuminate\Http\Response
     {
         $projects = $this->getFilteredProjects($request);
         $pdf = Pdf::loadView('app.back.reports.projects-pdf', compact('projects'));
@@ -49,7 +55,10 @@ class ReportController extends Controller
     /**
      * Export projects to Excel.
      */
-    public function projectsExcel(Request $request)
+    /**
+     * Export projects to Excel.
+     */
+    public function projectsExcel(Request $request): \Symfony\Component\HttpFoundation\BinaryFileResponse
     {
         return Excel::download(new ProjectsExport($request->all()), 'proyectos-' . date('Y-m-d') . '.xlsx');
     }
@@ -57,7 +66,10 @@ class ReportController extends Controller
     /**
      * Export tasks to PDF.
      */
-    public function tasksPdf(Request $request)
+    /**
+     * Export tasks to PDF.
+     */
+    public function tasksPdf(Request $request): \Illuminate\Http\Response
     {
         $tasks = $this->getFilteredTasks($request);
         $pdf = Pdf::loadView('app.back.reports.tasks-pdf', compact('tasks'));
@@ -68,7 +80,10 @@ class ReportController extends Controller
     /**
      * Export tasks to Excel.
      */
-    public function tasksExcel(Request $request)
+    /**
+     * Export tasks to Excel.
+     */
+    public function tasksExcel(Request $request): \Symfony\Component\HttpFoundation\BinaryFileResponse
     {
         return Excel::download(new TasksExport($request->all()), 'tareas-' . date('Y-m-d') . '.xlsx');
     }
@@ -76,7 +91,10 @@ class ReportController extends Controller
     /**
      * Export innovations to PDF.
      */
-    public function innovationsPdf(Request $request)
+    /**
+     * Export innovations to PDF.
+     */
+    public function innovationsPdf(Request $request): \Illuminate\Http\Response
     {
         $innovations = $this->getFilteredInnovations($request);
         $pdf = Pdf::loadView('reports.innovations-pdf', compact('innovations'));
@@ -87,7 +105,10 @@ class ReportController extends Controller
     /**
      * Export innovations to Excel.
      */
-    public function innovationsExcel(Request $request)
+    /**
+     * Export innovations to Excel.
+     */
+    public function innovationsExcel(Request $request): \Symfony\Component\HttpFoundation\BinaryFileResponse
     {
         return Excel::download(new InnovationsExport($request->all()), 'innovaciones-' . date('Y-m-d') . '.xlsx');
     }
@@ -98,7 +119,13 @@ class ReportController extends Controller
      * @param Request $request
      * @return \Illuminate\Support\Collection
      */
-    private function getFilteredProjects(Request $request)
+    /**
+     * Apply project filters for PDF export.
+     * 
+     * @param Request $request
+     * @return \Illuminate\Support\Collection<int, Project>
+     */
+    private function getFilteredProjects(Request $request): \Illuminate\Support\Collection
     {
         $query = Project::with(['category', 'profile.user']);
 
@@ -119,7 +146,13 @@ class ReportController extends Controller
      * @param Request $request
      * @return \Illuminate\Support\Collection
      */
-    private function getFilteredTasks(Request $request)
+    /**
+     * Apply task filters for PDF export.
+     * 
+     * @param Request $request
+     * @return \Illuminate\Support\Collection<int, Task>
+     */
+    private function getFilteredTasks(Request $request): \Illuminate\Support\Collection
     {
         $query = Task::with(['project', 'assignedProfile.user']);
         
@@ -136,7 +169,13 @@ class ReportController extends Controller
      * @param Request $request
      * @return \Illuminate\Support\Collection
      */
-    private function getFilteredInnovations(Request $request)
+    /**
+     * Apply innovation filters for PDF export.
+     * 
+     * @param Request $request
+     * @return \Illuminate\Support\Collection<int, Innovation>
+     */
+    private function getFilteredInnovations(Request $request): \Illuminate\Support\Collection
     {
         $query = Innovation::with(['profile.user', 'innovationType']);
         
@@ -147,7 +186,7 @@ class ReportController extends Controller
         return $query->get();
     }
 
-    public function teacherParticipation()
+    public function teacherParticipation(): \Illuminate\View\View
     {
         $data = $this->reportService->getTeacherParticipation();
         return view('app.back.reports.participation', $data);
@@ -156,7 +195,10 @@ class ReportController extends Controller
     /**
      * Display comparative reports between two periods.
      */
-    public function comparative(Request $request)
+    /**
+     * Display comparative reports between two periods.
+     */
+    public function comparative(Request $request): \Illuminate\View\View
     {
         $periods = [
             'period1Start' => $request->period1_start ?? now()->subMonths(2)->startOfMonth()->format('Y-m-d'),

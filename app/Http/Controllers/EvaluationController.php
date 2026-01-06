@@ -22,7 +22,7 @@ class EvaluationController extends Controller
     /**
      * Show the form for creating a new evaluation.
      */
-    public function create(Project $project)
+    public function create(Project $project): \Illuminate\View\View|\Illuminate\Http\RedirectResponse
     {
         if (!Auth::user()->hasRole(['coordinador', 'admin'])) {
             return redirect()->route('projects.show', $project)->with('error', 'Solo coordinadores pueden evaluar.');
@@ -42,7 +42,7 @@ class EvaluationController extends Controller
     /**
      * Store a newly created evaluation in storage.
      */
-    public function store(\App\Http\Requests\StoreEvaluationRequest $request, Project $project)
+    public function store(\App\Http\Requests\StoreEvaluationRequest $request, Project $project): \Illuminate\Http\RedirectResponse
     {
         $this->evaluationService->createEvaluation($project, $request->validated(), $request->file('report_file'));
 
@@ -52,7 +52,7 @@ class EvaluationController extends Controller
     /**
      * Show the form for editing the specified evaluation.
      */
-    public function edit(Evaluation $evaluation)
+    public function edit(Evaluation $evaluation): \Illuminate\View\View
     {
         return view('evaluations.edit', compact('evaluation'));
     }
@@ -60,7 +60,7 @@ class EvaluationController extends Controller
     /**
      * Update the specified evaluation in storage.
      */
-    public function update(\App\Http\Requests\StoreEvaluationRequest $request, Evaluation $evaluation)
+    public function update(\App\Http\Requests\StoreEvaluationRequest $request, Evaluation $evaluation): \Illuminate\Http\RedirectResponse
     {
         $this->evaluationService->updateEvaluation($evaluation, $request->validated(), $request->file('report_file'));
 
@@ -70,7 +70,7 @@ class EvaluationController extends Controller
     /**
      * Remove the specified evaluation from storage.
      */
-    public function destroy(Evaluation $evaluation)
+    public function destroy(Evaluation $evaluation): \Illuminate\Http\RedirectResponse
     {
         $project = $evaluation->project;
         $this->evaluationService->deleteEvaluation($evaluation);

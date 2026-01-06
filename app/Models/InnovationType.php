@@ -17,7 +17,10 @@ class InnovationType extends Model
     /**
      * Relaciones
      */
-    public function innovations()
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\Innovation, $this>
+     */
+    public function innovations(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Innovation::class);
     }

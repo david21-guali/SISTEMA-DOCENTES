@@ -22,11 +22,17 @@ class Resource extends Model
 
     protected $fillable = ['name', 'resource_type_id', 'description', 'cost', 'file_path'];
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\ResourceType, $this>
+     */
     public function type(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(ResourceType::class, 'resource_type_id');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<\App\Models\Project, $this>
+     */
     public function projects(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
         return $this->belongsToMany(Project::class)
@@ -34,7 +40,7 @@ class Resource extends Model
                     ->withTimestamps();
     }
 
-    public function getTypeSlugAttribute()
+    public function getTypeSlugAttribute(): ?string
     {
         return $this->type ? $this->type->slug : null;
     }

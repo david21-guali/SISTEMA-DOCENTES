@@ -33,7 +33,7 @@ class TasksExport implements FromCollection, WithHeadings, WithMapping, WithStyl
     /**
      * Fetch the filtered dataset for export.
      * 
-     * @return \Illuminate\Support\Collection
+     * @return \Illuminate\Support\Collection<int, \App\Models\Task>
      */
     public function collection()
     {
@@ -67,7 +67,7 @@ class TasksExport implements FromCollection, WithHeadings, WithMapping, WithStyl
      * Transform an individual Task model into an exportable array.
      * 
      * @param mixed $task
-     * @return array
+     * @return array<int, mixed>
      */
     public function map($task): array
     {

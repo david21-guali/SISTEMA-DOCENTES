@@ -19,7 +19,10 @@ class Category extends Model
     /**
      * Relaciones
      */
-    public function projects()
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\Project, $this>
+     */
+    public function projects(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Project::class);
     }

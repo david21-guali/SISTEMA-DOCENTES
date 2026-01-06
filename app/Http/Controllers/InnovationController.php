@@ -21,7 +21,10 @@ class InnovationController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(): \Illuminate\View\View
     {
         $innovations = Innovation::with(['profile.user', 'innovationType'])
             ->latest()
@@ -30,7 +33,7 @@ class InnovationController extends Controller
         return view('app.back.innovations.index', compact('innovations'));
     }
 
-    public function bestPractices()
+    public function bestPractices(): \Illuminate\View\View
     {
         $bestPractices = Innovation::with(['profile.user', 'innovationType'])
             ->approved() // Cambio: solo innovaciones aprobadas
@@ -43,7 +46,10 @@ class InnovationController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create(): \Illuminate\View\View
     {
         $innovationTypes = InnovationType::all();
         return view('app.back.innovations.create', compact('innovationTypes'));
@@ -52,7 +58,10 @@ class InnovationController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(\App\Http\Requests\StoreInnovationRequest $request)
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(\App\Http\Requests\StoreInnovationRequest $request): \Illuminate\Http\RedirectResponse
     {
         $this->innovationService->createInnovation(
             $request->validated(), 
@@ -66,7 +75,10 @@ class InnovationController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Innovation $innovation)
+    /**
+     * Display the specified resource.
+     */
+    public function show(Innovation $innovation): \Illuminate\View\View
     {
         $innovation->load(['profile.user', 'innovationType', 'attachments']);
         return view('app.back.innovations.show', compact('innovation'));
@@ -75,7 +87,10 @@ class InnovationController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Innovation $innovation)
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Innovation $innovation): \Illuminate\View\View
     {
         $innovationTypes = InnovationType::all();
         return view('app.back.innovations.edit', compact('innovation', 'innovationTypes'));
@@ -84,7 +99,10 @@ class InnovationController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(\App\Http\Requests\UpdateInnovationRequest $request, Innovation $innovation)
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(\App\Http\Requests\UpdateInnovationRequest $request, Innovation $innovation): \Illuminate\Http\RedirectResponse
     {
         $this->innovationService->updateInnovation(
             $innovation, 
@@ -99,7 +117,10 @@ class InnovationController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Innovation $innovation)
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Innovation $innovation): \Illuminate\Http\RedirectResponse
     {
         $this->innovationService->deleteInnovation($innovation);
 
@@ -110,7 +131,10 @@ class InnovationController extends Controller
     /**
      * Remove a specific evidence file.
      */
-    public function deleteAttachment(Innovation $innovation, $attachmentId)
+    /**
+     * Remove a specific evidence file.
+     */
+    public function deleteAttachment(Innovation $innovation, $attachmentId): \Illuminate\Http\RedirectResponse
     {
         $this->innovationService->deleteAttachment($innovation, (int)$attachmentId);
 
@@ -120,7 +144,10 @@ class InnovationController extends Controller
     /**
      * Approve an innovation (admin/coordinator only)
      */
-    public function approve(Request $request, Innovation $innovation)
+    /**
+     * Approve an innovation (admin/coordinator only)
+     */
+    public function approve(Request $request, Innovation $innovation): \Illuminate\Http\RedirectResponse
     {
         $request->validate([
             'review_notes' => 'nullable|string|max:1000'
@@ -139,7 +166,10 @@ class InnovationController extends Controller
     /**
      * Request review for an innovation (user/owner)
      */
-    public function requestReview(Innovation $innovation)
+    /**
+     * Request review for an innovation (user/owner)
+     */
+    public function requestReview(Innovation $innovation): \Illuminate\Http\RedirectResponse
     {
         // Solo permitir si no está ya aprobada o en revisión
         if (in_array($innovation->status, ['aprobada', 'en_revision'])) {
@@ -156,7 +186,10 @@ class InnovationController extends Controller
     /**
      * Reject an innovation (admin/coordinator only)
      */
-    public function reject(Request $request, Innovation $innovation)
+    /**
+     * Reject an innovation (admin/coordinator only)
+     */
+    public function reject(Request $request, Innovation $innovation): \Illuminate\Http\RedirectResponse
     {
         $request->validate([
             'review_notes' => 'required|string|max:1000'

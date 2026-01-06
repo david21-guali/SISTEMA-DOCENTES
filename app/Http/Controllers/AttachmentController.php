@@ -14,7 +14,10 @@ class AttachmentController extends Controller
     /**
      * Store a new attachment.
      */
-    public function store(Request $request, $type, $id)
+    /**
+     * Store a new attachment.
+     */
+    public function store(Request $request, $type, $id): \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
     {
         $request->validate([
             'files' => 'required',
@@ -61,7 +64,10 @@ class AttachmentController extends Controller
     /**
      * Download an attachment.
      */
-    public function download(Attachment $attachment)
+    /**
+     * Download an attachment.
+     */
+    public function download(Attachment $attachment): \Symfony\Component\HttpFoundation\BinaryFileResponse
     {
         $path = Storage::disk('public')->path($attachment->path);
         
@@ -75,7 +81,10 @@ class AttachmentController extends Controller
     /**
      * Delete an attachment.
      */
-    public function destroy(Attachment $attachment)
+    /**
+     * Delete an attachment.
+     */
+    public function destroy(Attachment $attachment): \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
     {
         // Check permission (only uploader or admin can delete)
         if ($attachment->uploaded_by !== Auth::user()->profile->id && !Auth::user()->hasRole('admin')) {

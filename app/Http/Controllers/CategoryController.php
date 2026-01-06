@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-    public function store(Request $request)
+    public function store(Request $request): \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:categories,name',
@@ -33,7 +33,7 @@ class CategoryController extends Controller
         return back()->with('success', 'Categoría creada exitosamente');
     }
 
-    public function destroy(Category $category)
+    public function destroy(Category $category): \Illuminate\Http\JsonResponse
     {
         // Only admins can delete
         if (!auth()->user()->hasRole('admin')) {

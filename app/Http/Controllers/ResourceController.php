@@ -18,7 +18,10 @@ class ResourceController extends Controller
     /**
      * Display a listing of the resource catalog.
      */
-    public function index()
+    /**
+     * Display a listing of the resource catalog.
+     */
+    public function index(): \Illuminate\View\View
     {
         $resources = Resource::with('type')->get();
         $types = \App\Models\ResourceType::all();
@@ -39,7 +42,10 @@ class ResourceController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request): \Illuminate\Http\RedirectResponse
     {
         $validated = $request->validate([
             'name'             => 'required|string|max:255',
@@ -57,7 +63,10 @@ class ResourceController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Resource $resource)
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Resource $resource): \Illuminate\View\View
     {
         $types = \App\Models\ResourceType::all();
         return view('resources.edit', compact('resource', 'types'));
@@ -66,7 +75,10 @@ class ResourceController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Resource $resource)
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, Resource $resource): \Illuminate\Http\RedirectResponse
     {
         $validated = $request->validate([
             'name'             => 'required|string|max:255',
@@ -84,7 +96,10 @@ class ResourceController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Resource $resource)
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Resource $resource): \Illuminate\Http\RedirectResponse
     {
         $resource->delete();
         return redirect()->route('resources.index')->with('success', 'Recurso eliminado.');
@@ -93,7 +108,10 @@ class ResourceController extends Controller
     /**
      * Assign a resource to a project.
      */
-    public function assignToProject(Request $request, Project $project)
+    /**
+     * Assign a resource to a project.
+     */
+    public function assignToProject(Request $request, Project $project): \Illuminate\Http\RedirectResponse
     {
         $validated = $request->validate([
             'resource_id' => 'required|exists:resources,id',
@@ -110,7 +128,10 @@ class ResourceController extends Controller
     /**
      * Remove a resource from a project.
      */
-    public function removeFromProject(Project $project, Resource $resource)
+    /**
+     * Remove a resource from a project.
+     */
+    public function removeFromProject(Project $project, Resource $resource): \Illuminate\Http\RedirectResponse
     {
         $project->resources()->detach($resource->id);
         return back()->with('success', 'Recurso eliminado del proyecto.');
@@ -119,7 +140,10 @@ class ResourceController extends Controller
     /**
      * Download the specified resource file.
      */
-    public function download(Resource $resource)
+    /**
+     * Download the specified resource file.
+     */
+    public function download(Resource $resource): \Symfony\Component\HttpFoundation\BinaryFileResponse|\Illuminate\Http\RedirectResponse
     {
         if (!$resource->file_path || !\Illuminate\Support\Facades\Storage::disk('public')->exists($resource->file_path)) {
             return back()->with('error', 'El archivo no existe.');

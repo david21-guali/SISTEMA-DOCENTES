@@ -19,8 +19,8 @@ class TaskActionService
     /**
      * Create a new task and handle all associated side effects.
      * 
-     * @param array $data Task data including project_id and assignees.
-     * @param array $files Uploaded attachments.
+     * @param array<string, mixed> $data Task data including project_id and assignees.
+     * @param array<int, \Illuminate\Http\UploadedFile> $files Uploaded attachments.
      * @return Task
      */
     public function createTask(array $data, array $files = []): Task
@@ -44,7 +44,7 @@ class TaskActionService
      * Update an existing task's data and affiliations.
      * 
      * @param Task $task
-     * @param array $data
+     * @param array<string, mixed> $data
      * @return void
      */
     public function updateTask(Task $task, array $data): void
@@ -100,8 +100,8 @@ class TaskActionService
      * 
      * @param Task $task
      * @param Project $project
-     * @param array $assigneeIds
-     * @param array $files
+     * @param array<int, int> $assigneeIds
+     * @param array<int, \Illuminate\Http\UploadedFile> $files
      * @return void
      */
     private function finalizeTaskSetup(Task $task, Project $project, array $assigneeIds, array $files): void
@@ -117,7 +117,7 @@ class TaskActionService
      * Ensure assignees belong to the project team.
      * 
      * @param Project $project
-     * @param array $userIds
+     * @param array<int, int> $userIds
      * @return void
      * @throws \Exception
      */
@@ -151,8 +151,8 @@ class TaskActionService
     /**
      * Get profile IDs for a list of user IDs.
      * 
-     * @param array $userIds
-     * @return array
+     * @param array<int, int> $userIds
+     * @return array<int, int>
      */
     private function getUserProfileIds(array $userIds): array
     {
@@ -167,7 +167,7 @@ class TaskActionService
      * Notify users about their new task assignment.
      * 
      * @param Task $task
-     * @param array $userIds
+     * @param array<int, int> $userIds
      * @return void
      */
     private function notifyAssignedUsers(Task $task, array $userIds): void
@@ -193,7 +193,7 @@ class TaskActionService
      * Store and associate uploaded files with the task.
      * 
      * @param Task $task
-     * @param array $files
+     * @param array<int, \Illuminate\Http\UploadedFile> $files
      * @return void
      */
     private function handleAttachments(Task $task, array $files): void

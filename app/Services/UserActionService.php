@@ -16,7 +16,7 @@ class UserActionService
     /**
      * Create a new user and assign a role.
      * 
-     * @param array $data Contains name, email, password and role.
+     * @param array<string, mixed> $data Contains name, email, password and role.
      * @return User
      */
     public function createUser(array $data): User
@@ -36,7 +36,7 @@ class UserActionService
      * Update an existing user's basic info and role.
      * 
      * @param User $user
-     * @param array $data
+     * @param array<string, mixed> $data
      * @return void
      */
     public function updateUser(User $user, array $data): void

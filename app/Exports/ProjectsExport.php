@@ -33,7 +33,7 @@ class ProjectsExport implements FromCollection, WithHeadings, WithMapping, WithS
     /**
      * Fetch the filtered dataset for export.
      * 
-     * @return \Illuminate\Support\Collection
+     * @return \Illuminate\Support\Collection<int, \App\Models\Project>
      */
     public function collection()
     {
@@ -69,7 +69,7 @@ class ProjectsExport implements FromCollection, WithHeadings, WithMapping, WithS
      * Transform an individual Project model into an exportable array.
      * 
      * @param mixed $project
-     * @return array
+     * @return array<int, mixed>
      */
     public function map($project): array
     {

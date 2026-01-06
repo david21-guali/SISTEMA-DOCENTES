@@ -26,7 +26,10 @@ class ProjectController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(Request $request): \Illuminate\View\View
     {
         $projects = $this->queryService->getProjects($request->all());
         $stats = $this->queryService->getStats();
@@ -37,7 +40,10 @@ class ProjectController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create(): \Illuminate\View\View
     {
         $categories = Category::all();
         $users = \App\Models\User::whereHas('profile', function($q) {
@@ -49,7 +55,10 @@ class ProjectController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(\App\Http\Requests\StoreProjectRequest $request)
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(\App\Http\Requests\StoreProjectRequest $request): \Illuminate\Http\RedirectResponse
     {
         $this->actionService->createProject($request->validated(), $request->file('attachments') ?? []);
 
@@ -60,7 +69,10 @@ class ProjectController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Project $project)
+    /**
+     * Display the specified resource.
+     */
+    public function show(Project $project): \Illuminate\View\View
     {
         $project->load(['category', 'profile', 'tasks', 'team']);
         return view('app.back.projects.show', compact('project'));
@@ -69,7 +81,10 @@ class ProjectController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Project $project)
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Project $project): \Illuminate\View\View
     {
         $categories = Category::all();
         $users = \App\Models\User::whereHas('profile', function($q) {
@@ -81,7 +96,10 @@ class ProjectController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(\App\Http\Requests\UpdateProjectRequest $request, Project $project)
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(\App\Http\Requests\UpdateProjectRequest $request, Project $project): \Illuminate\Http\RedirectResponse
     {
         $this->actionService->updateProject($project, $request->validated());
 
@@ -89,7 +107,7 @@ class ProjectController extends Controller
             ->with('success', 'Proyecto actualizado exitosamente.');
     }
 
-    public function uploadFinalReport(Request $request, Project $project)
+    public function uploadFinalReport(Request $request, Project $project): \Illuminate\Http\RedirectResponse
     {
         if (Auth::user()->profile->id !== $project->profile_id && !Auth::user()->hasRole('admin')) {
             abort(403, 'No tienes permiso.');
@@ -108,7 +126,10 @@ class ProjectController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Project $project)
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Project $project): \Illuminate\Http\RedirectResponse
     {
         $project->delete();
 

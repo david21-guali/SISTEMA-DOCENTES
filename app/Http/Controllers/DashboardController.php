@@ -57,7 +57,7 @@ class DashboardController extends Controller
     /**
      * Retrieve a small set of the most recently created projects.
      * 
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\Project>
      */
     private function getRecentProjects()
     {
@@ -70,7 +70,7 @@ class DashboardController extends Controller
     /**
      * Fetch the most recent unread notifications for the authenticated user.
      * 
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return \Illuminate\Database\Eloquent\Collection<int, \Illuminate\Notifications\DatabaseNotification>
      */
     private function getLatestNotifications()
     {
