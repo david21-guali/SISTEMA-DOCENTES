@@ -12,13 +12,17 @@ class TaskDeadlineApproaching extends Notification
 {
     use Queueable;
 
+    /** @var Task */
     public $task;
+    /** @var int */
     public $daysLeft;
 
     /**
      * Create a new notification instance.
+     * @param Task $task
+     * @param int $daysLeft
      */
-    public function __construct(Task $task, $daysLeft)
+    public function __construct(Task $task, int $daysLeft)
     {
         $this->task = $task;
         $this->daysLeft = $daysLeft;
@@ -27,6 +31,12 @@ class TaskDeadlineApproaching extends Notification
     /**
      * Get the notification's delivery channels.
      *
+     * @return array<int, string>
+     */
+    /**
+     * Get the notification's delivery channels.
+     *
+     * @param \App\Models\User $notifiable
      * @return array<int, string>
      */
     public function via(object $notifiable): array
@@ -48,6 +58,11 @@ class TaskDeadlineApproaching extends Notification
     /**
      * Get the mail representation of the notification.
      */
+    /**
+     * Get the mail representation of the notification.
+     * 
+     * @param \App\Models\User $notifiable
+     */
     public function toMail(object $notifiable): MailMessage
     {
         $message = "La tarea '{$this->task->title}' vence en {$this->daysLeft} " . ($this->daysLeft == 1 ? 'día' : 'días') . ".";
@@ -66,6 +81,12 @@ class TaskDeadlineApproaching extends Notification
     /**
      * Get the array representation of the notification.
      *
+     * @return array<string, mixed>
+     */
+    /**
+     * Get the array representation of the notification.
+     *
+     * @param \App\Models\User $notifiable
      * @return array<string, mixed>
      */
     public function toArray(object $notifiable): array

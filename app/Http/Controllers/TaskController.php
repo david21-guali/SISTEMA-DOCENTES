@@ -10,8 +10,8 @@ use Illuminate\Support\Facades\Auth;
 
 class TaskController extends Controller
 {
-    protected $queryService;
-    protected $actionService;
+    protected \App\Services\TaskQueryService $queryService;
+    protected \App\Services\TaskActionService $actionService;
 
     public function __construct(
         \App\Services\TaskQueryService $queryService,
@@ -50,7 +50,10 @@ class TaskController extends Controller
     public function create(): \Illuminate\View\View
     {
         $projects = $this->queryService->getProjectsForUser(Auth::user());
-        $users = User::whereHas('profile', fn($q) => $q->where('is_active', true))->get();
+        $users = User::whereHas('profile', function($q) {
+            /** @phpstan-ignore-next-line */
+            $q->where('is_active', true);
+        })->get();
         return view('app.back.tasks.create', compact('projects', 'users'));
     }
 
@@ -91,7 +94,10 @@ class TaskController extends Controller
     public function edit(Task $task): \Illuminate\View\View
     {
         $projects = $this->queryService->getProjectsForUser(Auth::user());
-        $users = User::whereHas('profile', fn($q) => $q->where('is_active', true))->get();
+        $users = User::whereHas('profile', function($q) {
+            /** @phpstan-ignore-next-line */
+            $q->where('is_active', true);
+        })->get();
         return view('app.back.tasks.edit', compact('task', 'projects', 'users'));
     }
 

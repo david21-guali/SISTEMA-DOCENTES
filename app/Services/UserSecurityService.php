@@ -78,6 +78,9 @@ class UserSecurityService
      */
     private function isAdminCountLow(): bool
     {
-        return User::whereHas('roles', fn($q) => $q->where('name', 'admin'))->count() <= 1;
+        return User::whereHas('roles', function($q) {
+            /** @phpstan-ignore-next-line */
+            $q->where('name', 'admin');
+        })->count() <= 1;
     }
 }

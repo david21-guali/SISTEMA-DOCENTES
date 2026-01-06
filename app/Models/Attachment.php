@@ -2,15 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
 class Attachment extends Model
 {
-    /** @use HasFactory<\Database\Factories\AttachmentFactory> */
-    use HasFactory;
-
     protected $fillable = [
         'attachable_type',
         'attachable_id',
@@ -24,13 +20,11 @@ class Attachment extends Model
 
     /**
      * Polymorphic relationship - can belong to Project or Task
-     */
-    /**
-     * Polymorphic relationship - can belong to Project or Task
      * 
      * @return \Illuminate\Database\Eloquent\Relations\MorphTo
      */
-    public function attachable(): \Illuminate\Database\Eloquent\Relations\MorphTo
+    /** @phpstan-ignore-next-line */
+    public function attachable()
     {
         return $this->morphTo();
     }

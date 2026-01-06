@@ -12,6 +12,7 @@ class ProjectAssigned extends Notification
 {
     use Queueable;
 
+    /** @var \App\Models\Project */
     public $project;
 
     /**
@@ -26,6 +27,12 @@ class ProjectAssigned extends Notification
     /**
      * Get the notification's delivery channels.
      *
+     * @return array<int, string>
+     */
+    /**
+     * Get the notification's delivery channels.
+     *
+     * @param \App\Models\User $notifiable
      * @return array<int, string>
      */
     public function via(object $notifiable): array
@@ -47,6 +54,11 @@ class ProjectAssigned extends Notification
     /**
      * Get the mail representation of the notification.
      */
+    /**
+     * Get the mail representation of the notification.
+     * 
+     * @param \App\Models\User $notifiable
+     */
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
@@ -62,6 +74,12 @@ class ProjectAssigned extends Notification
     /**
      * Get the array representation of the notification.
      *
+     * @return array<string, mixed>
+     */
+    /**
+     * Get the array representation of the notification.
+     *
+     * @param \App\Models\User $notifiable
      * @return array<string, mixed>
      */
     public function toArray(object $notifiable): array

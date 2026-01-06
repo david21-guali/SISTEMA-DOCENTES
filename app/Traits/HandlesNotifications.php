@@ -9,8 +9,9 @@ trait HandlesNotifications
 {
     /**
      * Notify a collection of users with a specific notification.
+     * @param iterable<int, \App\Models\User>|\Illuminate\Support\Collection<int, \App\Models\User>|array<int, \App\Models\User> $users
      */
-    protected function notifyUsers($users, $notification, $excludeAuth = true): void
+    protected function notifyUsers(iterable $users, \Illuminate\Notifications\Notification $notification, bool $excludeAuth = true): void
     {
         foreach ($users as $user) {
             if (!$excludeAuth || ($user->id !== Auth::id())) {
@@ -26,6 +27,8 @@ trait HandlesNotifications
 
     /**
      * Get users by their profile IDs.
+     * @param array<int, int> $profileIds
+     * @return \Illuminate\Database\Eloquent\Collection<int, User>
      */
     protected function getUsersFromProfiles(array $profileIds): \Illuminate\Database\Eloquent\Collection
     {

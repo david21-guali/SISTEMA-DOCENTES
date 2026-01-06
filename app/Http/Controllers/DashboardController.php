@@ -19,7 +19,7 @@ class DashboardController extends Controller
     /**
      * @var \App\Services\DashboardService Service for dashboard data aggregation.
      */
-    protected $dashboardService;
+    protected \App\Services\DashboardService $dashboardService;
 
     /**
      * DashboardController constructor.
@@ -80,8 +80,8 @@ class DashboardController extends Controller
     /**
      * Extract task-specific statistics from the general stats array.
      * 
-     * @param array $stats
-     * @return array
+     * @param array<string, int> $stats
+     * @return array<string, int>
      */
     private function formatTaskStats(array $stats): array
     {

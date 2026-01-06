@@ -17,6 +17,8 @@ use Carbon\Carbon;
  * @property-read \App\Models\Profile $profile
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Task[] $tasks
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Profile[] $team
+ * @property bool $is_active
+ * @property string $final_report
  */
 class Project extends Model
 {

@@ -14,9 +14,9 @@ class TaskQueryService
      * Retrieve a paginated list of tasks based on user permissions and filters.
      * 
      * @param \App\Models\User $user The user requesting the data.
-     * @param array $filters Key-value pairs of filters (status, project_id, search).
+     * @param array<string, mixed> $filters Key-value pairs of filters (status, project_id, search).
      * @param int $perPage Number of items per page.
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator<int, Task>
      */
     public function getTasks(\App\Models\User $user, array $filters, int $perPage = 15): \Illuminate\Contracts\Pagination\LengthAwarePaginator
     {
@@ -31,6 +31,9 @@ class TaskQueryService
         return $query->latest()->paginate($perPage);
     }
 
+    /**
+     * @return \Illuminate\Support\Collection<int, \App\Models\Project>
+     */
     public function getProjectsForUser(\App\Models\User $user): \Illuminate\Support\Collection
     {
         return (new ProjectAccessService())->getProjectsForUser($user);

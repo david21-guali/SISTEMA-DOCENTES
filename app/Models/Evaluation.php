@@ -32,6 +32,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Evaluation extends Model
 {
+    /** @use HasFactory<\Database\Factories\EvaluationFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -107,7 +108,7 @@ class Evaluation extends Model
      * Scopes
      */
     /**
-     * @param \Illuminate\Database\Eloquent\Builder.Evaluation> $query
+     * @param \Illuminate\Database\Eloquent\Builder<Evaluation> $query
      * @return \Illuminate\Database\Eloquent\Builder<Evaluation>
      */
     public function scopeFinalized($query)

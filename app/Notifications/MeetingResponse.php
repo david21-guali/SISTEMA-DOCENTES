@@ -39,9 +39,14 @@ class MeetingResponse extends Notification implements ShouldQueue
 
     /**
      * Get the notification's delivery channels.
+     *
+     * @return array<int, string>
      */
     public function via(object $notifiable): array
     {
+        if (!$notifiable instanceof \App\Models\User) {
+            return ['database'];
+        }
         return (new \App\Services\NotificationPreferenceService())->getChannels($notifiable, 'meetings');
     }
 
@@ -55,6 +60,8 @@ class MeetingResponse extends Notification implements ShouldQueue
 
     /**
      * Get array representation for database storage.
+     *
+     * @return array<string, mixed>
      */
     public function toArray(object $notifiable): array
     {

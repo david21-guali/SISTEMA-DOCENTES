@@ -94,6 +94,20 @@ class Innovation extends Model
     }
 
     /**
+     * Accessor: evidence_files
+     * Alias for attachments to satisfy legacy usage or export logic.
+     * 
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    /**
+     * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\Attachment>
+     */
+    public function getEvidenceFilesAttribute(): \Illuminate\Database\Eloquent\Collection
+    {
+        return $this->attachments;
+    }
+
+    /**
      * Atributos computados
      */
     public function getStatusColorAttribute(): string

@@ -15,7 +15,7 @@ class NotificationPreferenceService
      * 
      * @param User $user
      * @param string $type (meetings, projects, etc)
-     * @return array
+     * @return array<int, string>
      */
     public function getChannels(User $user, string $type): array
     {
@@ -31,8 +31,8 @@ class NotificationPreferenceService
     /**
      * Determine media channels (database, mail).
      * 
-     * @param array $prefs
-     * @return array
+     * @param array<string, bool> $prefs
+     * @return array<int, string>
      */
     private function getEnabledMedia(array $prefs): array
     {

@@ -23,7 +23,7 @@ class UpdateProjectRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      * 
-     * @return array
+     * @return array<string, mixed>
      */
     public function rules(): array
     {
@@ -44,7 +44,7 @@ class UpdateProjectRequest extends FormRequest
     }
 
     /**
-     * @return array Rules for project status lifecycle.
+     * @return array<int, string> Rules for project status lifecycle.
      */
     private function getStatusRules(): array
     {
@@ -52,7 +52,7 @@ class UpdateProjectRequest extends FormRequest
     }
 
     /**
-     * @return array Rules for the team members collection.
+     * @return array<int, string> Rules for the team members collection.
      */
     private function getTeamMemberRules(): array
     {

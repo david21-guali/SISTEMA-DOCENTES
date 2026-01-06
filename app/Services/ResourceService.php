@@ -15,8 +15,8 @@ class ResourceService
     /**
      * Create a new resource record and handle physical file storage.
      * 
-     * @param array $data General resource information.
-     * @param mixed|null $file Optional uploaded file to associate.
+     * @param array<string, mixed> $data General resource information.
+     * @param \Illuminate\Http\UploadedFile|null $file Optional uploaded file to associate.
      * @return Resource
      */
     public function createResource(array $data, $file = null): Resource
@@ -32,8 +32,8 @@ class ResourceService
      * Update an existing resource and manage file replacement if necessary.
      * 
      * @param Resource $resource
-     * @param array $data
-     * @param mixed|null $file
+     * @param array<string, mixed> $data
+     * @param \Illuminate\Http\UploadedFile|null $file
      * @return void
      */
     public function updateResource(Resource $resource, array $data, $file = null): void
@@ -50,7 +50,7 @@ class ResourceService
      * Associate a resource with a specific project using pivot table metadata.
      * 
      * @param Project $project
-     * @param array $data Assignment details (id, quantity, date, notes).
+     * @param array<string, mixed> $data Assignment details (id, quantity, date, notes).
      * @return void
      */
     public function assignToProject(Project $project, array $data): void

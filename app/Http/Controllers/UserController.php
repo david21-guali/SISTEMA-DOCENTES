@@ -10,9 +10,9 @@ use Illuminate\Validation\Rules;
 
 class UserController extends Controller
 {
-    protected $queryService;
-    protected $actionService;
-    protected $mgmtService;
+    protected \App\Services\UserQueryService $queryService;
+    protected \App\Services\UserActionService $actionService;
+    protected \App\Services\UserManagementService $mgmtService;
 
     public function __construct(
         \App\Services\UserQueryService $queryService,

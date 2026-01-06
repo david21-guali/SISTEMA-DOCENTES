@@ -14,9 +14,9 @@ class ProjectQueryService
     /**
      * Retrieve a paginated list of projects with eager loading and filters.
      * 
-     * @param array $filters Key-value pairs of filters (status, category_id, search).
+     * @param array<string, mixed> $filters Key-value pairs of filters (status, category_id, search).
      * @param int $perPage Number of items to show per page.
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator<int, Project>
      */
     public function getProjects(array $filters, int $perPage = 10): \Illuminate\Contracts\Pagination\LengthAwarePaginator
     {
@@ -31,7 +31,7 @@ class ProjectQueryService
     /**
      * Get aggregate statistics for projects.
      * 
-     * @return array
+     * @return array<string, int>
      */
     public function getStats(): array
     {
@@ -56,7 +56,7 @@ class ProjectQueryService
     /**
      * Restrict the query results based on user roles and ownership.
      * 
-     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param \Illuminate\Database\Eloquent\Builder<Project> $query
      * @return void
      */
     private function authorizeAccess($query): void
@@ -71,8 +71,8 @@ class ProjectQueryService
     /**
      * Run all applicable filters on the project query.
      * 
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param array $filters
+     * @param \Illuminate\Database\Eloquent\Builder<Project> $query
+     * @param array<string, mixed> $filters
      * @return void
      */
     private function applyContextualFilters($query, array $filters): void
@@ -85,7 +85,7 @@ class ProjectQueryService
     /**
      * Filter projects by their current status.
      * 
-     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param \Illuminate\Database\Eloquent\Builder<Project> $query
      * @param string|null $status
      * @return void
      */
@@ -99,7 +99,7 @@ class ProjectQueryService
     /**
      * Filter projects by a specific category.
      * 
-     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param \Illuminate\Database\Eloquent\Builder<Project> $query
      * @param mixed $categoryId
      * @return void
      */
@@ -113,7 +113,7 @@ class ProjectQueryService
     /**
      * Perform a keyword search on title and description.
      * 
-     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param \Illuminate\Database\Eloquent\Builder<Project> $query
      * @param string|null $searchTerm
      * @return void
      */

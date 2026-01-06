@@ -12,18 +12,19 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 /**
  * Export handler for tasks to Excel format.
  * Optimized for High Maintainability Index (MI >= 65).
+ * @implements WithMapping<mixed>
  */
 class TasksExport implements FromCollection, WithHeadings, WithMapping, WithStyles
 {
     /**
-     * @var array Contextual filters for the export query.
+     * @var array<string, mixed> Contextual filters for the export query.
      */
     protected $filters;
 
     /**
      * TasksExport constructor.
      * 
-     * @param array $filters
+     * @param array<string, mixed> $filters
      */
     public function __construct(array $filters = [])
     {
@@ -47,7 +48,7 @@ class TasksExport implements FromCollection, WithHeadings, WithMapping, WithStyl
     /**
      * Define the data headers for the Excel sheet.
      * 
-     * @return array
+     * @return array<int, string>
      */
     public function headings(): array
     {
@@ -71,6 +72,9 @@ class TasksExport implements FromCollection, WithHeadings, WithMapping, WithStyl
      */
     public function map($task): array
     {
+        if (!($task instanceof Task)) {
+            return [];
+        }
         return [
             $task->id,
             $task->title,
@@ -87,7 +91,7 @@ class TasksExport implements FromCollection, WithHeadings, WithMapping, WithStyl
      * Apply bold styling to the header row.
      * 
      * @param Worksheet $sheet
-     * @return array
+     * @return array<int, array<string, array<string, bool>>>
      */
     public function styles(Worksheet $sheet)
     {
@@ -97,7 +101,7 @@ class TasksExport implements FromCollection, WithHeadings, WithMapping, WithStyl
     /**
      * Apply contextual filters to the task query.
      * 
-     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param \Illuminate\Database\Eloquent\Builder<\App\Models\Task> $query
      * @return void
      */
     private function applyContextualFilters($query): void

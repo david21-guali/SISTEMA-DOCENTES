@@ -24,7 +24,7 @@ class StoreUserRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      * 
-     * @return array
+     * @return array<string, mixed>
      */
     public function rules(): array
     {
@@ -37,7 +37,7 @@ class StoreUserRequest extends FormRequest
     }
 
     /**
-     * @return array Basic name validation rules.
+     * @return array<int, string> Basic name validation rules.
      */
     private function getNameRules(): array
     {
@@ -45,7 +45,7 @@ class StoreUserRequest extends FormRequest
     }
 
     /**
-     * @return array Email validation rules ensuring uniqueness.
+     * @return array<int, string> Email validation rules ensuring uniqueness.
      */
     private function getEmailRules(): array
     {
@@ -53,7 +53,7 @@ class StoreUserRequest extends FormRequest
     }
 
     /**
-     * @return array Password validation rules using system defaults.
+     * @return array<int, mixed> Password validation rules using system defaults.
      */
     private function getPasswordRules(): array
     {
@@ -61,7 +61,7 @@ class StoreUserRequest extends FormRequest
     }
 
     /**
-     * @return array Role assignment validation rules.
+     * @return array<int, string> Role assignment validation rules.
      */
     private function getRoleRules(): array
     {

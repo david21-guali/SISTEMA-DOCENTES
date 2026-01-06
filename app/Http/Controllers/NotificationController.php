@@ -19,7 +19,7 @@ class NotificationController extends Controller
     /**
      * Mark a specific notification as read.
      */
-    public function markAsRead($id): \Illuminate\Http\RedirectResponse
+    public function markAsRead(int|string $id): \Illuminate\Http\RedirectResponse
     {
         $notification = Auth::user()->notifications()->where('id', $id)->first();
 
@@ -69,7 +69,7 @@ class NotificationController extends Controller
     /**
      * Remove the specified notification.
      */
-    public function destroy($id): \Illuminate\Http\RedirectResponse
+    public function destroy(int|string $id): \Illuminate\Http\RedirectResponse
     {
         $notification = Auth::user()->notifications()->where('id', $id)->first();
 

@@ -24,7 +24,7 @@ class StoreMeetingRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      * 
-     * @return array
+     * @return array<string, mixed>
      */
     public function rules(): array
     {
@@ -42,7 +42,7 @@ class StoreMeetingRequest extends FormRequest
     /**
      * Get custom attributes for validator errors.
      * 
-     * @return array
+     * @return array<string, string>
      */
     public function attributes(): array
     {
@@ -58,7 +58,7 @@ class StoreMeetingRequest extends FormRequest
     /**
      * Define validation logic for the participants array.
      * 
-     * @return array
+     * @return array<int, mixed>
      */
     private function getParticipantRules(): array
     {
@@ -74,7 +74,7 @@ class StoreMeetingRequest extends FormRequest
     /**
      * Ensure the participant list contains more than just the current user.
      * 
-     * @param array $value
+     * @param array<int, mixed> $value
      * @param \Closure $fail
      * @return void
      */

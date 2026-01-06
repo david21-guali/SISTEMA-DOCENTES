@@ -12,18 +12,19 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 /**
  * Export handler for projects to Excel format.
  * Optimized for High Maintainability Index (MI >= 65).
+ * @implements WithMapping<mixed>
  */
 class ProjectsExport implements FromCollection, WithHeadings, WithMapping, WithStyles
 {
     /**
-     * @var array Contextual filters for the export query.
+     * @var array<string, mixed> Contextual filters for the export query.
      */
     protected $filters;
 
     /**
      * ProjectsExport constructor.
      * 
-     * @param array $filters
+     * @param array<string, mixed> $filters
      */
     public function __construct(array $filters = [])
     {
@@ -47,7 +48,7 @@ class ProjectsExport implements FromCollection, WithHeadings, WithMapping, WithS
     /**
      * Define the data headers for the Excel sheet.
      * 
-     * @return array
+     * @return array<int, string>
      */
     public function headings(): array
     {
@@ -73,6 +74,9 @@ class ProjectsExport implements FromCollection, WithHeadings, WithMapping, WithS
      */
     public function map($project): array
     {
+        if (!($project instanceof Project)) {
+            return [];
+        }
         return [
             $project->id,
             $project->title,
@@ -91,7 +95,7 @@ class ProjectsExport implements FromCollection, WithHeadings, WithMapping, WithS
      * Apply bold styling to the header row.
      * 
      * @param Worksheet $sheet
-     * @return array
+     * @return array<int, array<string, array<string, bool>>>
      */
     public function styles(Worksheet $sheet)
     {
@@ -101,7 +105,7 @@ class ProjectsExport implements FromCollection, WithHeadings, WithMapping, WithS
     /**
      * Apply contextual filters to the project query.
      * 
-     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param \Illuminate\Database\Eloquent\Builder<\App\Models\Project> $query
      * @return void
      */
     private function applyContextualFilters($query): void

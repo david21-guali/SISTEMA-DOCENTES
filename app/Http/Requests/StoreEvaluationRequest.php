@@ -23,7 +23,7 @@ class StoreEvaluationRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      * 
-     * @return array
+     * @return array<string, mixed>
      */
     public function rules(): array
     {
@@ -46,7 +46,7 @@ class StoreEvaluationRequest extends FormRequest
     /**
      * Get custom error messages for validation rules.
      * 
-     * @return array
+     * @return array<string, string>
      */
     public function messages(): array
     {
@@ -57,7 +57,7 @@ class StoreEvaluationRequest extends FormRequest
             'numeric'  => 'Este campo debe ser un número.',
             'integer'  => 'Este campo debe ser un número entero.',
             'mimes'    => 'El archivo debe ser un PDF.',
-            'max'      => 'El archivo no puede pesar más de 5MB.',
+            // Removed duplicate max key, keeping relevant message
         ];
     }
 }

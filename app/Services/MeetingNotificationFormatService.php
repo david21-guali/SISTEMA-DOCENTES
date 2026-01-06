@@ -27,7 +27,7 @@ class MeetingNotificationFormatService
 
         $mail = (new MailMessage)
             ->subject($emoji . ' Respuesta: ' . $notif->meeting->title)
-            ->greeting('Hola ' . $notifiable->name)
+            ->greeting('Hola ' . ($notifiable instanceof \App\Models\User ? $notifiable->name : 'Usuario'))
             ->line($notif->responder->name . ' ha ' . $action . ' a: ' . $notif->meeting->title);
 
         if ($notif->status === 'rechazada' && $notif->reason) {

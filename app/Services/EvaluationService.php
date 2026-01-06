@@ -17,8 +17,8 @@ class EvaluationService
      * Create a new evaluation record and store the associated report file.
      * 
      * @param Project $project The project being evaluated.
-     * @param array $data Evaluation details (score, comments, etc.).
-     * @param mixed|null $file Optional uploaded report document.
+     * @param array<string, mixed> $data Evaluation details (score, comments, etc.).
+     * @param \Illuminate\Http\UploadedFile|null $file Optional uploaded report document.
      * @return Evaluation
      */
     public function createEvaluation(Project $project, array $data, $file = null): Evaluation
@@ -39,8 +39,8 @@ class EvaluationService
      * Update an existing evaluation and handle report file replacement.
      * 
      * @param Evaluation $evaluation
-     * @param array $data
-     * @param mixed|null $file
+     * @param array<string, mixed> $data
+     * @param \Illuminate\Http\UploadedFile|null $file
      * @return void
      */
     public function updateEvaluation(Evaluation $evaluation, array $data, $file = null): void

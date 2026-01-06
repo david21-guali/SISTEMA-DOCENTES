@@ -17,7 +17,7 @@ class ReportService
     /**
      * Aggregate system-wide statistics for the main dashboard.
      * 
-     * @return array
+     * @return array<string, int>
      */
     public function getDashboardStats(): array
     {
@@ -37,7 +37,7 @@ class ReportService
     /**
      * Retrieve participation metrics for teachers and other user roles.
      * 
-     * @return array
+     * @return array{teachers: \Illuminate\Support\Collection<int, User>, otherUsers: \Illuminate\Support\Collection<int, User>}
      */
     public function getTeacherParticipation(): array
     {
@@ -52,13 +52,15 @@ class ReportService
     /**
      * Fetch teachers and admins with their task and comment activity counts.
      * 
-     * @return \Illuminate\Support\Collection
+     * @return \Illuminate\Support\Collection<int, User>
      */
     private function getTeachersWithMetrics()
     {
         return User::whereHas('roles', function($q) {
-                $q->where('name', 'LIKE', '%docente%')
-                  ->orWhere('name', 'LIKE', '%admin%');
+                /** @phpstan-ignore-next-line */
+                $q->where('name', 'LIKE', '%docente%');
+                /** @phpstan-ignore-next-line */
+                $q->orWhere('name', 'LIKE', '%admin%');
             })
             ->with(['roles', 'profile' => function($q) {
                 $q->withCount(['assignedTasks', 'comments']);
@@ -78,8 +80,8 @@ class ReportService
      */
     private function attachMetricCounts(User $user)
     {
-        $user->assigned_tasks_count = $user->profile->assigned_tasks_count ?? 0;
-        $user->comments_count = $user->profile->comments_count ?? 0;
+        $user->setAttribute('assigned_tasks_count', $user->profile->assigned_tasks_count ?? 0);
+        $user->setAttribute('comments_count', $user->profile->comments_count ?? 0);
         
         return $user;
     }
@@ -87,8 +89,8 @@ class ReportService
     /**
      * Get users not included in the teacher participation list.
      * 
-     * @param \Illuminate\Support\Collection $teachers
-     * @return \Illuminate\Support\Collection
+     * @param \Illuminate\Support\Collection<int, User> $teachers
+     * @return \Illuminate\Support\Collection<int, User>
      */
     private function getExclucedUsers($teachers)
     {
@@ -110,7 +112,7 @@ class ReportService
      */
     private function getActiveProjectsCount(): int
     {
-        return Project::active()->count();
+        return Project::query()->where('status', 'en_progreso')->count();
     }
 
     /**

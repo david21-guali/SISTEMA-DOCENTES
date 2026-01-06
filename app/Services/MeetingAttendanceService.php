@@ -15,7 +15,7 @@ class MeetingAttendanceService
      * Update the attendance status of the current authenticated user.
      * 
      * @param Meeting $meeting
-     * @param array $data
+     * @param array<string, mixed> $data
      * @return string
      */
     public function updateAttendance(Meeting $meeting, array $data): string
@@ -35,7 +35,7 @@ class MeetingAttendanceService
      * Synchronize the participants list with the pivot table.
      * 
      * @param Meeting $meeting
-     * @param array $userIds
+     * @param array<int, int> $userIds
      * @param bool $isUpdate
      * @return void
      */
@@ -76,7 +76,7 @@ class MeetingAttendanceService
      * Process final attendance list during completion.
      * 
      * @param Meeting $meeting
-     * @param array $attendedPids
+     * @param array<int, int> $attendedPids
      * @return void
      */
     public function processFinalAttendance(Meeting $meeting, array $attendedPids): void
@@ -91,7 +91,7 @@ class MeetingAttendanceService
      * 
      * @param Meeting $meeting
      * @param int $pid
-     * @param array $attendedPids
+     * @param array<int, int> $attendedPids
      * @return void
      */
     private function updateSingleParticipantAttendance(Meeting $meeting, int $pid, array $attendedPids): void

@@ -25,6 +25,7 @@ class TaskActionService
      */
     public function createTask(array $data, array $files = []): Task
     {
+        /** @var \App\Models\Project $project */
         $project = Project::with('team')->findOrFail($data['project_id']);
         $this->ensureValidTeamAssignment($project, $data['assignees']);
 
@@ -135,7 +136,7 @@ class TaskActionService
      * Consolidate IDs of users eligible for task assignment.
      * 
      * @param Project $project
-     * @return array
+     * @return array<int, int>
      */
     private function getValidTeamUserIds(Project $project): array
     {
@@ -215,7 +216,7 @@ class TaskActionService
         $path = $file->store('attachments/tasks/' . $task->id, 'public');
         
         $task->attachments()->create([
-            'filename'      => basename($path),
+            'filename'      => basename((string)$path),
             'original_name' => $file->getClientOriginalName(),
             'mime_type'     => $file->getMimeType(),
             'size'          => $file->getSize(),

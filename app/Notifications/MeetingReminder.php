@@ -12,6 +12,7 @@ class MeetingReminder extends Notification
 {
     use Queueable;
 
+    /** @var Meeting */
     protected $meeting;
 
     /**
@@ -24,6 +25,14 @@ class MeetingReminder extends Notification
 
     /**
      * Get the notification's delivery channels.
+     *
+     * @return array<int, string>
+     */
+    /**
+     * Get the notification's delivery channels.
+     *
+     * @param \App\Models\User $notifiable
+     * @return array<int, string>
      */
     public function via(object $notifiable): array
     {
@@ -39,7 +48,7 @@ class MeetingReminder extends Notification
     /**
      * Check if meeting notifications are globally enabled for the user.
      * 
-     * @param array $prefs
+     * @param array<string, mixed> $prefs
      * @return bool
      */
     private function isNotificationEnabled(array $prefs): bool
@@ -50,8 +59,8 @@ class MeetingReminder extends Notification
     /**
      * Determine active channels based on user preferences.
      * 
-     * @param array $prefs
-     * @return array
+     * @param array<string, mixed> $prefs
+     * @return array<int, string>
      */
     private function getEnabledChannels(array $prefs): array
     {
@@ -66,6 +75,11 @@ class MeetingReminder extends Notification
 
     /**
      * Get the mail representation of the notification.
+     */
+    /**
+     * Get the mail representation of the notification.
+     * dir
+     * @param \App\Models\User $notifiable
      */
     public function toMail(object $notifiable): MailMessage
     {
@@ -88,6 +102,14 @@ class MeetingReminder extends Notification
 
     /**
      * Get the array representation of the notification.
+     *
+     * @return array<string, mixed>
+     */
+    /**
+     * Get the array representation of the notification.
+     *
+     * @param \App\Models\User $notifiable
+     * @return array<string, mixed>
      */
     public function toArray(object $notifiable): array
     {

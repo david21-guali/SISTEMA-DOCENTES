@@ -25,7 +25,7 @@ class UpdateTaskRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      * 
-     * @return array
+     * @return array<string, mixed>
      */
     public function rules(): array
     {
@@ -44,7 +44,7 @@ class UpdateTaskRequest extends FormRequest
     /**
      * Get custom attributes for validator errors.
      * 
-     * @return array
+     * @return array<string, string>
      */
     public function attributes(): array
     {
@@ -62,7 +62,7 @@ class UpdateTaskRequest extends FormRequest
     /**
      * Return the rules for the due_date field, including project bounds check.
      * 
-     * @return array
+     * @return array<int, mixed>
      */
     private function getDueDateRules(): array
     {
@@ -84,6 +84,7 @@ class UpdateTaskRequest extends FormRequest
      */
     private function validateDueDateWithinProjectScope($value, $fail): void
     {
+        /** @var \App\Models\Project|null $project */
         $project = Project::find($this->project_id);
         
         if (!$project) {

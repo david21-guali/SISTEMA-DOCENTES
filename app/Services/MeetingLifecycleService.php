@@ -25,7 +25,11 @@ class MeetingLifecycleService
     public function sendReminders(Meeting $meeting): void
     {
         $users = $meeting->participants
-            ->filter(fn($p) => $p->pivot->attendance !== 'rechazada')
+            ->filter(function($p) {
+                /** @var \App\Models\MeetingParticipant $pivot */
+                $pivot = $p->pivot;
+                return $pivot->attendance !== 'rechazada';
+            })
             ->pluck('user');
 
         $this->notifyUsers($users, new MeetingReminder($meeting));
@@ -53,7 +57,7 @@ class MeetingLifecycleService
      * Send notifications to invited users.
      * 
      * @param Meeting $meeting
-     * @param array $userIds
+     * @param array<int> $userIds
      * @return void
      */
     public function notifyParticipants(Meeting $meeting, array $userIds): void

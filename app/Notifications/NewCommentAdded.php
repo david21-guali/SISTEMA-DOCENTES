@@ -12,6 +12,7 @@ class NewCommentAdded extends Notification
 {
     use Queueable;
 
+    /** @var \App\Models\Comment */
     public $comment;
 
     /**

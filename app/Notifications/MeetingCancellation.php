@@ -12,7 +12,9 @@ class MeetingCancellation extends Notification implements ShouldQueue
 {
     use Queueable;
 
+    /** @var Meeting */
     protected $meeting;
+    /** @var string|null */
     protected $reason;
 
     /**
@@ -26,6 +28,14 @@ class MeetingCancellation extends Notification implements ShouldQueue
 
     /**
      * Get the notification's delivery channels.
+     *
+     * @return array<int, string>
+     */
+    /**
+     * Get the notification's delivery channels.
+     *
+     * @param \App\Models\User $notifiable
+     * @return array<int, string>
      */
     public function via(object $notifiable): array
     {
@@ -46,6 +56,11 @@ class MeetingCancellation extends Notification implements ShouldQueue
     /**
      * Get the mail representation of the notification.
      */
+    /**
+     * Get the mail representation of the notification.
+     * 
+     * @param \App\Models\User $notifiable
+     */
     public function toMail(object $notifiable): MailMessage
     {
         $mail = (new MailMessage)
@@ -64,6 +79,14 @@ class MeetingCancellation extends Notification implements ShouldQueue
 
     /**
      * Get the array representation of the notification.
+     *
+     * @return array<string, mixed>
+     */
+    /**
+     * Get the array representation of the notification.
+     *
+     * @param \App\Models\User $notifiable
+     * @return array<string, mixed>
      */
     public function toArray(object $notifiable): array
     {

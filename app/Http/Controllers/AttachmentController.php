@@ -16,6 +16,11 @@ class AttachmentController extends Controller
      */
     /**
      * Store a new attachment.
+     * 
+     * @param Request $request
+     * @param string $type
+     * @param int|string $id
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
      */
     public function store(Request $request, $type, $id): \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
     {
@@ -39,7 +44,7 @@ class AttachmentController extends Controller
             
             // Create attachment record
             $attachment = $attachable->attachments()->create([
-                'filename' => basename($path),
+                'filename' => basename((string)$path),
                 'original_name' => $file->getClientOriginalName(),
                 'mime_type' => $file->getMimeType(),
                 'size' => $file->getSize(),

@@ -12,8 +12,8 @@ use App\Models\ResourceType;
 
 class ProjectController extends Controller
 {
-    protected $queryService;
-    protected $actionService;
+    protected \App\Services\ProjectQueryService $queryService;
+    protected \App\Services\ProjectActionService $actionService;
 
     public function __construct(
         \App\Services\ProjectQueryService $queryService,
@@ -47,6 +47,7 @@ class ProjectController extends Controller
     {
         $categories = Category::all();
         $users = \App\Models\User::whereHas('profile', function($q) {
+            /** @phpstan-ignore-next-line */
             $q->where('is_active', true);
         })->get();
         return view('app.back.projects.create', compact('categories', 'users'));
@@ -88,6 +89,7 @@ class ProjectController extends Controller
     {
         $categories = Category::all();
         $users = \App\Models\User::whereHas('profile', function($q) {
+            /** @phpstan-ignore-next-line */
             $q->where('is_active', true);
         })->get();
         return view('app.back.projects.edit', compact('project', 'categories', 'users'));

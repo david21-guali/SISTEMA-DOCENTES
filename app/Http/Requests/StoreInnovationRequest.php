@@ -23,7 +23,7 @@ class StoreInnovationRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      * 
-     * @return array
+     * @return array<string, mixed>
      */
     public function rules(): array
     {
@@ -42,7 +42,7 @@ class StoreInnovationRequest extends FormRequest
     /**
      * Get custom attributes for validator errors.
      * 
-     * @return array
+     * @return array<string, string>
      */
     public function attributes(): array
     {
@@ -58,7 +58,7 @@ class StoreInnovationRequest extends FormRequest
     }
 
     /**
-     * @return array Rules for individual evidence documents.
+     * @return array<int, string> Rules for individual evidence documents.
      */
     private function getEvidenceFileRules(): array
     {

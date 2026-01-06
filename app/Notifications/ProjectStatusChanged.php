@@ -12,14 +12,17 @@ class ProjectStatusChanged extends Notification implements ShouldQueue
 {
     use Queueable;
 
+    /** @var \App\Models\Project */
     public $project;
+    /** @var string */
     public $oldStatus;
+    /** @var string */
     public $newStatus;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct(Project $project, $oldStatus, $newStatus)
+    public function __construct(Project $project, string $oldStatus, string $newStatus)
     {
         $this->project = $project;
         $this->oldStatus = $oldStatus;

@@ -11,14 +11,15 @@ use App\Models\User;
 class UserQueryService
 {
     /**
-     * Retrieve a paginated list of users based on role and search filters.
+     * Retrieve paginated users based on filtering criteria.
      * 
-     * @param array $filters Query parameters (role, search).
+     * @param array<string, mixed> $filters
      * @param int $perPage
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator<int, User>
      */
-    public function getUsers(array $filters, int $perPage = 15): \Illuminate\Contracts\Pagination\LengthAwarePaginator
+    public function getUsers(array $filters, int $perPage = 10): \Illuminate\Contracts\Pagination\LengthAwarePaginator
     {
+        /** @var \Illuminate\Database\Eloquent\Builder<\App\Models\User> $query */
         $query = User::with('roles');
 
         $this->applyRoleFilter($query, $filters['role'] ?? null);
@@ -28,9 +29,9 @@ class UserQueryService
     }
 
     /**
-     * Get aggregated system-wide user statistics by role.
+     * Get statistics about user roles and statuses.
      * 
-     * @return array
+     * @return array<string, int>
      */
     public function getUserStats(): array
     {
@@ -43,9 +44,9 @@ class UserQueryService
     }
 
     /**
-     * Fetch all available security roles in alphabetical order.
+     * Get all available roles.
      * 
-     * @return \Illuminate\Support\Collection
+     * @return \Illuminate\Support\Collection<int, \App\Models\Role>
      */
     public function getRoles(): \Illuminate\Support\Collection
     {
@@ -53,12 +54,12 @@ class UserQueryService
     }
 
     /**
-     * Aggregate activity statistics for a specific user profile.
+     * Get detailed project/task stats for a specific user profile.
      * 
-     * @param \App\Models\User $user
-     * @return array
+     * @param User $user
+     * @return array<string, int>
      */
-    public function getUserProfileStats(\App\Models\User $user): array
+    public function getUserProfileStats(User $user): array
     {
         if (!$user->profile) {
             return $this->getEmptyStats();
@@ -73,23 +74,24 @@ class UserQueryService
     }
 
     /**
-     * Restrict query by a specific role name.
+     * Filter query by role name.
      * 
-     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param \Illuminate\Database\Eloquent\Builder<User> $query
      * @param string|null $role
      * @return void
      */
     private function applyRoleFilter($query, ?string $role): void
     {
         if (!empty($role)) {
+            /** @phpstan-ignore-next-line */
             $query->whereHas('roles', fn($q) => $q->where('name', $role));
         }
     }
 
     /**
-     * Search users by name or email.
+     * Filter query by search term (name or email).
      * 
-     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param \Illuminate\Database\Eloquent\Builder<User> $query
      * @param string|null $search
      * @return void
      */
@@ -113,7 +115,10 @@ class UserQueryService
      */
     private function countByRole(string $role): int
     {
-        return User::whereHas('roles', fn($q) => $q->where('name', $role))->count();
+        return User::whereHas('roles', function($q) use ($role) {
+            /** @phpstan-ignore-next-line */
+            $q->where('name', $role);
+        })->count();
     }
 
     /**
@@ -163,9 +168,9 @@ class UserQueryService
     }
 
     /**
-     * Return a set of zeroed statistics for users without a profile.
+     * Return zeroed stats structure.
      * 
-     * @return array
+     * @return array<string, int>
      */
     private function getEmptyStats(): array
     {

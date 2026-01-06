@@ -27,7 +27,7 @@ class SendTaskReminders extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): int
     {
         $days = (int) $this->option('days');
         $now = Carbon::now();
@@ -61,7 +61,7 @@ class SendTaskReminders extends Command
             $profile = $task->assignedProfile;
             if ($profile instanceof \App\Models\Profile) {
                 $user = $profile->user;
-                $user->notify(new TaskDeadlineApproaching($task, $daysUntilDue));
+                $user->notify(new TaskDeadlineApproaching($task, (int)$daysUntilDue));
                 $notificationsSent++;
                 $this->line("  ✅ Recordatorio enviado a: {$user->name}");
             }

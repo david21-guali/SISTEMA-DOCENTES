@@ -12,8 +12,8 @@ use Illuminate\Support\Facades\Auth;
 
 class MeetingController extends Controller
 {
-    protected $queryService;
-    protected $actionService;
+    protected \App\Services\MeetingQueryService $queryService;
+    protected \App\Services\MeetingActionService $actionService;
 
     public function __construct(
         \App\Services\MeetingQueryService $queryService,
@@ -163,7 +163,7 @@ class MeetingController extends Controller
         return redirect()->route('meetings.show', $meeting)->with('success', 'Cancelada.');
     }
 
-    private function authorizeOwner(Meeting $meeting)
+    private function authorizeOwner(Meeting $meeting): void
     {
         if ($meeting->created_by !== Auth::user()->profile->id && !Auth::user()->hasRole('admin')) {
             abort(403, 'No tienes permiso para realizar esta acción.');

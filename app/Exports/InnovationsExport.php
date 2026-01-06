@@ -12,18 +12,19 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 /**
  * Export handler for pedagogical innovations to Excel format.
  * Optimized for High Maintainability Index (MI >= 65).
+ * @implements WithMapping<mixed>
  */
 class InnovationsExport implements FromCollection, WithHeadings, WithMapping, WithStyles
 {
     /**
-     * @var array Contextual filters for the export query.
+     * @var array<string, mixed> Contextual filters for the export query.
      */
     protected $filters;
 
     /**
      * Initialize the export with specific search/status filters.
      * 
-     * @param array $filters
+     * @param array<string, mixed> $filters
      */
     public function __construct(array $filters = [])
     {
@@ -47,7 +48,7 @@ class InnovationsExport implements FromCollection, WithHeadings, WithMapping, Wi
     /**
      * Define the data headers for the Excel sheet.
      * 
-     * @return array
+     * @return array<int, string>
      */
     public function headings(): array
     {
@@ -71,6 +72,9 @@ class InnovationsExport implements FromCollection, WithHeadings, WithMapping, Wi
      */
     public function map($innovation): array
     {
+        if (!($innovation instanceof Innovation)) {
+            return [];
+        }
         return [
             $innovation->id,
             $innovation->title,
@@ -87,7 +91,7 @@ class InnovationsExport implements FromCollection, WithHeadings, WithMapping, Wi
      * Apply bold styling to the header row.
      * 
      * @param Worksheet $sheet
-     * @return array
+     * @return array<int, array<string, array<string, bool>>>
      */
     public function styles(Worksheet $sheet)
     {
@@ -97,7 +101,7 @@ class InnovationsExport implements FromCollection, WithHeadings, WithMapping, Wi
     /**
      * Internal helper to filter innovations by their current status.
      * 
-     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param \Illuminate\Database\Eloquent\Builder<\App\Models\Innovation> $query
      * @return void
      */
     private function applyContextualFilters($query): void

@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 
 class ResourceController extends Controller
 {
-    protected $resourceService;
+    protected \App\Services\ResourceService $resourceService;
 
     public function __construct(\App\Services\ResourceService $resourceService)
     {

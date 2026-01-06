@@ -6,7 +6,7 @@ use Illuminate\Notifications\DatabaseNotification;
 
 trait CleansNotifications
 {
-    protected static function bootCleansNotifications()
+    protected static function bootCleansNotifications(): void
     {
         static::deleting(function ($model) {
             $key = $model->getNotificationKey();

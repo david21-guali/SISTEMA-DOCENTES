@@ -24,7 +24,7 @@ class UpdateUserRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      * 
-     * @return array
+     * @return array<string, mixed>
      */
     public function rules(): array
     {
@@ -37,7 +37,7 @@ class UpdateUserRequest extends FormRequest
     }
 
     /**
-     * @return array Basic name validation rules.
+     * @return array<int, string> Basic name validation rules.
      */
     private function getNameRules(): array
     {
@@ -45,11 +45,13 @@ class UpdateUserRequest extends FormRequest
     }
 
     /**
-     * @return array Email validation rules ensuring uniqueness except for current user.
+     * @return array<int, string> Email validation rules ensuring uniqueness except for current user.
      */
     private function getEmailRules(): array
     {
-        $userId = $this->route('user')->id;
+        /** @var \App\Models\User $user */
+        $user = $this->route('user');
+        $userId = $user->id;
         
         return [
             'required', 
@@ -61,7 +63,7 @@ class UpdateUserRequest extends FormRequest
     }
 
     /**
-     * @return array Optional password validation rules using system defaults.
+     * @return array<int, mixed> Optional password validation rules using system defaults.
      */
     private function getPasswordRules(): array
     {
@@ -69,7 +71,7 @@ class UpdateUserRequest extends FormRequest
     }
 
     /**
-     * @return array Role assignment validation rules.
+     * @return array<int, string> Role assignment validation rules.
      */
     private function getRoleRules(): array
     {

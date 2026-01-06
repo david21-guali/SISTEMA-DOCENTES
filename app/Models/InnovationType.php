@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class InnovationType extends Model
 {
+    /** @use HasFactory<\Database\Factories\InnovationTypeFactory> */
     use HasFactory;
 
     protected $fillable = [

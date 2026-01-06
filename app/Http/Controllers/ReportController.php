@@ -15,8 +15,8 @@ use App\Exports\InnovationsExport;
 
 class ReportController extends Controller
 {
-    protected $reportService;
-    protected $comparativeService;
+    protected \App\Services\ReportService $reportService;
+    protected \App\Services\ComparativeReportService $comparativeService;
 
     public function __construct(
         \App\Services\ReportService $reportService,

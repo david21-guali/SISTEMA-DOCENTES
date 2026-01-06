@@ -11,10 +11,15 @@ class PasswordResetByAdmin extends Notification
 {
     use Queueable;
 
+    /** @var string */
     protected $newPassword;
 
     /**
      * Create a new notification instance.
+     */
+    /**
+     * Create a new notification instance.
+     * @param string $newPassword
      */
     public function __construct($newPassword)
     {
@@ -24,6 +29,12 @@ class PasswordResetByAdmin extends Notification
     /**
      * Get the notification's delivery channels.
      */
+    /**
+     * Get the notification's delivery channels.
+     * 
+     * @param \App\Models\User $notifiable
+     * @return array<int, string>
+     */
     public function via(object $notifiable): array
     {
         return ['database', 'mail'];
@@ -31,6 +42,11 @@ class PasswordResetByAdmin extends Notification
 
     /**
      * Get the mail representation of the notification.
+     */
+    /**
+     * Get the mail representation of the notification.
+     * 
+     * @param \App\Models\User $notifiable
      */
     public function toMail(object $notifiable): MailMessage
     {
@@ -47,6 +63,12 @@ class PasswordResetByAdmin extends Notification
 
     /**
      * Get the array representation of the notification.
+     */
+    /**
+     * Get the array representation of the notification.
+     * 
+     * @param \App\Models\User $notifiable
+     * @return array<string, mixed>
      */
     public function toArray(object $notifiable): array
     {

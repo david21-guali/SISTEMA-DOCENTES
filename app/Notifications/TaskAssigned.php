@@ -12,6 +12,7 @@ class TaskAssigned extends Notification implements ShouldQueue
 {
     use Queueable;
 
+    /** @var \App\Models\Task */
     public $task;
 
     /**

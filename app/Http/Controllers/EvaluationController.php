@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Artisan;
 
 class EvaluationController extends Controller
 {
-    protected $evaluationService;
+    protected \App\Services\EvaluationService $evaluationService;
 
     public function __construct(\App\Services\EvaluationService $evaluationService)
     {

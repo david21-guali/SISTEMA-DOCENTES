@@ -43,7 +43,7 @@ class ForumController extends Controller
         return view('forum.show', compact('topic', 'posts'));
     }
 
-    public function storePost(Request $request, $forum): \Illuminate\Http\RedirectResponse
+    public function storePost(Request $request, ForumTopic|string|int $forum): \Illuminate\Http\RedirectResponse
     {
         $request->validate(['content' => 'required']);
 

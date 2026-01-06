@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Storage;
 
 class InnovationController extends Controller
 {
-    protected $innovationService;
+    protected \App\Services\InnovationService $innovationService;
 
     public function __construct(\App\Services\InnovationService $innovationService)
     {
@@ -134,7 +134,7 @@ class InnovationController extends Controller
     /**
      * Remove a specific evidence file.
      */
-    public function deleteAttachment(Innovation $innovation, $attachmentId): \Illuminate\Http\RedirectResponse
+    public function deleteAttachment(Innovation $innovation, int|string $attachmentId): \Illuminate\Http\RedirectResponse
     {
         $this->innovationService->deleteAttachment($innovation, (int)$attachmentId);
 

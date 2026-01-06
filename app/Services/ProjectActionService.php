@@ -194,7 +194,7 @@ class ProjectActionService
         $path = $file->store('attachments/projects/' . $project->id, 'public');
         
         $project->attachments()->create([
-            'filename'      => basename($path),
+            'filename'      => basename((string)$path),
             'original_name' => $file->getClientOriginalName(),
             'mime_type'     => $file->getMimeType(),
             'size'          => $file->getSize(),

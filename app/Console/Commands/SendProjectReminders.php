@@ -27,7 +27,7 @@ class SendProjectReminders extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): int
     {
         $days = (int) $this->option('days');
         $now = Carbon::now();
@@ -61,7 +61,7 @@ class SendProjectReminders extends Command
             $profile = $project->profile;
             if ($profile instanceof \App\Models\Profile) {
                 $user = $profile->user;
-                $user->notify(new ProjectDeadlineApproaching($project, $daysUntilDue));
+                $user->notify(new ProjectDeadlineApproaching($project, (int)$daysUntilDue));
                 $notificationsSent++;
                 $this->line("  ✅ Recordatorio enviado a: {$user->name}");
                 

@@ -17,12 +17,13 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ForumTopic extends Model
 {
+    /** @use HasFactory<\Database\Factories\ForumTopicFactory> */
     use HasFactory;
 
     /**
      * The attributes that are mass assignable.
      * 
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'profile_id',

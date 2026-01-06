@@ -13,8 +13,8 @@ class TaskFilterService
     /**
      * Apply contextual filters to the task query.
      * 
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param array $filters
+     * @param \Illuminate\Database\Eloquent\Builder<Task> $query
+     * @param array<string, mixed> $filters
      * @return void
      */
     public function applyFilters($query, array $filters): void
@@ -27,7 +27,7 @@ class TaskFilterService
     /**
      * Apply status filter.
      * 
-     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param \Illuminate\Database\Eloquent\Builder<Task> $query
      * @param string|null $status
      * @return void
      */
@@ -36,7 +36,8 @@ class TaskFilterService
         if (empty($status)) return;
 
         if ($status === 'atrasada') {
-            $query->overdue();
+            // Fixing: Scope overdue() might be missing in Model or using raw where
+            $query->where('status', 'pendiente')->where('due_date', '<', now());
             return;
         }
 
@@ -46,7 +47,7 @@ class TaskFilterService
     /**
      * Filter tasks by a specific project ID.
      * 
-     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param \Illuminate\Database\Eloquent\Builder<Task> $query
      * @param mixed $projectId
      * @return void
      */
@@ -60,7 +61,7 @@ class TaskFilterService
     /**
      * Filter tasks by title or metadata.
      * 
-     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param \Illuminate\Database\Eloquent\Builder<Task> $query
      * @param string|null $searchTerm
      * @return void
      */

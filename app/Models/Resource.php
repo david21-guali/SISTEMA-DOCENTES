@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Resource extends Model
 {
+    /** @use HasFactory<\Database\Factories\ResourceFactory> */
     use HasFactory;
 
     protected $fillable = ['name', 'resource_type_id', 'description', 'cost', 'file_path'];

@@ -28,6 +28,8 @@ use Illuminate\Notifications\Notifiable;
  * @property-read \Illuminate\Database\Eloquent\Collection|\Spatie\Permission\Models\Role[] $roles
  * @property int|null $tasks_count
  * @property int|null $user_comments_count
+ * @property bool $is_active
+ * @property int $profile_id
  */
 class User extends Authenticatable implements MustVerifyEmail
 {

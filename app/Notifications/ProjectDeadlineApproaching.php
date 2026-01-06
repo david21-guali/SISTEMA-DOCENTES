@@ -12,13 +12,17 @@ class ProjectDeadlineApproaching extends Notification
 {
     use Queueable;
 
+    /** @var Project */
     public $project;
+    /** @var int */
     public $daysLeft;
 
     /**
      * Create a new notification instance.
+     * @param Project $project
+     * @param int $daysLeft
      */
-    public function __construct(Project $project, $daysLeft)
+    public function __construct(Project $project, int $daysLeft)
     {
         $this->project = $project;
         $this->daysLeft = $daysLeft;

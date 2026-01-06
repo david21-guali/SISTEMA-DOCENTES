@@ -22,9 +22,11 @@ use Carbon\Carbon;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Project $project
  * @property-read \App\Models\Profile $assignedProfile
+ * @property bool $is_active
  */
 class Task extends Model
 {
+    /** @use HasFactory<\Database\Factories\TaskFactory> */
     use HasFactory, \App\Traits\CleansNotifications;
 
     protected $fillable = [

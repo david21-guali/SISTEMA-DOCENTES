@@ -23,7 +23,7 @@ class StoreProjectRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      * 
-     * @return array
+     * @return array<string, mixed>
      */
     public function rules(): array
     {
@@ -45,7 +45,7 @@ class StoreProjectRequest extends FormRequest
     /**
      * Get custom error messages for validation failures.
      * 
-     * @return array
+     * @return array<string, string>
      */
     public function messages(): array
     {
@@ -72,7 +72,7 @@ class StoreProjectRequest extends FormRequest
     }
 
     /**
-     * @return array Rules for the team members collection.
+     * @return array<int, string> Rules for the team members collection.
      */
     private function getTeamMemberRules(): array
     {
@@ -80,7 +80,7 @@ class StoreProjectRequest extends FormRequest
     }
 
     /**
-     * @return array Rules for individual file attachments.
+     * @return array<int, string> Rules for individual file attachments.
      */
     private function getAttachmentRules(): array
     {

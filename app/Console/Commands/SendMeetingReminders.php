@@ -27,7 +27,7 @@ class SendMeetingReminders extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): int
     {
         $hours = (int) $this->option('hours');
         $now = Carbon::now();
