@@ -25,6 +25,7 @@ use Carbon\Carbon;
  */
 class Meeting extends Model
 {
+    /** @use HasFactory<\Database\Factories\MeetingFactory> */
     use HasFactory, \App\Traits\CleansNotifications;
 
     protected $fillable = [
@@ -45,28 +46,40 @@ class Meeting extends Model
     /**
      * Relaciones
      */
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\Project, $this>
+     */
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\Profile, $this>
+     */
     public function creator(): BelongsTo
     {
         return $this->belongsTo(Profile::class, 'created_by');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<\App\Models\Profile, $this, \App\Models\MeetingParticipant>
+     */
     public function participants(): BelongsToMany
     {
-        return $this->belongsToMany(Profile::class, 'meeting_profile', 'meeting_id', 'profile_id')
+        /** @var \Illuminate\Database\Eloquent\Relations\BelongsToMany<\App\Models\Profile, $this, \App\Models\MeetingParticipant> $relation */
+        $relation = $this->belongsToMany(Profile::class, 'meeting_profile', 'meeting_id', 'profile_id')
                     ->using(MeetingParticipant::class)
                     ->withPivot('attendance')
                     ->withTimestamps();
+        
+        return $relation;
     }
 
     /**
      * Atributos computados
      */
-    public function getStatusColorAttribute()
+    public function getStatusColorAttribute(): string
     {
         return match($this->status) {
             'completada' => 'success',
@@ -75,28 +88,32 @@ class Meeting extends Model
         };
     }
 
-    public function getFormattedDateAttribute()
+    public function getFormattedDateAttribute(): ?string
     {
         return $this->meeting_date?->format('d/m/Y H:i');
     }
 
-    public function getStatusLabelAttribute()
+    public function getStatusLabelAttribute(): string
     {
         return ucfirst($this->status ?? 'pendiente');
     }
 
-    public function getIsUpcomingAttribute()
+    public function getIsUpcomingAttribute(): bool
     {
         return $this->meeting_date > now() && $this->status === 'pendiente';
     }
 
-    public function getIsPastAttribute()
+    public function getIsPastAttribute(): bool
     {
         return $this->meeting_date < now();
     }
 
     /**
      * Scopes
+     */
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<Meeting> $query
+     * @return \Illuminate\Database\Eloquent\Builder<Meeting>
      */
     public function scopeUpcoming($query)
     {
@@ -105,22 +122,39 @@ class Meeting extends Model
                      ->orderBy('meeting_date', 'asc');
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<Meeting> $query
+     * @return \Illuminate\Database\Eloquent\Builder<Meeting>
+     */
     public function scopePast($query)
     {
         return $query->where('meeting_date', '<', now())
                      ->orderBy('meeting_date', 'desc');
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<Meeting> $query
+     * @return \Illuminate\Database\Eloquent\Builder<Meeting>
+     */
     public function scopePending($query)
     {
         return $query->where('status', 'pendiente');
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<Meeting> $query
+     * @return \Illuminate\Database\Eloquent\Builder<Meeting>
+     */
     public function scopeCompleted($query)
     {
         return $query->where('status', 'completada');
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<Meeting> $query
+     * @param int $profileId
+     * @return \Illuminate\Database\Eloquent\Builder<Meeting>
+     */
     public function scopeForUser($query, $profileId)
     {
         return $query->where('created_by', $profileId)

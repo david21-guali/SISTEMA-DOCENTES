@@ -16,8 +16,8 @@ class ComparativeReportService
     /**
      * Generate comparative datasets for two different periods and historical graph data.
      * 
-     * @param array $periods Contains keys p1_start, p1_end, p2_start, p2_end.
-     * @return array
+     * @param array{period1Start: string, period1End: string, period2Start: string, period2End: string} $periods
+     * @return array{period1Stats: array<string, int|float>, period2Stats: array<string, int|float>, changes: array<string, float>, projectsByMonth: array<string, int>, tasksByMonth: array<string, int>, innovationsByMonth: array<string, int>}
      */
     public function getComparativeData(array $periods): array
     {
@@ -41,7 +41,7 @@ class ComparativeReportService
      * 
      * @param string $start
      * @param string $end
-     * @return array
+     * @return array<string, int|float>
      */
     private function calculateStatsForPeriod(string $start, string $end): array
     {
@@ -57,7 +57,7 @@ class ComparativeReportService
      * 
      * @param string $start
      * @param string $end
-     * @return array
+     * @return array<string, int>
      */
     private function getProjectStats(string $start, string $end): array
     {
@@ -74,7 +74,7 @@ class ComparativeReportService
      * 
      * @param string $start
      * @param string $end
-     * @return array
+     * @return array<string, int>
      */
     private function getTaskStats(string $start, string $end): array
     {
@@ -92,7 +92,7 @@ class ComparativeReportService
      * 
      * @param string $start
      * @param string $end
-     * @return array
+     * @return array<string, int|float>
      */
     private function getInnovationStats(string $start, string $end): array
     {
@@ -101,16 +101,16 @@ class ComparativeReportService
             'innovations_completed' => Innovation::where('status', 'completada')
                                                  ->whereBetween('updated_at', [$start, $end])
                                                  ->count(),
-            'avg_impact_score'      => Innovation::whereBetween('created_at', [$start, $end])->avg('impact_score') ?? 0,
+            'avg_impact_score'      => (float) (Innovation::whereBetween('created_at', [$start, $end])->avg('impact_score') ?? 0),
         ];
     }
 
     /**
      * Map percentage changes between two datasets.
      * 
-     * @param array $old
-     * @param array $new
-     * @return array
+     * @param array<string, int|float> $old
+     * @param array<string, int|float> $new
+     * @return array<string, float>
      */
     private function mapPercentageChanges(array $old, array $new): array
     {
@@ -141,7 +141,7 @@ class ComparativeReportService
     /**
      * Generate historical activity data for the last 6 months.
      * 
-     * @return array
+     * @return array{projects: array<int, int>, tasks: array<int, int>, innovations: array<int, int>, labels: array<int, string>}
      */
     private function getMonthlyGraphData(): array
     {
@@ -164,7 +164,7 @@ class ComparativeReportService
      * Extract key metrics for a specific calendar month.
      * 
      * @param Carbon $month
-     * @return array
+     * @return array{projects: int, tasks: int, innovations: int}
      */
     private function getMetricsForSingleMonth($month): array
     {

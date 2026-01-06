@@ -28,6 +28,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Innovation extends Model
 {
+    /** @use HasFactory<\Database\Factories\InnovationFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -47,27 +48,38 @@ class Innovation extends Model
 
     protected $casts = [
         'reviewed_at' => 'datetime',
-        // 'evidence_files' removed
     ];
 
     /**
      * Relaciones
+     */
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\Profile, $this>
      */
     public function profile(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Profile::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\InnovationType, $this>
+     */
     public function innovationType(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(InnovationType::class);
     }
 
-    public function attachments()
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany<\App\Models\Attachment, $this>
+     */
+    public function attachments(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(Attachment::class, 'attachable');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\User, $this>
+     */
     public function reviewer(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(User::class, 'reviewed_by');
@@ -76,49 +88,67 @@ class Innovation extends Model
     /**
      * Accessor: user (via profile)
      */
-    public function getUserAttribute()
+    public function getUserAttribute(): ?User
     {
-        return $this->profile->user ?? null;
+        return $this->profile->user;
     }
 
     /**
      * Atributos computados
      */
-    public function getStatusColorAttribute()
+    public function getStatusColorAttribute(): string
     {
         return match($this->status) {
-            'propuesta' => 'info',
-            'en_implementacion', 'en_revision' => 'warning',
-            'completada' => 'primary',
             'aprobada' => 'success',
             'rechazada' => 'danger',
-            default => 'secondary',
+            'en_revision' => 'warning',
+            default => 'primary',
         };
     }
 
     /**
      * Scopes
      */
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<Innovation> $query
+     * @return \Illuminate\Database\Eloquent\Builder<Innovation>
+     */
     public function scopeCompleted($query)
     {
         return $query->where('status', 'completada');
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<Innovation> $query
+     * @return \Illuminate\Database\Eloquent\Builder<Innovation>
+     */
     public function scopeBestRated($query)
     {
-        return $query->orderByDesc('impact_score');
+        return $query->where('impact_score', '>=', 4);
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<Innovation> $query
+     * @return \Illuminate\Database\Eloquent\Builder<Innovation>
+     */
     public function scopeInProgress($query)
     {
-        return $query->where('status', 'en_implementacion');
+        return $query->where('status', 'en_proceso');
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<Innovation> $query
+     * @return \Illuminate\Database\Eloquent\Builder<Innovation>
+     */
     public function scopeApproved($query)
     {
         return $query->where('status', 'aprobada');
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<Innovation> $query
+     * @return \Illuminate\Database\Eloquent\Builder<Innovation>
+     */
     public function scopePendingReview($query)
     {
         return $query->where('status', 'en_revision');

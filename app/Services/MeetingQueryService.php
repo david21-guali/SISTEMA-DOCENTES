@@ -14,11 +14,11 @@ class MeetingQueryService
     /**
      * Retrieve global statistics for meetings associated with the current user.
      * 
-     * @return array
+     * @return array{upcoming: int, completed: int, total: int}
      */
     public function getStats(): array
     {
-        $baseQuery = Meeting::forUser(Auth::id());
+        $baseQuery = Meeting::forUser((int) Auth::id());
 
         return [
             'upcoming'  => $this->countUpcoming($baseQuery),
@@ -30,14 +30,14 @@ class MeetingQueryService
     /**
      * Retrieve a paginated list of meetings based on filters and user profile.
      * 
-     * @param array $filters Query parameters for filtering and ordering.
+     * @param array<string, mixed> $filters Query parameters for filtering and ordering.
      * @param int $perPage Number of results per page.
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator<int, \App\Models\Meeting>
      */
     public function getMeetings(array $filters, int $perPage = 10): \Illuminate\Contracts\Pagination\LengthAwarePaginator
     {
         $query = Meeting::with(['project', 'creator', 'participants.user'])
-            ->forUser(Auth::id());
+            ->forUser((int) Auth::id());
 
         $this->applyContextualFilters($query, $filters);
         $this->applyOrdering($query, $filters['order'] ?? 'asc');
@@ -48,7 +48,7 @@ class MeetingQueryService
     /**
      * Get all projects available for associating with a meeting.
      * 
-     * @return \Illuminate\Support\Collection
+     * @return \Illuminate\Support\Collection<int, \App\Models\Project>
      */
     public function getProjects(): \Illuminate\Support\Collection
     {
@@ -58,7 +58,7 @@ class MeetingQueryService
     /**
      * Retrieve users that can be invited to meetings (admin, coordinator, teacher).
      * 
-     * @return \Illuminate\Support\Collection
+     * @return \Illuminate\Support\Collection<int, \App\Models\User>
      */
     public function getEligibleUsers(): \Illuminate\Support\Collection
     {
@@ -70,8 +70,8 @@ class MeetingQueryService
     /**
      * Apply status and project filters to the query.
      * 
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param array $filters
+     * @param \Illuminate\Database\Eloquent\Builder<Meeting> $query
+     * @param array<string, mixed> $filters
      * @return void
      */
     private function applyContextualFilters($query, array $filters): void
@@ -88,7 +88,7 @@ class MeetingQueryService
     /**
      * Apply sorting logic to the meetings query.
      * 
-     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param \Illuminate\Database\Eloquent\Builder<Meeting> $query
      * @param string $order Direction of the sort (asc/desc).
      * @return void
      */
@@ -100,7 +100,7 @@ class MeetingQueryService
     /**
      * Count upcoming meetings for the provided query scope.
      * 
-     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param \Illuminate\Database\Eloquent\Builder<Meeting> $query
      * @return int
      */
     private function countUpcoming($query): int
@@ -111,7 +111,7 @@ class MeetingQueryService
     /**
      * Count completed meetings for the provided query scope.
      * 
-     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param \Illuminate\Database\Eloquent\Builder<Meeting> $query
      * @return int
      */
     private function countCompleted($query): int
@@ -122,7 +122,7 @@ class MeetingQueryService
     /**
      * Get total count for the provided meeting query.
      * 
-     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param \Illuminate\Database\Eloquent\Builder<Meeting> $query
      * @return int
      */
     private function countTotal($query): int
