@@ -49,7 +49,7 @@
 <div class="page">
     <div class="content content-first">
         <div class="report-details">
-            Created at 2026-01-05 22:41:22        , with PHPMetrics v2.9.1 (<a href="https://twitter.com/Halleck45">Jean-François Lépine</a>).
+            Created at 2026-01-06 15:54:53        , with PHPMetrics v2.9.1 (<a href="https://twitter.com/Halleck45">Jean-François Lépine</a>).
         </div>
 
         
@@ -93,7 +93,7 @@
                             <path d="M0 0h24v24H0z" fill="none">
                             <path d="M20 8h-2.81c-.45-.78-1.07-1.45-1.82-1.96L17 4.41 15.59 3l-2.17 2.17C12.96 5.06 12.49 5 12 5c-.49 0-.96.06-1.41.17L8.41 3 7 4.41l1.62 1.63C7.88 6.55 7.26 7.22 6.81 8H4v2h2.09c-.05.33-.09.66-.09 1v1H4v2h2v1c0 .34.04.67.09 1H4v2h2.81c1.04 1.79 2.97 3 5.19 3s4.15-1.21 5.19-3H20v-2h-2.09c.05-.33.09-.66.09-1v-1h2v-2h-2v-1c0-.34-.04-.67-.09-1H20V8zm-6 8h-4v-2h4v2zm0-4h-4v-2h4v2z">
                         </svg>
-                        Violations (11)
+                        Violations (13)
                     </a>
                 </li>
                                     <li>
@@ -378,6 +378,7 @@
             "\\App\\Models\\Project",
             "\\App\\Models\\Task",
             "\\Illuminate\\Support\\Facades\\Auth",
+            "\\Symfony\\Component\\HttpFoundation\\BinaryFileResponse",
             "\\App\\Models\\Attachment",
             "\\Illuminate\\Support\\Facades\\Storage"
         ]
@@ -398,10 +399,16 @@
         "relations": []
     },
     {
+        "name": "\\Symfony\\Component\\HttpFoundation\\BinaryFileResponse",
+        "size": 3000,
+        "relations": []
+    },
+    {
         "name": "\\App\\Models\\Attachment",
         "size": 3000,
         "relations": [
             "\\Illuminate\\Database\\Eloquent\\Model",
+            "\\Illuminate\\Database\\Eloquent\\Relations\\BelongsTo",
             "\\Illuminate\\Support\\Facades\\Storage",
             "\\static"
         ]
@@ -590,6 +597,8 @@
         "size": 3000,
         "relations": [
             "\\App\\Http\\Controllers\\Controller",
+            "\\Illuminate\\View\\View",
+            "\\Illuminate\\Http\\JsonResponse",
             "\\Illuminate\\Http\\Request",
             "\\App\\Models\\Project",
             "\\App\\Models\\Task",
@@ -597,19 +606,26 @@
         ]
     },
     {
+        "name": "\\Illuminate\\Http\\JsonResponse",
+        "size": 3000,
+        "relations": []
+    },
+    {
         "name": "\\App\\Http\\Controllers\\CategoryController",
         "size": 3000,
         "relations": [
             "\\App\\Http\\Controllers\\Controller",
             "\\Illuminate\\Http\\Request",
-            "\\App\\Models\\Category"
+            "\\App\\Models\\Category",
+            "\\Illuminate\\Http\\JsonResponse"
         ]
     },
     {
         "name": "\\App\\Models\\Category",
         "size": 3000,
         "relations": [
-            "\\Illuminate\\Database\\Eloquent\\Model"
+            "\\Illuminate\\Database\\Eloquent\\Model",
+            "\\Illuminate\\Database\\Eloquent\\Relations\\HasMany"
         ]
     },
     {
@@ -617,9 +633,11 @@
         "size": 3000,
         "relations": [
             "\\App\\Http\\Controllers\\Controller",
+            "\\Illuminate\\View\\View",
             "\\Illuminate\\Support\\Facades\\Auth",
             "\\App\\Models\\User",
             "\\App\\Models\\Message",
+            "\\Illuminate\\Http\\RedirectResponse",
             "\\Illuminate\\Http\\Request"
         ]
     },
@@ -627,7 +645,8 @@
         "name": "\\App\\Models\\Message",
         "size": 3000,
         "relations": [
-            "\\Illuminate\\Database\\Eloquent\\Model"
+            "\\Illuminate\\Database\\Eloquent\\Model",
+            "\\Illuminate\\Database\\Eloquent\\Relations\\BelongsTo"
         ]
     },
     {
@@ -635,6 +654,7 @@
         "size": 3000,
         "relations": [
             "\\App\\Http\\Controllers\\Controller",
+            "\\Illuminate\\Http\\RedirectResponse",
             "\\Illuminate\\Http\\Request",
             "\\App\\Models\\Project",
             "\\Illuminate\\Support\\Facades\\Auth",
@@ -686,7 +706,9 @@
             "\\App\\Models\\Project",
             "\\Illuminate\\Support\\Facades\\Auth",
             "\\App\\Models\\Evaluation",
-            "\\App\\Http\\Requests\\StoreEvaluationRequest"
+            "\\Illuminate\\Http\\RedirectResponse",
+            "\\App\\Http\\Requests\\StoreEvaluationRequest",
+            "\\Illuminate\\View\\View"
         ]
     },
     {
@@ -716,7 +738,9 @@
         "size": 3000,
         "relations": [
             "\\App\\Http\\Controllers\\Controller",
+            "\\Illuminate\\View\\View",
             "\\App\\Models\\ForumTopic",
+            "\\Illuminate\\Http\\RedirectResponse",
             "\\Illuminate\\Http\\Request",
             "\\Illuminate\\Support\\Facades\\Auth",
             "\\App\\Models\\ForumPost"
@@ -745,10 +769,14 @@
         "relations": [
             "\\App\\Http\\Controllers\\Controller",
             "\\App\\Services\\InnovationService",
+            "\\Illuminate\\View\\View",
             "\\App\\Models\\Innovation",
             "\\App\\Models\\InnovationType",
+            "\\Illuminate\\Http\\RedirectResponse",
             "\\App\\Http\\Requests\\StoreInnovationRequest",
-            "\\App\\Http\\Requests\\UpdateInnovationRequest"
+            "\\App\\Http\\Requests\\UpdateInnovationRequest",
+            "\\Illuminate\\Http\\Request",
+            "\\Illuminate\\Support\\Facades\\Auth"
         ]
     },
     {
@@ -763,7 +791,8 @@
         "name": "\\App\\Models\\InnovationType",
         "size": 3000,
         "relations": [
-            "\\Illuminate\\Database\\Eloquent\\Model"
+            "\\Illuminate\\Database\\Eloquent\\Model",
+            "\\Illuminate\\Database\\Eloquent\\Relations\\HasMany"
         ]
     },
     {
@@ -787,8 +816,10 @@
             "\\App\\Http\\Controllers\\Controller",
             "\\App\\Services\\MeetingQueryService",
             "\\App\\Services\\MeetingActionService",
+            "\\Illuminate\\View\\View",
             "\\Illuminate\\Http\\Request",
             "\\App\\Models\\Project",
+            "\\Illuminate\\Http\\RedirectResponse",
             "\\App\\Http\\Requests\\StoreMeetingRequest",
             "\\App\\Models\\Meeting",
             "\\App\\Http\\Requests\\UpdateMeetingRequest",
@@ -838,7 +869,9 @@
         "size": 3000,
         "relations": [
             "\\App\\Http\\Controllers\\Controller",
-            "\\Illuminate\\Support\\Facades\\Auth"
+            "\\Illuminate\\View\\View",
+            "\\Illuminate\\Support\\Facades\\Auth",
+            "\\Illuminate\\Http\\RedirectResponse"
         ]
     },
     {
@@ -875,9 +908,11 @@
             "\\App\\Http\\Controllers\\Controller",
             "\\App\\Services\\ProjectQueryService",
             "\\App\\Services\\ProjectActionService",
+            "\\Illuminate\\View\\View",
             "\\Illuminate\\Http\\Request",
             "\\App\\Models\\Category",
             "\\App\\Models\\User",
+            "\\Illuminate\\Http\\RedirectResponse",
             "\\App\\Http\\Requests\\StoreProjectRequest",
             "\\App\\Models\\Project",
             "\\App\\Http\\Requests\\UpdateProjectRequest",
@@ -919,12 +954,16 @@
             "\\App\\Http\\Controllers\\Controller",
             "\\App\\Services\\ReportService",
             "\\App\\Services\\ComparativeReportService",
+            "\\Illuminate\\View\\View",
+            "\\Illuminate\\Http\\Response",
             "\\Illuminate\\Http\\Request",
             "\\Barryvdh\\DomPDF\\Facade\\Pdf",
+            "\\Symfony\\Component\\HttpFoundation\\BinaryFileResponse",
             "\\App\\Exports\\ProjectsExport",
             "\\Maatwebsite\\Excel\\Facades\\Excel",
             "\\App\\Exports\\TasksExport",
             "\\App\\Exports\\InnovationsExport",
+            "\\Illuminate\\Support\\Collection",
             "\\App\\Models\\Project",
             "\\App\\Models\\Task",
             "\\App\\Models\\Innovation"
@@ -950,6 +989,11 @@
         ]
     },
     {
+        "name": "\\Illuminate\\Http\\Response",
+        "size": 3000,
+        "relations": []
+    },
+    {
         "name": "\\Barryvdh\\DomPDF\\Facade\\Pdf",
         "size": 3000,
         "relations": []
@@ -960,16 +1004,24 @@
         "relations": []
     },
     {
+        "name": "\\Illuminate\\Support\\Collection",
+        "size": 3000,
+        "relations": []
+    },
+    {
         "name": "\\App\\Http\\Controllers\\ResourceController",
         "size": 3000,
         "relations": [
             "\\App\\Http\\Controllers\\Controller",
             "\\App\\Services\\ResourceService",
+            "\\Illuminate\\View\\View",
             "\\App\\Models\\Resource",
             "\\App\\Models\\ResourceType",
+            "\\Illuminate\\Http\\RedirectResponse",
             "\\Illuminate\\Http\\Request",
             "\\App\\Models\\Project",
-            "\\Illuminate\\Support\\Facades\\Storage"
+            "\\Illuminate\\Support\\Facades\\Storage",
+            "\\Illuminate\\Support\\Str"
         ]
     },
     {
@@ -989,15 +1041,14 @@
     {
         "name": "\\App\\Models\\ResourceType",
         "size": 3000,
-        "relations": [
-            "\\Illuminate\\Database\\Eloquent\\Model"
-        ]
+        "relations": []
     },
     {
         "name": "\\App\\Http\\Controllers\\ResourceTypeController",
         "size": 3000,
         "relations": [
             "\\App\\Http\\Controllers\\Controller",
+            "\\Illuminate\\Http\\JsonResponse",
             "\\Illuminate\\Http\\Request",
             "\\Illuminate\\Support\\Str",
             "\\App\\Models\\ResourceType"
@@ -1010,9 +1061,11 @@
             "\\App\\Http\\Controllers\\Controller",
             "\\App\\Services\\TaskQueryService",
             "\\App\\Services\\TaskActionService",
+            "\\Illuminate\\View\\View",
             "\\Illuminate\\Http\\Request",
             "\\Illuminate\\Support\\Facades\\Auth",
             "\\App\\Models\\User",
+            "\\Illuminate\\Http\\RedirectResponse",
             "\\App\\Http\\Requests\\StoreTaskRequest",
             "\\App\\Models\\Task",
             "\\App\\Http\\Requests\\UpdateTaskRequest"
@@ -1069,10 +1122,13 @@
             "\\App\\Services\\UserQueryService",
             "\\App\\Services\\UserActionService",
             "\\App\\Services\\UserManagementService",
+            "\\Illuminate\\View\\View",
             "\\Illuminate\\Http\\Request",
+            "\\Illuminate\\Http\\RedirectResponse",
             "\\App\\Http\\Requests\\StoreUserRequest",
             "\\App\\Models\\User",
-            "\\App\\Http\\Requests\\UpdateUserRequest"
+            "\\App\\Http\\Requests\\UpdateUserRequest",
+            "\\Illuminate\\Http\\JsonResponse"
         ]
     },
     {
@@ -1166,17 +1222,27 @@
         "relations": []
     },
     {
-        "name": "\\static",
-        "size": 3000,
-        "relations": []
-    },
-    {
         "name": "\\Illuminate\\Database\\Eloquent\\Relations\\BelongsTo",
         "size": 3000,
         "relations": []
     },
     {
+        "name": "\\static",
+        "size": 3000,
+        "relations": []
+    },
+    {
         "name": "\\Illuminate\\Database\\Eloquent\\Relations\\HasMany",
+        "size": 3000,
+        "relations": []
+    },
+    {
+        "name": "\\Illuminate\\Database\\Eloquent\\Relations\\MorphMany",
+        "size": 3000,
+        "relations": []
+    },
+    {
+        "name": "\\Illuminate\\Database\\Eloquent\\Collection",
         "size": 3000,
         "relations": []
     },
@@ -1219,11 +1285,6 @@
     },
     {
         "name": "\\Spatie\\Permission\\Models\\Role",
-        "size": 3000,
-        "relations": []
-    },
-    {
-        "name": "\\Illuminate\\Database\\Eloquent\\Relations\\MorphMany",
         "size": 3000,
         "relations": []
     },
@@ -1339,11 +1400,6 @@
         "relations": []
     },
     {
-        "name": "\\Illuminate\\Support\\Collection",
-        "size": 3000,
-        "relations": []
-    },
-    {
         "name": "\\Illuminate\\Support\\Facades\\DB",
         "size": 3000,
         "relations": []
@@ -1416,6 +1472,7 @@
         "name": "\\App\\Traits\\HandlesNotifications",
         "size": 3000,
         "relations": [
+            "\\Illuminate\\Notifications\\Notification",
             "\\Illuminate\\Support\\Facades\\Auth",
             "\\Illuminate\\Support\\Facades\\Log",
             "\\Illuminate\\Database\\Eloquent\\Collection",
@@ -1424,11 +1481,6 @@
     },
     {
         "name": "\\Illuminate\\Support\\Facades\\Log",
-        "size": 3000,
-        "relations": []
-    },
-    {
-        "name": "\\Illuminate\\Database\\Eloquent\\Collection",
         "size": 3000,
         "relations": []
     },
