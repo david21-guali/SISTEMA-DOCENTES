@@ -143,7 +143,7 @@ class ResourceController extends Controller
     /**
      * Download the specified resource file.
      */
-    public function download(Resource $resource): \Symfony\Component\HttpFoundation\BinaryFileResponse|\Illuminate\Http\RedirectResponse
+    public function download(Resource $resource): \Symfony\Component\HttpFoundation\StreamedResponse|\Symfony\Component\HttpFoundation\BinaryFileResponse|\Illuminate\Http\RedirectResponse
     {
         if (!$resource->file_path || !\Illuminate\Support\Facades\Storage::disk('public')->exists($resource->file_path)) {
             return back()->with('error', 'El archivo no existe.');
