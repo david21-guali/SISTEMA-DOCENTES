@@ -20,7 +20,7 @@ use Carbon\Carbon;
  */
 class Project extends Model
 {
-    use HasFactory;
+    use HasFactory, \App\Traits\CleansNotifications;
 
     protected $fillable = [
         'title',
@@ -99,13 +99,26 @@ class Project extends Model
     }
 
     /**
+     * Scope projects visible to a specific user.
+     */
+    public function scopeForUser($query, \App\Models\User $user)
+    {
+        if ($user->hasRole(['admin', 'coordinador'])) {
+            return $query;
+        }
+
+        return $query->where('profile_id', $user->profile->id)
+                     ->orWhereHas('team', function ($q) use ($user) {
+                         $q->where('profile_id', $user->profile->id);
+                     });
+    }
+
+    /**
      * Atributos computados
      */
     public function getStatusColorAttribute()
     {
-        if ($this->is_actually_at_risk) {
-            return 'danger';
-        }
+        if ($this->is_actually_at_risk) return 'danger';
 
         return match($this->status) {
             'planificacion' => 'secondary',
@@ -117,7 +130,7 @@ class Project extends Model
 
     public function getIsOverdueAttribute()
     {
-        return $this->end_date < Carbon::now() && $this->status !== 'finalizado';
+        return $this->end_date < now() && $this->status !== 'finalizado';
     }
 
     /**
@@ -135,52 +148,12 @@ class Project extends Model
 
     public function scopeAtRisk($query)
     {
-        return $query->where(function($q) {
-            $q->where('status', 'en_riesgo')
-              ->orWhere(function($sq) {
-                  $sq->where('status', 'en_progreso')
-                     ->where('end_date', '<', Carbon::now());
-              });
-        });
+        return $query->where('status', 'en_riesgo')
+                     ->orWhere(fn($q) => $q->where('status', 'en_progreso')->where('end_date', '<', now()));
     }
 
     public function getIsActuallyAtRiskAttribute()
     {
-        if ($this->status === 'en_riesgo') return true;
-        if ($this->status === 'en_progreso' && $this->end_date < Carbon::now()) return true;
-        return false;
-    }
-    public function recalculateProgress()
-    {
-        $totalTasks = $this->tasks()->count();
-        
-        if ($totalTasks == 0) {
-            $this->completion_percentage = 0;
-        } else {
-            $completedTasks = $this->tasks()->where('status', 'completada')->count();
-            $this->completion_percentage = (int) round(($completedTasks / $totalTasks) * 100);
-        }
-        
-        // Si llega a 100% y no está finalizado, opcionalmente podríamos sugerir/cambiar estado, 
-        // pero por ahora solo actualizamos el porcentaje.
-        if ($this->completion_percentage == 100 && $this->status == 'en_progreso') {
-            // $this->status = 'finalizado'; // Opcional: automatizar cierre
-        }
-
-        $this->save();
-    }
-    protected static function booted()
-    {
-        static::deleting(function ($project) {
-            // Delete generic notifications related to this project safe method
-            // Uses LIKE to find candidates and PHP to verify, avoiding SQL JSON errors
-            \Illuminate\Notifications\DatabaseNotification::where('data', 'LIKE', '%"project_id":%')
-                ->get()
-                ->each(function ($notification) use ($project) {
-                    if (($notification->data['project_id'] ?? null) == $project->id) {
-                        $notification->delete();
-                    }
-                });
-        });
+        return $this->status === 'en_riesgo' || ($this->status === 'en_progreso' && $this->end_date < now());
     }
 }

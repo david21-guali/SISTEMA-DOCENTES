@@ -10,6 +10,15 @@
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2><i class="fas fa-lightbulb"></i> {{ $innovation->title }}</h2>
                 <div>
+                    @if($innovation->status !== 'aprobada' && $innovation->status !== 'en_revision')
+                        <form action="{{ route('innovations.request-review', $innovation) }}" method="POST" class="d-inline">
+                            @csrf
+                            <button type="submit" class="btn btn-info text-white me-2">
+                                <i class="fas fa-paper-plane"></i> Solicitar Revisión
+                            </button>
+                        </form>
+                    @endif
+
                     @can('edit-innovations')
                     <a href="{{ route('innovations.edit', $innovation) }}" class="btn btn-warning">
                         <i class="fas fa-edit"></i> Editar
@@ -154,6 +163,67 @@
                             @endif
                         </div>
                     </div>
+
+                    <!-- Panel de Aprobación (Solo Admins en estado en_revision o completada) -->
+                    @if(auth()->user()->hasRole('admin') && ($innovation->status === 'en_revision' || $innovation->status === 'completada'))
+                    <div class="card shadow mb-4 border-warning">
+                        <div class="card-header bg-warning text-white">
+                            <h6 class="mb-0"><i class="fas fa-gavel me-2"></i>Revisión Pendiente</h6>
+                        </div>
+                        <div class="card-body">
+                            <p class="small text-muted mb-3">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Esta innovación está esperando tu revisión para ser aprobada como Mejor Práctica.
+                            </p>
+                            
+                            <form action="{{ route('innovations.approve', $innovation) }}" method="POST" class="mb-3">
+                                @csrf
+                                <textarea name="review_notes" class="form-control form-control-sm mb-2" rows="2" 
+                                          placeholder="Notas de aprobación (opcional)"></textarea>
+                                <button type="submit" class="btn btn-success btn-sm w-100">
+                                    <i class="fas fa-check me-1"></i>Aprobar como Mejor Práctica
+                                </button>
+                            </form>
+                            
+                            <form action="{{ route('innovations.reject', $innovation) }}" method="POST">
+                                @csrf
+                                <textarea name="review_notes" class="form-control form-control-sm mb-2" rows="2" 
+                                          placeholder="Razón del rechazo (requerido)" required></textarea>
+                                <button type="submit" class="btn btn-danger btn-sm w-100">
+                                    <i class="fas fa-times me-1"></i>Rechazar
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    @endif
+
+                    <!-- Información de Revisión (Si ya fue revisada) -->
+                    @if($innovation->reviewed_by && $innovation->reviewed_at)
+                    <div class="card shadow mb-4 border-{{ $innovation->status === 'aprobada' ? 'success' : 'danger' }}">
+                        <div class="card-header bg-{{ $innovation->status === 'aprobada' ? 'success' : 'danger' }} text-white">
+                            <h6 class="mb-0">
+                                <i class="fas fa-{{ $innovation->status === 'aprobada' ? 'check-circle' : 'times-circle' }} me-2"></i>
+                                {{ $innovation->status === 'aprobada' ? 'Aprobada' : 'Rechazada' }}
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-2">
+                                <small class="text-muted d-block">Revisada por</small>
+                                <strong>{{ $innovation->reviewer->name }}</strong>
+                            </div>
+                            <div class="mb-2">
+                                <small class="text-muted d-block">Fecha de revisión</small>
+                                <strong>{{ $innovation->reviewed_at->format('d/m/Y H:i') }}</strong>
+                            </div>
+                            @if($innovation->review_notes)
+                            <div>
+                                <small class="text-muted d-block">Notas de revisión</small>
+                                <p class="mb-0 small">{{ $innovation->review_notes }}</p>
+                            </div>
+                            @endif
+                        </div>
+                    </div>
+                    @endif
 
                     <!-- Información del Docente -->
                     <div class="card shadow mb-4">

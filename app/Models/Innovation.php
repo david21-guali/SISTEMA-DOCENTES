@@ -40,9 +40,13 @@ class Innovation extends Model
         'actual_results',
         'status',
         'impact_score',
+        'reviewed_by',
+        'review_notes',
+        'reviewed_at',
     ];
 
     protected $casts = [
+        'reviewed_at' => 'datetime',
         // 'evidence_files' removed
     ];
 
@@ -64,6 +68,11 @@ class Innovation extends Model
         return $this->morphMany(Attachment::class, 'attachable');
     }
 
+    public function reviewer(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(User::class, 'reviewed_by');
+    }
+
     /**
      * Accessor: user (via profile)
      */
@@ -80,7 +89,9 @@ class Innovation extends Model
         return match($this->status) {
             'propuesta' => 'info',
             'en_implementacion', 'en_revision' => 'warning',
-            'completada' => 'success',
+            'completada' => 'primary',
+            'aprobada' => 'success',
+            'rechazada' => 'danger',
             default => 'secondary',
         };
     }
@@ -101,5 +112,15 @@ class Innovation extends Model
     public function scopeInProgress($query)
     {
         return $query->where('status', 'en_implementacion');
+    }
+
+    public function scopeApproved($query)
+    {
+        return $query->where('status', 'aprobada');
+    }
+
+    public function scopePendingReview($query)
+    {
+        return $query->where('status', 'en_revision');
     }
 }

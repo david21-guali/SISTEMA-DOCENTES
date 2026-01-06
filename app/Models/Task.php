@@ -25,7 +25,7 @@ use Carbon\Carbon;
  */
 class Task extends Model
 {
-    use HasFactory;
+    use HasFactory, \App\Traits\CleansNotifications;
 
     protected $fillable = [
         'project_id',
@@ -80,7 +80,7 @@ class Task extends Model
      */
     public function getIsOverdueAttribute()
     {
-        return $this->due_date < Carbon::now() && $this->status !== 'completada';
+        return $this->due_date < now() && $this->status !== 'completada';
     }
 
     public function getPriorityColorAttribute()
@@ -108,21 +108,12 @@ class Task extends Model
 
     public function scopeOverdue($query)
     {
-        return $query->where('due_date', '<', Carbon::now())
+        return $query->where('due_date', '<', now())
                      ->where('status', '!=', 'completada');
     }
 
-    protected static function booted()
+    public function scopeInProgress($query)
     {
-        static::deleting(function ($task) {
-            // Delete generic notifications related to this task safe method
-            \Illuminate\Notifications\DatabaseNotification::where('data', 'LIKE', '%"task_id":%')
-                ->get()
-                ->each(function ($notification) use ($task) {
-                    if (($notification->data['task_id'] ?? null) == $task->id) {
-                        $notification->delete();
-                    }
-                });
-        });
+        return $query->where('status', 'en_progreso');
     }
 }

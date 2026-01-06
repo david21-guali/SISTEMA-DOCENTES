@@ -98,39 +98,80 @@ class Attachment extends Model
     }
 
     /**
-     * Get appropriate icon class based on file type
+     * Get appropriate icon class based on file type.
+     * 
+     * @return string
      */
-    public function getIconAttribute()
+    public function getIconAttribute(): string
     {
-        if ($this->isImage()) return 'fas fa-file-image text-success';
-        if ($this->isPdf()) return 'fas fa-file-pdf text-danger';
-        if ($this->isWord()) return 'fas fa-file-word text-primary';
-        if ($this->isExcel()) return 'fas fa-file-excel text-success';
+        if ($this->isImage()) {
+            return 'fas fa-file-image text-success';
+        }
+
+        return $this->getNonImageIcon();
+    }
+
+    /**
+     * Determine icon for non-image files.
+     * 
+     * @return string
+     */
+    private function getNonImageIcon(): string
+    {
+        $icons = [
+            'pdf'   => 'fas fa-file-pdf text-danger',
+            'word'  => 'fas fa-file-word text-primary',
+            'excel' => 'fas fa-file-excel text-success',
+        ];
+
+        foreach ($icons as $type => $icon) {
+            $method = 'is' . ucfirst($type);
+            if ($this->$method()) {
+                return $icon;
+            }
+        }
+
         return 'fas fa-file text-muted';
     }
 
     /**
-     * Get human-readable file size
+     * Get human-readable file size.
+     * 
+     * @return string
      */
-    public function getHumanSizeAttribute()
+    public function getHumanSizeAttribute(): string
     {
         $bytes = $this->size;
         $units = ['B', 'KB', 'MB', 'GB'];
+        $i = 0;
         
-        for ($i = 0; $bytes >= 1024 && $i < count($units) - 1; $i++) {
+        while ($bytes >= 1024 && $i < count($units) - 1) {
             $bytes /= 1024;
+            $i++;
         }
         
         return round($bytes, 0) . ' ' . $units[$i];
     }
 
     /**
-     * Delete file from storage when model is deleted
+     * Delete file from storage when model is deleted.
+     * 
+     * @return void
      */
-    protected static function booted()
+    protected static function booted(): void
     {
         static::deleting(function ($attachment) {
-            Storage::disk('public')->delete($attachment->path);
+            $attachment->deleteFileFromDisk();
         });
+    }
+
+    /**
+     * Remove physical file from dedicated disk.
+     * 
+     * @return void
+     */
+    protected function deleteFileFromDisk(): void
+    {
+        Storage::disk('public')->delete($this->path);
     }
 }

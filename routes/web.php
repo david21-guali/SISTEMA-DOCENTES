@@ -85,7 +85,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Forum routes
     Route::resource('forum', ForumController::class);
-    Route::post('forum/{forum}/posts', [ForumController::class, 'storePost'])->name('forum.storePost');
+    Route::post('forum/{topic}/posts', [ForumController::class, 'storePost'])->name('forum.storePost');
 
     // Task routes
     Route::resource('tasks', TaskController::class);
@@ -96,6 +96,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('innovations', InnovationController::class);
     Route::delete('innovations/{innovation}/attachments/{attachment}', [InnovationController::class, 'deleteAttachment'])
         ->name('innovations.attachments.delete');
+    Route::post('innovations/{innovation}/request-review', [InnovationController::class, 'requestReview'])
+        ->name('innovations.request-review');
+    Route::post('innovations/{innovation}/approve', [InnovationController::class, 'approve'])
+        ->name('innovations.approve')
+        ->middleware('role:admin');
+    Route::post('innovations/{innovation}/reject', [InnovationController::class, 'reject'])
+        ->name('innovations.reject')
+        ->middleware('role:admin');
     
     // Report routes
     Route::get('reports', [ReportController::class, 'index'])->name('reports.index');

@@ -29,11 +29,34 @@ class MeetingReminder extends Notification
     {
         $prefs = $notifiable->profile->notification_preferences ?? [];
         
-        if (!($prefs['meetings'] ?? true)) {
+        if (!$this->isNotificationEnabled($prefs)) {
             return [];
         }
 
+        return $this->getEnabledChannels($prefs);
+    }
+
+    /**
+     * Check if meeting notifications are globally enabled for the user.
+     * 
+     * @param array $prefs
+     * @return bool
+     */
+    private function isNotificationEnabled(array $prefs): bool
+    {
+        return $prefs['meetings'] ?? true;
+    }
+
+    /**
+     * Determine active channels based on user preferences.
+     * 
+     * @param array $prefs
+     * @return array
+     */
+    private function getEnabledChannels(array $prefs): array
+    {
         $channels = ['database'];
+        
         if ($prefs['email_enabled'] ?? true) {
             $channels[] = 'mail';
         }

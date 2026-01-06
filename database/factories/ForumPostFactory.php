@@ -16,6 +16,7 @@ class ForumPostFactory extends Factory
         return [
             'topic_id' => ForumTopic::factory(),
             'profile_id' => Profile::factory(),
+            'user_id' => \App\Models\User::factory(),
             'content' => $this->faker->paragraph(),
         ];
     }

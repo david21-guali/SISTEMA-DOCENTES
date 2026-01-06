@@ -21,6 +21,7 @@ class ForumMessageTest extends TestCase
         $post = ForumPost::create([
             'topic_id' => $topic->id,
             'profile_id' => $user->profile->id,
+            'user_id' => $user->id,
             'content' => 'Test post'
         ]);
 

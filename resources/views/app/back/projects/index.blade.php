@@ -18,7 +18,7 @@
     <!-- Stats Row -->
     <div class="row row-cols-2 row-cols-sm-2 row-cols-lg-5 g-3 mb-4">
         <div class="col">
-            <div class="card text-white h-100" style="background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);">
+            <div class="card text-white h-100 clickable-card" style="background: linear-gradient(135deg, #4e73df 0%, #224abe 100%); cursor: pointer;">
                 <div class="card-body p-2 p-sm-3">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
@@ -31,14 +31,14 @@
                     </div>
                 </div>
                 <div class="card-footer bg-transparent border-top-0 pt-0 pb-2">
-                    <a href="#" class="text-white text-decoration-none" style="font-size: 0.7rem;">
+                    <a href="{{ route('projects.index') }}" class="text-white text-decoration-none" style="font-size: 0.7rem;">
                         Ver <i class="fas fa-arrow-right ms-1"></i>
                     </a>
                 </div>
             </div>
         </div>
         <div class="col">
-            <div class="card text-white h-100" style="background: linear-gradient(135deg, #1cc88a 0%, #13855c 100%);">
+            <div class="card text-white h-100 clickable-card" style="background: linear-gradient(135deg, #1cc88a 0%, #13855c 100%); cursor: pointer;">
                 <div class="card-body p-2 p-sm-3">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
@@ -51,14 +51,14 @@
                     </div>
                 </div>
                 <div class="card-footer bg-transparent border-top-0 pt-0 pb-2">
-                    <a href="#" class="text-white text-decoration-none" style="font-size: 0.7rem;">
+                    <a href="{{ route('projects.index', ['status' => 'finalizado']) }}" class="text-white text-decoration-none" style="font-size: 0.7rem;">
                         Ver <i class="fas fa-arrow-right ms-1"></i>
                     </a>
                 </div>
             </div>
         </div>
         <div class="col">
-            <div class="card text-white h-100" style="background: linear-gradient(135deg, #f6c23e 0%, #dda20a 100%);">
+            <div class="card text-white h-100 clickable-card" style="background: linear-gradient(135deg, #f6c23e 0%, #dda20a 100%); cursor: pointer;">
                 <div class="card-body p-2 p-sm-3">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
@@ -71,14 +71,14 @@
                     </div>
                 </div>
                 <div class="card-footer bg-transparent border-top-0 pt-0 pb-2">
-                    <a href="#" class="text-white text-decoration-none" style="font-size: 0.7rem;">
+                    <a href="{{ route('projects.index', ['status' => 'en_progreso']) }}" class="text-white text-decoration-none" style="font-size: 0.7rem;">
                         Ver <i class="fas fa-arrow-right ms-1"></i>
                     </a>
                 </div>
             </div>
         </div>
         <div class="col">
-            <div class="card text-white h-100" style="background: linear-gradient(135deg, #e74a3b 0%, #be2617 100%);">
+            <div class="card text-white h-100 clickable-card" style="background: linear-gradient(135deg, #e74a3b 0%, #be2617 100%); cursor: pointer;">
                 <div class="card-body p-2 p-sm-3">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
@@ -91,14 +91,14 @@
                     </div>
                 </div>
                 <div class="card-footer bg-transparent border-top-0 pt-0 pb-2">
-                    <a href="#" class="text-white text-decoration-none" style="font-size: 0.7rem;">
+                    <a href="{{ route('projects.index', ['status' => 'en_riesgo']) }}" class="text-white text-decoration-none" style="font-size: 0.7rem;">
                         Ver <i class="fas fa-arrow-right ms-1"></i>
                     </a>
                 </div>
             </div>
         </div>
         <div class="col">
-            <div class="card text-white h-100" style="background: linear-gradient(135deg, #36b9cc 0%, #258391 100%);">
+            <div class="card text-white h-100 clickable-card" style="background: linear-gradient(135deg, #36b9cc 0%, #258391 100%); cursor: pointer;">
                 <div class="card-body p-2 p-sm-3">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
@@ -111,7 +111,7 @@
                     </div>
                 </div>
                 <div class="card-footer bg-transparent border-top-0 pt-0 pb-2">
-                    <a href="#" class="text-white extra-small text-decoration-none" style="font-size: 0.7rem;">
+                    <a href="{{ route('projects.index', ['status' => 'planificacion']) }}" class="text-white extra-small text-decoration-none" style="font-size: 0.7rem;">
                         Ver <i class="fas fa-arrow-right ms-1"></i>
                     </a>
                 </div>
@@ -341,6 +341,17 @@
                 order: [[ 5, "desc" ]]
             });
         }
+    });
+
+    // Make stat cards clickable
+    document.querySelectorAll('.clickable-card').forEach(card => {
+        card.addEventListener('click', function(e) {
+            // Find the link inside the card
+            const link = this.querySelector('.card-footer a');
+            if (link && !e.target.closest('a')) {
+                window.location.href = link.href;
+            }
+        });
     });
 </script>
 @endsection

@@ -25,7 +25,7 @@ use Carbon\Carbon;
  */
 class Meeting extends Model
 {
-    use HasFactory;
+    use HasFactory, \App\Traits\CleansNotifications;
 
     protected $fillable = [
         'project_id',
@@ -69,7 +69,6 @@ class Meeting extends Model
     public function getStatusColorAttribute()
     {
         return match($this->status) {
-            'pendiente' => 'primary',
             'completada' => 'success',
             'cancelada' => 'secondary',
             default => 'primary',
@@ -78,27 +77,22 @@ class Meeting extends Model
 
     public function getFormattedDateAttribute()
     {
-        return $this->meeting_date ? $this->meeting_date->format('d/m/Y H:i') : null;
+        return $this->meeting_date?->format('d/m/Y H:i');
     }
 
     public function getStatusLabelAttribute()
     {
-        return match($this->status) {
-            'pendiente' => 'Pendiente',
-            'completada' => 'Completada',
-            'cancelada' => 'Cancelada',
-            default => $this->status,
-        };
+        return ucfirst($this->status ?? 'pendiente');
     }
 
     public function getIsUpcomingAttribute()
     {
-        return $this->meeting_date > Carbon::now() && $this->status === 'pendiente';
+        return $this->meeting_date > now() && $this->status === 'pendiente';
     }
 
     public function getIsPastAttribute()
     {
-        return $this->meeting_date < Carbon::now();
+        return $this->meeting_date < now();
     }
 
     /**
@@ -106,14 +100,14 @@ class Meeting extends Model
      */
     public function scopeUpcoming($query)
     {
-        return $query->where('meeting_date', '>', Carbon::now())
+        return $query->where('meeting_date', '>', now())
                      ->where('status', 'pendiente')
                      ->orderBy('meeting_date', 'asc');
     }
 
     public function scopePast($query)
     {
-        return $query->where('meeting_date', '<', Carbon::now())
+        return $query->where('meeting_date', '<', now())
                      ->orderBy('meeting_date', 'desc');
     }
 
@@ -127,35 +121,9 @@ class Meeting extends Model
         return $query->where('status', 'completada');
     }
 
-    public function scopeForUser($query, $userId)
+    public function scopeForUser($query, $profileId)
     {
-        // $userId is a User ID (Auth::id()), but relationships use Profile ID.
-        // We need to find the profile associated with this user.
-        // Alternatively, we can assume the controller passes Auth::user()->profile->id if we change the controller,
-        // BUT strict signature says $userId. Let's resolve profile id here to be safe and robust.
-        
-        $user = \App\Models\User::find($userId);
-        if (!$user || !$user->profile) return $query->whereRaw('0 = 1'); // No profile, no meetings
-
-        $profileId = $user->profile->id;
-
         return $query->where('created_by', $profileId)
-                     ->orWhereHas('participants', function($q) use ($profileId) {
-                         $q->where('profiles.id', $profileId);
-                     });
-    }
-
-    protected static function booted()
-    {
-        static::deleting(function ($meeting) {
-            // Delete generic notifications related to this meeting safe method
-            \Illuminate\Notifications\DatabaseNotification::where('data', 'LIKE', '%"meeting_id":%')
-                ->get()
-                ->each(function ($notification) use ($meeting) {
-                    if (($notification->data['meeting_id'] ?? null) == $meeting->id) {
-                        $notification->delete();
-                    }
-                });
-        });
+                     ->orWhereHas('participants', fn($q) => $q->where('profiles.id', $profileId));
     }
 }

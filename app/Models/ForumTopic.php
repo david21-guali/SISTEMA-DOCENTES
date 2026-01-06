@@ -5,22 +5,48 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Represents a specific discussion thread within the community forum.
+ * Optimized for High Maintainability Index (MI >= 65).
+ * 
+ * @property int $profile_id
+ * @property string $title
+ * @property string $description
+ * @property \Carbon\Carbon $created_at
+ * @property \Carbon\Carbon $updated_at
+ */
 class ForumTopic extends Model
 {
     use HasFactory;
 
+    /**
+     * The attributes that are mass assignable.
+     * 
+     * @var array<int, string>
+     */
     protected $fillable = [
         'profile_id',
+        'user_id',
         'title',
         'description',
     ];
 
+    /**
+     * Get the profile that authored the topic.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function profile(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Profile::class);
     }
 
-    public function posts()
+    /**
+     * Get all posts associated with this discussion topic.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function posts(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(ForumPost::class, 'topic_id');
     }

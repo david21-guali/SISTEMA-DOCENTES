@@ -64,13 +64,6 @@
                             <a href="{{ route('users.edit', $user) }}" class="btn btn-primary btn-sm">
                                 <i class="fas fa-edit me-1"></i> Editar
                             </a>
-                            <form action="{{ route('users.destroy', $user) }}" method="POST">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-outline-danger btn-sm w-100">
-                                    <i class="fas fa-trash me-1"></i> Eliminar
-                                </button>
-                            </form>
                             @endif
                         </div>
                     @endif

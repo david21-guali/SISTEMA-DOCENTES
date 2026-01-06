@@ -18,9 +18,9 @@
     </div>
 
     <!-- Stats Row -->
-    <div class="row g-3 mb-4">
-        <div class="col-md-3">
-            <div class="card text-white h-100" style="background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);">
+    <div class="row row-cols-2 row-cols-sm-3 row-cols-lg-5 g-3 mb-4">
+        <div class="col">
+            <div class="card text-white h-100 clickable-card" style="background: linear-gradient(135deg, #4e73df 0%, #224abe 100%); cursor: pointer;">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
@@ -39,8 +39,8 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card text-white h-100" style="background: linear-gradient(135deg, #f6c23e 0%, #dda20a 100%);">
+        <div class="col">
+            <div class="card text-white h-100 clickable-card" style="background: linear-gradient(135deg, #f6c23e 0%, #dda20a 100%); cursor: pointer;">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
@@ -59,8 +59,28 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card text-white h-100" style="background: linear-gradient(135deg, #1cc88a 0%, #13855c 100%);">
+        <div class="col">
+            <div class="card text-white h-100 clickable-card" style="background: linear-gradient(135deg, #36b9cc 0%, #258391 100%); cursor: pointer;">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="small text-white-50 text-uppercase fw-bold">En Progreso</div>
+                            <div class="h3 mb-0 fw-bold">{{ \App\Models\Task::inProgress()->count() }}</div>
+                        </div>
+                        <div class="opacity-50">
+                            <i class="fas fa-spinner fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-top-0 pt-0">
+                    <a href="{{ route('tasks.index', ['status' => 'en_progreso']) }}" class="text-white small text-decoration-none">
+                        Ver En Progreso <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card text-white h-100 clickable-card" style="background: linear-gradient(135deg, #1cc88a 0%, #13855c 100%); cursor: pointer;">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
@@ -79,8 +99,8 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card text-white h-100" style="background: linear-gradient(135deg, #e74a3b 0%, #be2617 100%);">
+        <div class="col">
+            <div class="card text-white h-100 clickable-card" style="background: linear-gradient(135deg, #e74a3b 0%, #be2617 100%); cursor: pointer;">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
@@ -110,6 +130,9 @@
                 </a>
                 <a href="{{ route('tasks.index', ['status' => 'pendiente']) }}" class="nav-link {{ request('status') == 'pendiente' ? 'active bg-warning text-dark' : 'text-muted' }}">
                     Pendientes
+                </a>
+                <a href="{{ route('tasks.index', ['status' => 'en_progreso']) }}" class="nav-link {{ request('status') == 'en_progreso' ? 'active bg-info' : 'text-muted' }}">
+                    En Progreso
                 </a>
                 <a href="{{ route('tasks.index', ['status' => 'completada']) }}" class="nav-link {{ request('status') == 'completada' ? 'active bg-success' : 'text-muted' }}">
                     Completadas
@@ -393,6 +416,16 @@
                 order: [[ 5, "asc" ]]
             });
         }
+
+        // Make stat cards clickable
+        document.querySelectorAll('.clickable-card').forEach(card => {
+            card.addEventListener('click', function(e) {
+                const link = this.querySelector('.card-footer a');
+                if (link && !e.target.closest('a')) {
+                    window.location.href = link.href;
+                }
+            });
+        });
     });
 </script>
 @endsection

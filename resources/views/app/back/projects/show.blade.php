@@ -14,11 +14,6 @@
 </style>
 <div class="content-fix-sidebar">
 <div class="container-fluid">
-    @if(config('app.debug'))
-        <div class="alert alert-info">
-            <small>Debug: Margen corregido {{ date('H:i:s') }}</small>
-        </div>
-    @endif
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2><i class="fas fa-folder-open"></i> {{ $project->title }}</h2>

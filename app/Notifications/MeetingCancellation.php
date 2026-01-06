@@ -8,7 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class MeetingCancellation extends Notification
+class MeetingCancellation extends Notification implements ShouldQueue
 {
     use Queueable;
 

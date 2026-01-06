@@ -49,6 +49,14 @@
                                         <li><a class="dropdown-item" href="{{ route('innovations.show', $innovation) }}">Ver detalles</a></li>
                                         @can('update', $innovation)
                                         <li><a class="dropdown-item" href="{{ route('innovations.edit', $innovation) }}">Editar</a></li>
+                                            @if($innovation->status !== 'aprobada' && $innovation->status !== 'en_revision')
+                                            <li>
+                                                <form action="{{ route('innovations.request-review', $innovation) }}" method="POST">
+                                                    @csrf
+                                                    <button type="submit" class="dropdown-item text-primary">Solicitar Revisión</button>
+                                                </form>
+                                            </li>
+                                            @endif
                                         @endcan
                                         @can('delete', $innovation)
                                         <li><hr class="dropdown-divider"></li>

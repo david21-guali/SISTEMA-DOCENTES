@@ -8,6 +8,13 @@ use Illuminate\Http\Request;
 
 class ResourceController extends Controller
 {
+    protected $resourceService;
+
+    public function __construct(\App\Services\ResourceService $resourceService)
+    {
+        $this->resourceService = $resourceService;
+    }
+
     /**
      * Display a listing of the resource catalog.
      */
@@ -15,7 +22,18 @@ class ResourceController extends Controller
     {
         $resources = Resource::with('type')->get();
         $types = \App\Models\ResourceType::all();
-        return view('resources.index', compact('resources', 'types'));
+        
+        // Prepare data for distribution chart
+        $distributionData = $types->map(function($type) use ($resources) {
+            return [
+                'label' => $type->name,
+                'count' => $resources->where('resource_type_id', $type->id)->count()
+            ];
+        })->filter(function($item) {
+            return $item['count'] > 0; // Only show types with resources
+        })->values();
+        
+        return view('resources.index', compact('resources', 'types', 'distributionData'));
     }
 
     /**
@@ -23,26 +41,15 @@ class ResourceController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
+        $validated = $request->validate([
+            'name'             => 'required|string|max:255',
             'resource_type_id' => 'required|exists:resource_types,id',
-            'cost' => 'nullable|numeric|max:9999999.99',
-            'file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx|max:10240', // 10MB max
-        ], [], [
-            'name' => 'nombre',
-            'resource_type_id' => 'tipo de recurso',
-            'cost' => 'costo',
-            'file' => 'archivo',
+            'description'      => 'nullable|string|max:1000',
+            'cost'             => 'nullable|numeric|max:9999999.99',
+            'file'             => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx|max:10240',
         ]);
 
-        $data = $request->all();
-
-        if ($request->hasFile('file')) {
-            $path = $request->file('file')->store('resources', 'public');
-            $data['file_path'] = $path;
-        }
-
-        Resource::create($data);
+        $this->resourceService->createResource($validated, $request->file('file'));
 
         return back()->with('success', 'Recurso creado exitosamente.');
     }
@@ -61,30 +68,15 @@ class ResourceController extends Controller
      */
     public function update(Request $request, Resource $resource)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
+        $validated = $request->validate([
+            'name'             => 'required|string|max:255',
             'resource_type_id' => 'required|exists:resource_types,id',
-            'cost' => 'nullable|numeric|max:9999999.99',
-            'file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx|max:10240',
-        ], [], [
-            'name' => 'nombre',
-            'resource_type_id' => 'tipo de recurso',
-            'cost' => 'costo',
-            'file' => 'archivo',
+            'description'      => 'nullable|string|max:1000',
+            'cost'             => 'nullable|numeric|max:9999999.99',
+            'file'             => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx|max:10240',
         ]);
 
-        $data = $request->all();
-
-        if ($request->hasFile('file')) {
-            // Delete old file if exists
-            if ($resource->file_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($resource->file_path)) {
-                \Illuminate\Support\Facades\Storage::disk('public')->delete($resource->file_path);
-            }
-            $path = $request->file('file')->store('resources', 'public');
-            $data['file_path'] = $path;
-        }
-
-        $resource->update($data);
+        $this->resourceService->updateResource($resource, $validated, $request->file('file'));
 
         return redirect()->route('resources.index')->with('success', 'Recurso actualizado.');
     }
@@ -103,25 +95,16 @@ class ResourceController extends Controller
      */
     public function assignToProject(Request $request, Project $project)
     {
-        $request->validate([
+        $validated = $request->validate([
             'resource_id' => 'required|exists:resources,id',
             'quantity' => 'required|integer|min:1',
             'assigned_date' => 'required|date',
             'notes' => 'nullable|string',
-        ], [], [
-            'resource_id' => 'recurso',
-            'quantity' => 'cantidad',
-            'assigned_date' => 'fecha de asignación',
-            'notes' => 'notas',
         ]);
 
-        $project->resources()->attach($request->resource_id, [
-            'quantity' => $request->quantity,
-            'assigned_date' => $request->assigned_date,
-            'notes' => $request->notes,
-        ]);
+        $this->resourceService->assignToProject($project, $validated);
 
-        return back()->with('success', 'Recurso asignado al proyecto correctamente.');
+        return back()->with('success', 'Recurso asignado al proyecto.');
     }
 
     /**
@@ -139,9 +122,12 @@ class ResourceController extends Controller
     public function download(Resource $resource)
     {
         if (!$resource->file_path || !\Illuminate\Support\Facades\Storage::disk('public')->exists($resource->file_path)) {
-            return back()->with('error', 'El archivo no existe o no pudo ser encontrado.');
+            return back()->with('error', 'El archivo no existe.');
         }
 
-        return \Illuminate\Support\Facades\Storage::disk('public')->download($resource->file_path, $resource->name . '.' . pathinfo($resource->file_path, PATHINFO_EXTENSION));
+        $extension = pathinfo($resource->file_path, PATHINFO_EXTENSION);
+        $filename = \Illuminate\Support\Str::finish($resource->name, '.' . $extension);
+        
+        return \Illuminate\Support\Facades\Storage::disk('public')->download($resource->file_path, $filename);
     }
 }

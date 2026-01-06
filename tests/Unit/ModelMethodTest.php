@@ -20,7 +20,7 @@ class ModelMethodTest extends TestCase
     public function test_innovation_color_helper()
     {
         $innovation = new Innovation(['status' => 'completada']);
-        $this->assertEquals('success', $innovation->status_color);
+        $this->assertEquals('primary', $innovation->status_color);
 
         $innovation->status = 'en_revision';
         $this->assertEquals('warning', $innovation->status_color);

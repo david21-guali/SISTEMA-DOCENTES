@@ -36,9 +36,10 @@ class InnovationPolicy
      */
     public function update(User $user, Innovation $innovation): bool
     {
-        return $user->hasRole('admin') || $user->hasRole('coordinador') || $user->profile->id === $innovation->profile_id;
+        return $user->hasRole('admin') || 
+               $user->hasRole('coordinador') || 
+               ($user->profile && $user->profile->id === $innovation->profile_id);
     }
-
     /**
      * Determine whether the user can delete the model.
      */

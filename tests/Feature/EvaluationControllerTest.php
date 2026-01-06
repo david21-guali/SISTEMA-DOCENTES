@@ -93,19 +93,5 @@ class EvaluationControllerTest extends TestCase
         $this->assertDatabaseMissing('evaluations', ['id' => $evaluation->id]);
     }
 
-    public function test_fix_storage_link_route()
-    {
-        $user = User::factory()->create();
-        $user->assignRole('admin');
-
-        // Use from() to ensure back() has a target, and check for success OR error 
-        // (Since symlink/exec might fail depending on OS permissions, but the route should be accessible)
-        $response = $this->actingAs($user)
-            ->from(route('dashboard'))
-            ->get(route('storage.fix'));
-
-        $response->assertRedirect();
-        // It should have either success or error, but not nothing (except if middleware blocks)
-        $this->assertTrue(session()->has('success') || session()->has('error'), 'Session should have success or error message');
-    }
+    // test_fix_storage_link_route removed as the route/method no longer exists
 }

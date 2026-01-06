@@ -51,6 +51,32 @@
         @endforeach
     </div>
 
+    <!-- Distribution Chart -->
+    @if($distributionData->count() > 0)
+    <div class="row mb-4">
+        <div class="col-lg-6 mx-auto">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <h6 class="m-0 fw-bold text-primary">
+                        <i class="fas fa-chart-pie me-2"></i>Distribución por Tipo de Recurso
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container" style="position: relative; height: 300px;">
+                        <canvas id="resourceDistributionChart"></canvas>
+                    </div>
+                    <div class="mt-3 text-center">
+                        <small class="text-muted">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Mostrando distribución de {{ $distributionData->count() }} tipo(s) con recursos asignados
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
     <!-- Resources List -->
     <div class="card shadow-sm border-0">
         <div class="card-header bg-white py-3">
@@ -84,7 +110,7 @@
                                     {{ $resource->type->name ?? 'Sin Tipo' }}
                                 </span>
                                 @if($resource->file_path)
-                                    <a href="{{ asset('storage/' . $resource->file_path) }}" target="_blank" class="ms-1 text-primary" title="Descargar">
+                                    <a href="{{ route('resources.download', $resource) }}" class="ms-1 text-primary" title="Descargar">
                                         <i class="fas fa-download"></i>
                                     </a>
                                 @endif
@@ -127,7 +153,7 @@
                         <div class="d-flex justify-content-between align-items-center pt-2 border-top">
                             <div>
                                 @if($resource->file_path)
-                                    <a href="{{ asset('storage/' . $resource->file_path) }}" target="_blank" class="btn btn-sm btn-outline-primary rounded-pill">
+                                    <a href="{{ route('resources.download', $resource) }}" class="btn btn-sm btn-outline-primary rounded-pill">
                                         <i class="fas fa-download me-1"></i> Archivo
                                     </a>
                                 @endif
@@ -375,6 +401,22 @@
                 option.setAttribute('data-slug', data.type.slug);
                 select.add(option);
                 
+                // Update the management list if visible
+                const manageList = document.querySelector('#manageTypesSection .list-group');
+                if (manageList) {
+                    const newItem = document.createElement('div');
+                    newItem.className = 'list-group-item d-flex justify-content-between align-items-center px-2 py-1 bg-transparent border-0';
+                    newItem.innerHTML = `
+                        <span class="small">${data.type.name} <span class="badge bg-secondary">0</span></span>
+                        <button type="button" class="btn btn-sm btn-link text-danger p-0" 
+                                onclick="deleteResourceType(${data.type.id}, '${data.type.name}', 0)"
+                                title="Eliminar tipo">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    `;
+                    manageList.appendChild(newItem);
+                }
+                
                 // Close modal
                 const modal = bootstrap.Modal.getInstance(document.getElementById('createTypeModal'));
                 modal.hide();
@@ -512,6 +554,65 @@
         @if($errors->any())
             var createResourceModal = new bootstrap.Modal(document.getElementById('createResourceModal'));
             createResourceModal.show();
+        @endif
+
+        // Trigger file group visibility for old values or errors
+        const typeSelect = document.getElementById('resourceTypeSelect');
+        if(typeSelect && typeSelect.value) {
+            toggleFileGroup(typeSelect);
+        }
+
+        // Initialize Distribution Chart
+        @if(isset($distributionData) && $distributionData->count() > 0)
+        const ctx = document.getElementById('resourceDistributionChart');
+        if (ctx) {
+            const chartData = @json($distributionData);
+            
+            // Generate vibrant colors
+            const colors = [
+                '#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b',
+                '#858796', '#5a5c69', '#2e59d9', '#17a673', '#2c9faf',
+                '#dda20a', '#be2617', '#6c757d', '#fd7e14', '#6610f2'
+            ];
+            
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: chartData.map(item => item.label),
+                    datasets: [{
+                        data: chartData.map(item => item.count),
+                        backgroundColor: colors.slice(0, chartData.length),
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                boxWidth: 12,
+                                padding: 10,
+                                font: { size: 11 }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.parsed || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((value / total) * 100).toFixed(1);
+                                    return `${label}: ${value} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
         @endif
     });
 </script>
