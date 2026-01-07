@@ -115,4 +115,46 @@ class ResourceControllerTest extends TestCase
         $response->assertStatus(200);
         $response->assertHeader('Content-Disposition', 'attachment; filename=Resource.pdf');
     }
+
+    public function test_admin_can_edit_resource()
+    {
+        $user = User::factory()->create();
+        $user->assignRole('admin');
+        $resource = Resource::factory()->create();
+
+        $response = $this->actingAs($user)->get(route('resources.edit', $resource));
+
+        $response->assertStatus(200);
+        $response->assertViewHas('resource');
+    }
+
+    public function test_admin_can_update_resource()
+    {
+        Storage::fake('public');
+        $user = User::factory()->create();
+        $user->assignRole('admin');
+        $resource = Resource::factory()->create();
+        $type = ResourceType::factory()->create();
+
+        $response = $this->actingAs($user)->put(route('resources.update', $resource), [
+            'name' => 'Updated Name',
+            'resource_type_id' => $type->id,
+            'cost' => 100
+        ]);
+
+        $response->assertRedirect(route('resources.index'));
+        $this->assertDatabaseHas('resources', ['id' => $resource->id, 'name' => 'Updated Name']);
+    }
+
+    public function test_admin_can_delete_resource()
+    {
+        $user = User::factory()->create();
+        $user->assignRole('admin');
+        $resource = Resource::factory()->create();
+
+        $response = $this->actingAs($user)->delete(route('resources.destroy', $resource));
+
+        $response->assertRedirect(route('resources.index'));
+        $this->assertDatabaseMissing('resources', ['id' => $resource->id]);
+    }
 }
