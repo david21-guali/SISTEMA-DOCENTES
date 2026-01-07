@@ -21,16 +21,18 @@ class InnovationService
      */
     public function createInnovation(array $data, array $files = []): Innovation
     {
-        $payload = array_merge($data, [
-            'profile_id' => Auth::user()->profile->id,
-            'status'     => 'propuesta'
-        ]);
+        return \Illuminate\Support\Facades\DB::transaction(function () use ($data, $files) {
+            $payload = array_merge($data, [
+                'profile_id' => Auth::user()->profile->id,
+                'status'     => 'propuesta'
+            ]);
 
-        $innovation = Innovation::create($payload);
-        
-        $this->processAttachments($innovation, $files);
+            $innovation = Innovation::create($payload);
+            
+            $this->processAttachments($innovation, $files);
 
-        return $innovation;
+            return $innovation;
+        });
     }
 
     /**
@@ -43,9 +45,11 @@ class InnovationService
      */
     public function updateInnovation(Innovation $innovation, array $data, array $files = []): void
     {
-        $innovation->update($data);
-        
-        $this->processAttachments($innovation, $files);
+        \Illuminate\Support\Facades\DB::transaction(function () use ($innovation, $data, $files) {
+            $innovation->update($data);
+            
+            $this->processAttachments($innovation, $files);
+        });
     }
 
     /**

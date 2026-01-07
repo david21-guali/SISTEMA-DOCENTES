@@ -38,6 +38,8 @@ class StoreTaskRequest extends FormRequest
             'due_date'      => $this->getDueDateRules(),
             'priority'      => 'required|in:baja,media,alta',
             'attachments.*' => 'nullable|file|max:10240',
+            'temp_attachments'   => 'nullable|array',
+            'temp_attachments.*' => 'string'
         ];
     }
 

@@ -44,10 +44,7 @@ class MeetingResponse extends Notification implements ShouldQueue
      */
     public function via(object $notifiable): array
     {
-        if (!$notifiable instanceof \App\Models\User) {
-            return ['database'];
-        }
-        return (new \App\Services\NotificationPreferenceService())->getChannels($notifiable, 'meetings');
+        return ['database'];
     }
 
     /**

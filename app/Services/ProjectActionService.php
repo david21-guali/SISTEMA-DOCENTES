@@ -25,15 +25,18 @@ class ProjectActionService
      */
     public function createProject(array $data, array $files = []): Project
     {
-        $data['profile_id'] = Auth::user()->profile->id;
-        $data['status'] = $data['status'] ?? 'en_progreso';
+        return \Illuminate\Support\Facades\DB::transaction(function () use ($data, $files) {
+            $data['profile_id'] = Auth::user()->profile->id;
+            $data['status'] = $data['status'] ?? 'en_progreso';
 
-        $project = Project::create($data);
+            $project = Project::create($data);
 
-        $this->setupProjectTeam($project, $data['team_members'] ?? []);
-        $this->handleAttachments($project, $files);
+            $this->setupProjectTeam($project, $data['team_members'] ?? []);
+            $this->handleAttachments($project, $files);
+            $this->handleTemporaryAttachments($project, $data['temp_attachments'] ?? []);
 
-        return $project;
+            return $project;
+        });
     }
 
     /**
@@ -45,12 +48,15 @@ class ProjectActionService
      */
     public function updateProject(Project $project, array $data): void
     {
-        $oldStatus = $project->status;
-        
-        $project->update($data);
+        \Illuminate\Support\Facades\DB::transaction(function () use ($project, $data) {
+            $oldStatus = $project->status;
+            
+            $project->update($data);
 
-        $this->updateProjectTeam($project, $data['team_members'] ?? []);
-        $this->checkStatusChange($project, $oldStatus);
+            $this->updateProjectTeam($project, $data['team_members'] ?? []);
+            $this->handleTemporaryAttachments($project, $data['temp_attachments'] ?? []);
+            $this->checkStatusChange($project, $oldStatus);
+        });
     }
 
     /**
@@ -179,6 +185,40 @@ class ProjectActionService
     {
         foreach ($files as $file) {
             $this->processSingleAttachment($project, $file);
+        }
+    }
+
+    /**
+     * Process files that were uploaded via AJAX to a temporary directory.
+     * 
+     * @param Project $project
+     * @param array<int, string> $tempPaths
+     * @return void
+     */
+    private function handleTemporaryAttachments(Project $project, array $tempPaths): void
+    {
+        foreach ($tempPaths as $value) {
+            $data = json_decode($value, true);
+            $path = $data ? $data['path'] : $value;
+            $originalName = $data ? $data['name'] : basename($path);
+
+            if (\Illuminate\Support\Facades\Storage::disk('public')->exists($path)) {
+                $permanentDir = 'attachments/projects/' . $project->id;
+                $permanentPath = $permanentDir . '/' . basename($path);
+                
+                \Illuminate\Support\Facades\Storage::disk('public')->makeDirectory($permanentDir);
+                \Illuminate\Support\Facades\Storage::disk('public')->copy($path, $permanentPath);
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($path);
+
+                $project->attachments()->create([
+                    'filename'      => basename($permanentPath),
+                    'original_name' => $originalName, 
+                    'mime_type'     => \Illuminate\Support\Facades\Storage::disk('public')->mimeType($permanentPath),
+                    'size'          => \Illuminate\Support\Facades\Storage::disk('public')->size($permanentPath),
+                    'path'          => $permanentPath,
+                    'uploaded_by'   => Auth::user()->profile->id,
+                ]);
+            }
         }
     }
 

@@ -39,6 +39,8 @@ class StoreProjectRequest extends FormRequest
             'team_members'       => $this->getTeamMemberRules(),
             'team_members.*'     => 'exists:users,id',
             'attachments.*'      => $this->getAttachmentRules(),
+            'temp_attachments'   => 'nullable|array',
+            'temp_attachments.*' => 'string'
         ];
     }
 

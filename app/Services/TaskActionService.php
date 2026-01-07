@@ -25,20 +25,22 @@ class TaskActionService
      */
     public function createTask(array $data, array $files = []): Task
     {
-        /** @var \App\Models\Project $project */
-        $project = Project::with('team')->findOrFail($data['project_id']);
-        $this->ensureValidTeamAssignment($project, $data['assignees']);
+        return \Illuminate\Support\Facades\DB::transaction(function () use ($data, $files) {
+            /** @var \App\Models\Project $project */
+            $project = Project::with('team')->findOrFail($data['project_id']);
+            $this->ensureValidTeamAssignment($project, $data['assignees']);
 
-        $assigneeProfileIds = $this->getUserProfileIds($data['assignees']);
-        
-        $task = Task::create(array_merge($data, [
-            'assigned_to' => $assigneeProfileIds[0] ?? null,
-            'status'      => 'pendiente'
-        ]));
+            $assigneeProfileIds = $this->getUserProfileIds($data['assignees']);
+            
+            $task = Task::create(array_merge($data, [
+                'assigned_to' => $assigneeProfileIds[0] ?? null,
+                'status'      => 'pendiente'
+            ]));
 
-        $this->finalizeTaskSetup($task, $project, $assigneeProfileIds, $files);
+            $this->finalizeTaskSetup($task, $project, $assigneeProfileIds, $files, $data['temp_attachments'] ?? []);
 
-        return $task;
+            return $task;
+        });
     }
 
     /**
@@ -50,16 +52,19 @@ class TaskActionService
      */
     public function updateTask(Task $task, array $data): void
     {
-        $this->ensureValidTeamAssignment($task->project, $data['assignees']);
-        $assigneeProfileIds = $this->getUserProfileIds($data['assignees']);
-        
-        $task->update(array_merge($data, [
-            'assigned_to' => $assigneeProfileIds[0] ?? null
-        ]));
+        \Illuminate\Support\Facades\DB::transaction(function () use ($task, $data) {
+            $this->ensureValidTeamAssignment($task->project, $data['assignees']);
+            $assigneeProfileIds = $this->getUserProfileIds($data['assignees']);
+            
+            $task->update(array_merge($data, [
+                'assigned_to' => $assigneeProfileIds[0] ?? null
+            ]));
 
-        $task->assignees()->sync($assigneeProfileIds);
-        
-        $this->refreshProjectProgress($task->project);
+            $task->assignees()->sync($assigneeProfileIds);
+            $this->handleTemporaryAttachments($task, $data['temp_attachments'] ?? []);
+            
+            $this->refreshProjectProgress($task->project);
+        });
     }
 
     /**
@@ -103,15 +108,17 @@ class TaskActionService
      * @param Project $project
      * @param array<int, int> $assigneeIds
      * @param array<int, \Illuminate\Http\UploadedFile> $files
+     * @param array<int, string> $tempPaths
      * @return void
      */
-    private function finalizeTaskSetup(Task $task, Project $project, array $assigneeIds, array $files): void
+    private function finalizeTaskSetup(Task $task, Project $project, array $assigneeIds, array $files, array $tempPaths = []): void
     {
         $task->assignees()->sync($assigneeIds);
 
         $this->notifyAssignedUsers($task, $assigneeIds);
         $this->refreshProjectProgress($project);
         $this->handleAttachments($task, $files);
+        $this->handleTemporaryAttachments($task, $tempPaths);
     }
 
     /**
@@ -201,6 +208,40 @@ class TaskActionService
     {
         foreach ($files as $file) {
             $this->processSingleAttachment($task, $file);
+        }
+    }
+
+    /**
+     * Process files that were uploaded via AJAX to a temporary directory.
+     * 
+     * @param Task $task
+     * @param array<int, string> $tempPaths
+     * @return void
+     */
+    private function handleTemporaryAttachments(Task $task, array $tempPaths): void
+    {
+        foreach ($tempPaths as $value) {
+            $data = json_decode($value, true);
+            $path = $data ? $data['path'] : $value;
+            $originalName = $data ? $data['name'] : basename($path);
+
+            if (\Illuminate\Support\Facades\Storage::disk('public')->exists($path)) {
+                $permanentDir = 'attachments/tasks/' . $task->id;
+                $permanentPath = $permanentDir . '/' . basename($path);
+                
+                \Illuminate\Support\Facades\Storage::disk('public')->makeDirectory($permanentDir);
+                \Illuminate\Support\Facades\Storage::disk('public')->copy($path, $permanentPath);
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($path);
+
+                $task->attachments()->create([
+                    'filename'      => basename($permanentPath),
+                    'original_name' => $originalName,
+                    'mime_type'     => \Illuminate\Support\Facades\Storage::disk('public')->mimeType($permanentPath),
+                    'size'          => \Illuminate\Support\Facades\Storage::disk('public')->size($permanentPath),
+                    'path'          => $permanentPath,
+                    'uploaded_by'   => Auth::user()->profile->id,
+                ]);
+            }
         }
     }
 

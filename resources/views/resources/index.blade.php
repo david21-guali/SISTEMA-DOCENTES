@@ -534,17 +534,26 @@
                     {
                         extend: 'excel',
                         className: 'btn btn-success btn-sm',
-                        text: '<i class="fas fa-file-excel me-1"></i> Excel'
+                        text: '<i class="fas fa-file-excel me-1"></i> Excel',
+                        exportOptions: {
+                            columns: [0, 1, 2]
+                        }
                     },
                     {
                         extend: 'pdf',
                         className: 'btn btn-danger btn-sm',
-                        text: '<i class="fas fa-file-pdf me-1"></i> PDF'
+                        text: '<i class="fas fa-file-pdf me-1"></i> PDF',
+                        exportOptions: {
+                            columns: [0, 1, 2]
+                        }
                     },
                     {
                         extend: 'print',
                         className: 'btn btn-secondary btn-sm',
-                        text: '<i class="fas fa-print me-1"></i> Imprimir'
+                        text: '<i class="fas fa-print me-1"></i> Imprimir',
+                        exportOptions: {
+                            columns: [0, 1, 2]
+                        }
                     }
                 ],
                 responsive: true

@@ -116,6 +116,7 @@ class Innovation extends Model
             'aprobada' => 'success',
             'rechazada' => 'danger',
             'en_revision' => 'warning',
+            'propuesta' => 'info',
             default => 'primary',
         };
     }
@@ -123,6 +124,15 @@ class Innovation extends Model
     /**
      * Scopes
      */
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<Innovation> $query
+     * @return \Illuminate\Database\Eloquent\Builder<Innovation>
+     */
+    public function scopePropuesta($query)
+    {
+        return $query->where('status', 'propuesta');
+    }
+
     /**
      * @param \Illuminate\Database\Eloquent\Builder<Innovation> $query
      * @return \Illuminate\Database\Eloquent\Builder<Innovation>

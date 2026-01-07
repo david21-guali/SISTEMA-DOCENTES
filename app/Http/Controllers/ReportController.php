@@ -97,7 +97,7 @@ class ReportController extends Controller
     public function innovationsPdf(Request $request): \Illuminate\Http\Response
     {
         $innovations = $this->getFilteredInnovations($request);
-        $pdf = Pdf::loadView('reports.innovations-pdf', compact('innovations'));
+        $pdf = Pdf::loadView('app.back.reports.innovations-pdf', compact('innovations'));
 
         return $pdf->download('innovaciones-' . date('Y-m-d') . '.pdf');
     }

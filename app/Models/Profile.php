@@ -153,4 +153,20 @@ class Profile extends Model
     {
         return $this->hasMany(Attachment::class, 'uploaded_by');
     }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\ForumTopic, $this>
+     */
+    public function forumTopics(): HasMany
+    {
+        return $this->hasMany(ForumTopic::class, 'profile_id');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\ForumPost, $this>
+     */
+    public function forumPosts(): HasMany
+    {
+        return $this->hasMany(ForumPost::class, 'profile_id');
+    }
 }

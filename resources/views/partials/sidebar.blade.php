@@ -51,6 +51,13 @@
             <i class="fas fa-star"></i>
             <span>Buenas Prácticas</span>
         </a>
+
+        @if(auth()->user()->hasRole('admin'))
+        <a href="{{ route('innovation-types.index') }}" class="menu-item {{ request()->routeIs('innovation-types.*') ? 'active' : '' }}">
+            <i class="fas fa-tags"></i>
+            <span>Tipos de Innovación</span>
+        </a>
+        @endif
     </nav>
 
     <!-- Communication Section -->

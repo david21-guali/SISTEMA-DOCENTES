@@ -63,7 +63,7 @@ class ReportService
                 $q->orWhere('name', 'LIKE', '%admin%');
             })
             ->with(['roles', 'profile' => function($q) {
-                $q->withCount(['assignedTasks', 'comments']);
+                $q->withCount(['assignedTasks', 'comments', 'innovations']);
             }])
             ->get()
             ->map(function($user) {
@@ -82,6 +82,7 @@ class ReportService
     {
         $user->setAttribute('assigned_tasks_count', $user->profile->assigned_tasks_count ?? 0);
         $user->setAttribute('comments_count', $user->profile->comments_count ?? 0);
+        $user->setAttribute('innovations_count', $user->profile->innovations_count ?? 0);
         
         return $user;
     }

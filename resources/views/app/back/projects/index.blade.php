@@ -154,6 +154,7 @@
                                     </span>
                                 </td>
                                 <td class="text-muted small">
+                                    <span class="d-none export-names">{{ $project->team->pluck('user.name')->join(', ') ?: ($project->profile->user->name ?? 'N/A') }}</span>
                                     @if($project->team->count() > 0)
                                         <div class="d-flex align-items-center">
                                             @foreach($project->team->take(4) as $member)
@@ -324,17 +325,94 @@
                     {
                         extend: 'excel',
                         className: 'btn btn-success btn-sm',
-                        text: '<i class="fas fa-file-excel me-1"></i> Excel'
+                        text: '<i class="fas fa-file-excel me-1"></i> Excel',
+                        exportOptions: {
+                            columns: [0, 1, 2, 3, 4, 5],
+                            format: {
+                                 body: function (data, row, column, node) {
+                                    // Always check if there's a specific export span first
+                                    const exportOnly = $(node).find('.export-names');
+                                    if (exportOnly.length) {
+                                        return exportOnly.text().trim();
+                                    }
+
+                                    // Special handling for Column 2 (Responsable) fallback using tooltips
+                                    if (column === 2) {
+                                        let names = $(node).find('[data-bs-original-title], [title]').map(function() { 
+                                            return $(this).attr('data-bs-original-title') || $(this).attr('title'); 
+                                        }).get().filter(n => n && n.trim() !== '').join(', ');
+
+                                        if (!names) {
+                                            names = $(node).find('span.small').text().trim();
+                                        }
+                                        return names || $(node).text().replace(/\s+/g, ' ').trim();
+                                    }
+
+                                    // Special handling for Column 4 (Progreso)
+                                    if (column === 4) {
+                                        return $(node).find('small').text().trim() || $(node).text().trim();
+                                    }
+
+                                    // Default: Strip HTML and collapse whitespace
+                                    return $(node).text().replace(/\s+/g, ' ').trim();
+                                }
+                            }
+                        }
                     },
                     {
                         extend: 'pdf',
                         className: 'btn btn-danger btn-sm',
-                        text: '<i class="fas fa-file-pdf me-1"></i> PDF'
+                        text: '<i class="fas fa-file-pdf me-1"></i> PDF',
+                        exportOptions: {
+                            columns: [0, 1, 2, 3, 4, 5],
+                            format: {
+                                 body: function (data, row, column, node) {
+                                    // Always check if there's a specific export span first
+                                    const exportOnly = $(node).find('.export-names');
+                                    if (exportOnly.length) {
+                                        return exportOnly.text().trim();
+                                    }
+
+                                    if (column === 2) {
+                                        let names = $(node).find('[data-bs-original-title], [title]').map(function() { 
+                                            return $(this).attr('data-bs-original-title') || $(this).attr('title'); 
+                                        }).get().filter(n => n && n.trim() !== '').join(', ');
+
+                                        if (!names) {
+                                            names = $(node).find('span.small').text().trim();
+                                        }
+                                        return names || $(node).text().replace(/\s+/g, ' ').trim();
+                                    }
+                                    if (column === 4) {
+                                        return $(node).find('small').text().trim() || $(node).text().trim();
+                                    }
+                                    return $(node).text().replace(/\s+/g, ' ').trim();
+                                }
+                            }
+                        }
                     },
                     {
                         extend: 'print',
                         className: 'btn btn-secondary btn-sm',
-                        text: '<i class="fas fa-print me-1"></i> Imprimir'
+                        text: '<i class="fas fa-print me-1"></i> Imprimir',
+                        exportOptions: {
+                            columns: [0, 1, 2, 3, 4, 5],
+                            format: {
+                                body: function (data, row, column, node) {
+                                    const exportOnly = $(node).find('.export-names');
+                                    if (exportOnly.length) return exportOnly.text().trim();
+                                    
+                                    if (column === 2) {
+                                        let names = $(node).find('[data-bs-original-title], [title]').map(function() { 
+                                            return $(this).attr('data-bs-original-title') || $(this).attr('title'); 
+                                        }).get().filter(n => n && n.trim() !== '').join(', ');
+                                        return names || $(node).find('span.small').text().trim() || $(node).text().replace(/\s+/g, ' ').trim();
+                                    }
+                                    if (column === 4) return $(node).find('small').text().trim() || $(node).text().trim();
+                                    return $(node).text().replace(/\s+/g, ' ').trim();
+                                }
+                            }
+                        }
                     }
                 ],
                 responsive: true,

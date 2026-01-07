@@ -24,13 +24,26 @@ class InnovationController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): \Illuminate\View\View
+    public function index(Request $request): \Illuminate\View\View
     {
-        $innovations = Innovation::with(['profile.user', 'innovationType'])
-            ->latest()
-            ->paginate(12);
+        $innovationsQuery = Innovation::with(['profile.user', 'innovationType']);
 
-        return view('app.back.innovations.index', compact('innovations'));
+        if ($request->has('status') && !empty($request->status)) {
+            $innovationsQuery->where('status', $request->status);
+        }
+        
+        // Calcular estadísticas
+        $stats = [
+            'total' => Innovation::count(),
+            'aprobada' => Innovation::where('status', 'aprobada')->count(),
+            'en_revision' => Innovation::where('status', 'en_revision')->count(),
+            'rechazada' => Innovation::where('status', 'rechazada')->count(),
+            'propuesta' => Innovation::where('status', 'propuesta')->count(),
+        ];
+
+        $innovations = $innovationsQuery->latest()->get(); // Get ALL for DataTables if not paginating server-side
+
+        return view('app.back.innovations.index', compact('innovations', 'stats'));
     }
 
     public function bestPractices(): \Illuminate\View\View
@@ -160,6 +173,11 @@ class InnovationController extends Controller
             'reviewed_at' => now()
         ]);
 
+        // Notificar al autor
+        if ($innovation->profile && $innovation->profile->user) {
+            $innovation->profile->user->notify(new \App\Notifications\InnovationStatusChanged($innovation));
+        }
+
         return back()->with('success', 'Innovación aprobada como Mejor Práctica.');
     }
 
@@ -179,6 +197,10 @@ class InnovationController extends Controller
         $innovation->update([
             'status' => 'en_revision'
         ]);
+
+        // Enviar notificación a administradores y coordinadores
+        $staff = \App\Models\User::role(['admin', 'coordinador'])->get();
+        \Illuminate\Support\Facades\Notification::send($staff, new \App\Notifications\InnovationReviewRequested($innovation));
 
         return back()->with('success', 'Solicitud de revisión enviada correctamente.');
     }
@@ -201,6 +223,11 @@ class InnovationController extends Controller
             'review_notes' => $request->review_notes,
             'reviewed_at' => now()
         ]);
+
+        // Notificar al autor
+        if ($innovation->profile && $innovation->profile->user) {
+            $innovation->profile->user->notify(new \App\Notifications\InnovationStatusChanged($innovation));
+        }
 
         return back()->with('error', 'Innovación rechazada.');
     }

@@ -38,6 +38,8 @@ class UpdateTaskRequest extends FormRequest
             'due_date'    => $this->getDueDateRules(),
             'status'      => 'required|in:pendiente,en_progreso,completada,atrasada',
             'priority'    => 'required|in:baja,media,alta',
+            'temp_attachments'   => 'nullable|array',
+            'temp_attachments.*' => 'string'
         ];
     }
 

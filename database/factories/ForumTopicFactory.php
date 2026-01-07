@@ -14,7 +14,6 @@ class ForumTopicFactory extends Factory
     {
         return [
             'profile_id' => Profile::factory(),
-            'user_id' => \App\Models\User::factory(),
             'title' => $this->faker->sentence(),
             'description' => $this->faker->paragraph(),
         ];

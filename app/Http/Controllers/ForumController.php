@@ -26,7 +26,6 @@ class ForumController extends Controller
 
         ForumTopic::create([
             'profile_id' => Auth::user()->profile->id,
-            'user_id' => Auth::id(),
             'title' => $request->title,
             'description' => $request->description,
         ]);
@@ -53,7 +52,6 @@ class ForumController extends Controller
         ForumPost::create([
             'topic_id' => $topicId,
             'profile_id' => Auth::user()->profile->id,
-            'user_id' => Auth::id(),
             'content' => $request->content,
         ]);
 

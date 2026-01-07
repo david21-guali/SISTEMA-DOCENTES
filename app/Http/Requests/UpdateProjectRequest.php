@@ -40,6 +40,8 @@ class UpdateProjectRequest extends FormRequest
             'completion_percentage' => 'nullable|integer|min:0|max:100',
             'team_members'          => $this->getTeamMemberRules(),
             'team_members.*'        => 'exists:users,id',
+            'temp_attachments'      => 'nullable|array',
+            'temp_attachments.*'    => 'string'
         ];
     }
 

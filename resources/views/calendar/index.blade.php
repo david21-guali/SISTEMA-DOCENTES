@@ -169,10 +169,18 @@
             selectable: true,
             themeSystem: 'bootstrap5',
             dayMaxEvents: true, // allow "more" link when too many events
-            windowResize: function(view) {
-                // Optional: Force view change on resize? 
-                // Mostly unnecessary unless rotating device.
-                // Logic handled in button click.
+            loading: function(isLoading) {
+                const btn = document.querySelector('button[onclick="calendar.refetchEvents()"]');
+                if (btn) {
+                    const icon = btn.querySelector('i');
+                    if (isLoading) {
+                        icon.classList.add('fa-spin');
+                        btn.disabled = true;
+                    } else {
+                        icon.classList.remove('fa-spin');
+                        btn.disabled = false;
+                    }
+                }
             },
             
             // Callbacks

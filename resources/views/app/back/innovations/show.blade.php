@@ -11,12 +11,14 @@
                 <h2><i class="fas fa-lightbulb"></i> {{ $innovation->title }}</h2>
                 <div>
                     @if($innovation->status !== 'aprobada' && $innovation->status !== 'en_revision')
-                        <form action="{{ route('innovations.request-review', $innovation) }}" method="POST" class="d-inline">
-                            @csrf
-                            <button type="submit" class="btn btn-info text-white me-2">
-                                <i class="fas fa-paper-plane"></i> Solicitar Revisión
-                            </button>
-                        </form>
+                        @if(!auth()->user()->hasRole('admin') && !auth()->user()->hasRole('coordinador'))
+                            <form action="{{ route('innovations.request-review', $innovation) }}" method="POST" class="d-inline">
+                                @csrf
+                                <button type="submit" class="btn btn-info text-white me-2">
+                                    <i class="fas fa-paper-plane"></i> Solicitar Revisión
+                                </button>
+                            </form>
+                        @endif
                     @endif
 
                     @can('edit-innovations')

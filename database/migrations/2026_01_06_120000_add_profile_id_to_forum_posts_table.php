@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('forum_posts', function (Blueprint $table) {
-            $table->foreignId('profile_id')->nullable()->constrained()->onDelete('cascade');
-        });
+        if (!Schema::hasColumn('forum_posts', 'profile_id')) {
+            Schema::table('forum_posts', function (Blueprint $table) {
+                $table->foreignId('profile_id')->nullable()->constrained()->onDelete('cascade');
+            });
+        }
     }
 
     /**

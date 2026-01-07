@@ -37,18 +37,7 @@ class ProjectAssigned extends Notification
      */
     public function via(object $notifiable): array
     {
-        $prefs = $notifiable->profile->notification_preferences ?? [];
-        
-        if (!($prefs['projects'] ?? true)) {
-            return [];
-        }
-
-        $channels = ['database'];
-        if ($prefs['email_enabled'] ?? true) {
-            $channels[] = 'mail';
-        }
-
-        return $channels;
+        return ['database'];
     }
 
     /**

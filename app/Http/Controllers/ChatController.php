@@ -40,11 +40,14 @@ class ChatController extends Controller
     {
         $request->validate(['content' => 'required']);
 
-        Message::create([
+        $message = Message::create([
             'sender_id' => Auth::user()->profile->id,
             'receiver_id' => $user->profile->id,
             'content' => $request->content,
         ]);
+
+        // Notificar al receptor
+        $user->notify(new \App\Notifications\NewMessageReceived($message));
 
         return back();
     }

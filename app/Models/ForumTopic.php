@@ -27,7 +27,6 @@ class ForumTopic extends Model
      */
     protected $fillable = [
         'profile_id',
-        'user_id',
         'title',
         'description',
     ];

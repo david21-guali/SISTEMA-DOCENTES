@@ -47,7 +47,7 @@
     <div class="card shadow">
         <div class="card-body bg-light">
             <h6 class="mb-3">Tu Respuesta</h6>
-            <form action="{{ route('forum.posts.store', $topic) }}" method="POST">
+            <form action="{{ route('forum.storePost', $topic) }}" method="POST">
                 @csrf
                 <div class="mb-3">
                     <textarea name="content" class="form-control @error('content') is-invalid @enderror" rows="3" placeholder="Escribe tu comentario aquí...">{{ old('content') }}</textarea>

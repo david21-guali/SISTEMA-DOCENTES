@@ -36,13 +36,7 @@ class MeetingReminder extends Notification
      */
     public function via(object $notifiable): array
     {
-        $prefs = $notifiable->profile->notification_preferences ?? [];
-        
-        if (!$this->isNotificationEnabled($prefs)) {
-            return [];
-        }
-
-        return $this->getEnabledChannels($prefs);
+        return ['database'];
     }
 
     /**

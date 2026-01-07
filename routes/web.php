@@ -12,6 +12,7 @@ use App\Http\Controllers\ResourceController;
 use App\Http\Controllers\ResourceTypeController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\ForumController;
+use App\Http\Controllers\TemporaryUploadController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -91,7 +92,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('tasks', TaskController::class);
     Route::patch('tasks/{task}/complete', [TaskController::class, 'complete'])->name('tasks.complete');
     
-    // Innovation routes d
+    // Innovation routes 
     Route::get('innovations/best-practices', [InnovationController::class, 'bestPractices'])->name('innovations.best-practices');
     Route::resource('innovations', InnovationController::class);
     Route::delete('innovations/{innovation}/attachments/{attachment}', [InnovationController::class, 'deleteAttachment'])
@@ -104,6 +105,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('innovations/{innovation}/reject', [InnovationController::class, 'reject'])
         ->name('innovations.reject')
         ->middleware('role:admin');
+    
+    // Innovation types management (Admin/Coordinator)
+    Route::get('innovation-types', [\App\Http\Controllers\InnovationTypeController::class, 'index'])->name('innovation-types.index');
+    Route::post('innovation-types', [\App\Http\Controllers\InnovationTypeController::class, 'store'])->name('innovation-types.store');
+    Route::put('innovation-types/{innovationType}', [\App\Http\Controllers\InnovationTypeController::class, 'update'])->name('innovation-types.update');
+    Route::delete('innovation-types/{innovationType}', [\App\Http\Controllers\InnovationTypeController::class, 'destroy'])->name('innovation-types.destroy');
     
     // Report routes
     Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
@@ -150,6 +157,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('attachments/{type}/{id}', [\App\Http\Controllers\AttachmentController::class, 'store'])->name('attachments.store');
     Route::get('attachments/{attachment}/download', [\App\Http\Controllers\AttachmentController::class, 'download'])->name('attachments.download');
     Route::delete('attachments/{attachment}', [\App\Http\Controllers\AttachmentController::class, 'destroy'])->name('attachments.destroy');
+
+    // Temporary upload routes
+    Route::post('temp-upload', [TemporaryUploadController::class, 'store'])->name('temp.upload');
+    Route::delete('temp-delete', [TemporaryUploadController::class, 'destroy'])->name('temp.delete');
 });
 
 require __DIR__.'/auth.php';

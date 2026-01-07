@@ -189,6 +189,7 @@
                                 @endif
                             </td>
                             <td>
+                                <span class="d-none export-names">{{ $task->assignees->pluck('user.name')->join(', ') ?: ($task->assignedProfile->user->name ?? 'Sin asignar') }}</span>
                                 @if($task->assignees->count() > 0)
                                     <div class="d-flex align-items-center">
                                         @foreach($task->assignees->take(4) as $assignee)
@@ -399,12 +400,72 @@
                     {
                         extend: 'excel',
                         className: 'btn btn-success btn-sm',
-                        text: '<i class="fas fa-file-excel me-1"></i> Excel'
+                        text: '<i class="fas fa-file-excel me-1"></i> Excel',
+                        exportOptions: {
+                            columns: [0, 1, 2, 3, 4, 5],
+                            format: {
+                                 body: function (data, row, column, node) {
+                                    // Always check if there's a specific export span first
+                                    const exportOnly = $(node).find('.export-names');
+                                    if (exportOnly.length) {
+                                        return exportOnly.text().trim();
+                                    }
+
+                                    // Column 2 is "Asignado a" - Extract titles from avatars (including tooltips)
+                                    if (column === 2) {
+                                        // Try to find full names in avatar titles or Bootstrap tooltips
+                                        let names = $(node).find('[data-bs-original-title], [title]').map(function() { 
+                                            return $(this).attr('data-bs-original-title') || $(this).attr('title'); 
+                                        }).get().filter(n => n && n.trim() !== '').join(', ');
+
+                                        // Fallback for single user or legacy view (if no avatars with titles found)
+                                        if (!names) {
+                                            const spanText = $(node).find('span.small').text().trim();
+                                            names = spanText || $(node).text().replace(/\s+/g, ' ').trim();
+                                        }
+
+                                        return names;
+                                    }
+                                    // Default: Strip HTML and collapse whitespace
+                                    return $(node).text().replace(/\s+/g, ' ').trim();
+                                }
+                            }
+                        }
                     },
                     {
                         extend: 'pdf',
                         className: 'btn btn-danger btn-sm',
-                        text: '<i class="fas fa-file-pdf me-1"></i> PDF'
+                        text: '<i class="fas fa-file-pdf me-1"></i> PDF',
+                        exportOptions: {
+                            columns: [0, 1, 2, 3, 4, 5],
+                            format: {
+                                 body: function (data, row, column, node) {
+                                    // Always check if there's a specific export span first
+                                    const exportOnly = $(node).find('.export-names');
+                                    if (exportOnly.length) {
+                                        return exportOnly.text().trim();
+                                    }
+
+                                    // Column 2 is "Asignado a" - Extract titles from avatars (including tooltips)
+                                    if (column === 2) {
+                                        // Try to find full names in avatar titles or Bootstrap tooltips
+                                        let names = $(node).find('[data-bs-original-title], [title]').map(function() { 
+                                            return $(this).attr('data-bs-original-title') || $(this).attr('title'); 
+                                        }).get().filter(n => n && n.trim() !== '').join(', ');
+
+                                        // Fallback for single user or legacy view (if no avatars with titles found)
+                                        if (!names) {
+                                            const spanText = $(node).find('span.small').text().trim();
+                                            names = spanText || $(node).text().replace(/\s+/g, ' ').trim();
+                                        }
+
+                                        return names;
+                                    }
+                                    // Default: Strip HTML and collapse whitespace
+                                    return $(node).text().replace(/\s+/g, ' ').trim();
+                                }
+                            }
+                        }
                     },
                     {
                         extend: 'print',

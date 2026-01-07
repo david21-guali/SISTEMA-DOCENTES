@@ -21,17 +21,21 @@
                         <thead class="table-light">
                             <tr>
                                 <th>Docente</th>
-                                <th class="text-center">Tareas Asignadas</th>
-                                <th class="text-center">Comentarios Publicados</th>
+                                <th class="text-center">Tareas</th>
+                                <th class="text-center">Comentarios</th>
+                                <th class="text-center">Innovaciones</th>
                                 <th class="text-center">Nivel de Actividad</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($teachers as $teacher)
                             @php
-                                $totalActivity = $teacher->assigned_tasks_count + $teacher->comments_count;
-                                $activityLevel = $totalActivity > 50 ? 'Alto' : ($totalActivity > 20 ? 'Medio' : 'Bajo');
-                                $badgeColor = $totalActivity > 50 ? 'success' : ($totalActivity > 20 ? 'warning' : 'secondary');
+                                // Calculamos un puntaje ponderado
+                                // 1 pto por tarea/comentario, 3 ptos por innovación
+                                $score = $teacher->assigned_tasks_count + $teacher->comments_count + ($teacher->innovations_count * 3);
+                                
+                                $activityLevel = $score > 8 ? 'Alto' : ($score >= 3 ? 'Medio' : 'Bajo');
+                                $badgeColor = $score > 8 ? 'success' : ($score >= 3 ? 'warning' : 'secondary');
                             @endphp
                             <tr>
                                 <td>
@@ -46,10 +50,13 @@
                                     </div>
                                 </td>
                                 <td class="text-center">
-                                    <span class="fs-5 fw-bold text-primary">{{ $teacher->assigned_tasks_count }}</span>
+                                    <span class="fs-6 fw-bold text-primary">{{ $teacher->assigned_tasks_count }}</span>
                                 </td>
                                 <td class="text-center">
-                                    <span class="fs-5 fw-bold text-info">{{ $teacher->comments_count }}</span>
+                                    <span class="fs-6 fw-bold text-info">{{ $teacher->comments_count }}</span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="fs-6 fw-bold text-success">{{ $teacher->innovations_count }}</span>
                                 </td>
                                 <td class="text-center">
                                     <span class="badge bg-{{ $badgeColor }} rounded-pill">{{ $activityLevel }}</span>

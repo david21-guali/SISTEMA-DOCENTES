@@ -2,25 +2,25 @@
 
 namespace App\Notifications;
 
-use App\Models\Comment;
+use App\Models\Innovation;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class NewCommentAdded extends Notification
+class InnovationReviewRequested extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    /** @var \App\Models\Comment */
-    public $comment;
+    /** @var \App\Models\Innovation */
+    public $innovation;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct(Comment $comment)
+    public function __construct(Innovation $innovation)
     {
-        $this->comment = $comment;
+        $this->innovation = $innovation;
     }
 
     /**
@@ -41,12 +41,10 @@ class NewCommentAdded extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            'project_id' => $this->comment->project_id,
-            'comment_id' => $this->comment->id,
-            'user_name' => $this->comment->profile->user->name ?? 'Usuario',
-            'title' => 'Nuevo comentario',
-            'message' => "{$this->comment->profile->user->name} comentó en el proyecto: {$this->comment->project->title}",
-            'link' => route('projects.show', $this->comment->project_id),
+            'innovation_id' => $this->innovation->id,
+            'title' => 'Nueva solicitud de revisión',
+            'message' => 'El docente ' . ($this->innovation->profile->user->name ?? 'N/A') . ' ha solicitado la revisión de la innovación: ' . $this->innovation->title,
+            'link' => route('innovations.show', $this->innovation->id),
         ];
     }
 }

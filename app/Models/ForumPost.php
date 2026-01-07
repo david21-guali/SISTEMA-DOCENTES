@@ -28,7 +28,6 @@ class ForumPost extends Model
     protected $fillable = [
         'topic_id',
         'profile_id',
-        'user_id',
         'content',
     ];
 
