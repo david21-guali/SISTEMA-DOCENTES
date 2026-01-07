@@ -40,34 +40,6 @@ class MeetingReminder extends Notification
     }
 
     /**
-     * Check if meeting notifications are globally enabled for the user.
-     * 
-     * @param array<string, mixed> $prefs
-     * @return bool
-     */
-    private function isNotificationEnabled(array $prefs): bool
-    {
-        return $prefs['meetings'] ?? true;
-    }
-
-    /**
-     * Determine active channels based on user preferences.
-     * 
-     * @param array<string, mixed> $prefs
-     * @return array<int, string>
-     */
-    private function getEnabledChannels(array $prefs): array
-    {
-        $channels = ['database'];
-        
-        if ($prefs['email_enabled'] ?? true) {
-            $channels[] = 'mail';
-        }
-
-        return $channels;
-    }
-
-    /**
      * Get the mail representation of the notification.
      */
     /**

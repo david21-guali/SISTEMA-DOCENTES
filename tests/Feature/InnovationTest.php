@@ -17,7 +17,7 @@ class InnovationTest extends TestCase
         $user = User::factory()->create();
         $this->actingAs($user);
         
-        $type = InnovationType::create(['name' => 'Tecnológica', 'description' => 'Tech']);
+        $type = InnovationType::factory()->create(['name' => 'Tecnológica']);
 
         // 2. Act
         $response = $this->post(route('innovations.store'), [

@@ -12,6 +12,7 @@ class InnovationType extends Model
 
     protected $fillable = [
         'name',
+        'slug',
         'description',
     ];
 

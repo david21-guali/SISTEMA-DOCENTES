@@ -8,8 +8,10 @@ class InnovationTypeFactory extends Factory
 {
     public function definition(): array
     {
+        $name = $this->faker->unique()->word();
         return [
-            'name' => $this->faker->word(),
+            'name' => $name,
+            'slug' => \Illuminate\Support\Str::slug($name),
             'description' => $this->faker->sentence(),
         ];
     }

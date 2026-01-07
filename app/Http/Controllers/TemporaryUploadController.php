@@ -11,7 +11,7 @@ class TemporaryUploadController extends Controller
     /**
      * Store a temporary file.
      */
-    public function store(Request $request)
+    public function store(Request $request): \Illuminate\Http\JsonResponse
     {
         $request->validate([
             'file' => 'required|file|max:10240', // 10MB
@@ -40,7 +40,7 @@ class TemporaryUploadController extends Controller
     /**
      * Delete a temporary file.
      */
-    public function destroy(Request $request)
+    public function destroy(Request $request): \Illuminate\Http\JsonResponse
     {
         $path = $request->input('path');
         
