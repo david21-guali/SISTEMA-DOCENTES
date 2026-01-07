@@ -49,7 +49,7 @@
 <div class="page">
     <div class="content content-first">
         <div class="report-details">
-            Created at 2026-01-06 15:54:53        , with PHPMetrics v2.9.1 (<a href="https://twitter.com/Halleck45">Jean-François Lépine</a>).
+            Created at 2026-01-07 15:32:44        , with PHPMetrics v2.9.1 (<a href="https://twitter.com/Halleck45">Jean-François Lépine</a>).
         </div>
 
         
@@ -93,7 +93,7 @@
                             <path d="M0 0h24v24H0z" fill="none">
                             <path d="M20 8h-2.81c-.45-.78-1.07-1.45-1.82-1.96L17 4.41 15.59 3l-2.17 2.17C12.96 5.06 12.49 5 12 5c-.49 0-.96.06-1.41.17L8.41 3 7 4.41l1.62 1.63C7.88 6.55 7.26 7.22 6.81 8H4v2h2.09c-.05.33-.09.66-.09 1v1H4v2h2v1c0 .34.04.67.09 1H4v2h2.81c1.04 1.79 2.97 3 5.19 3s4.15-1.21 5.19-3H20v-2h-2.09c.05-.33.09-.66.09-1v-1h2v-2h-2v-1c0-.34-.04-.67-.09-1H20V8zm-6 8h-4v-2h4v2zm0-4h-4v-2h4v2z">
                         </svg>
-                        Violations (13)
+                        Violations (14)
                     </a>
                 </li>
                                     <li>
@@ -638,15 +638,21 @@
             "\\App\\Models\\User",
             "\\App\\Models\\Message",
             "\\Illuminate\\Http\\RedirectResponse",
-            "\\Illuminate\\Http\\Request"
+            "\\Illuminate\\Http\\Request",
+            "\\App\\Notifications\\NewMessageReceived"
         ]
     },
     {
         "name": "\\App\\Models\\Message",
         "size": 3000,
+        "relations": []
+    },
+    {
+        "name": "\\App\\Notifications\\NewMessageReceived",
+        "size": 3000,
         "relations": [
-            "\\Illuminate\\Database\\Eloquent\\Model",
-            "\\Illuminate\\Database\\Eloquent\\Relations\\BelongsTo"
+            "\\Illuminate\\Notifications\\Notification",
+            "\\App\\Models\\Message"
         ]
     },
     {
@@ -770,13 +776,17 @@
             "\\App\\Http\\Controllers\\Controller",
             "\\App\\Services\\InnovationService",
             "\\Illuminate\\View\\View",
+            "\\Illuminate\\Http\\Request",
             "\\App\\Models\\Innovation",
             "\\App\\Models\\InnovationType",
             "\\Illuminate\\Http\\RedirectResponse",
             "\\App\\Http\\Requests\\StoreInnovationRequest",
             "\\App\\Http\\Requests\\UpdateInnovationRequest",
-            "\\Illuminate\\Http\\Request",
-            "\\Illuminate\\Support\\Facades\\Auth"
+            "\\Illuminate\\Support\\Facades\\Auth",
+            "\\App\\Notifications\\InnovationStatusChanged",
+            "\\App\\Models\\User",
+            "\\App\\Notifications\\InnovationReviewRequested",
+            "\\Illuminate\\Support\\Facades\\Notification"
         ]
     },
     {
@@ -784,7 +794,8 @@
         "size": 3000,
         "relations": [
             "\\App\\Models\\Innovation",
-            "\\Illuminate\\Support\\Facades\\Auth"
+            "\\Illuminate\\Support\\Facades\\Auth",
+            "\\Illuminate\\Support\\Facades\\DB"
         ]
     },
     {
@@ -807,6 +818,41 @@
         "size": 3000,
         "relations": [
             "\\Illuminate\\Foundation\\Http\\FormRequest"
+        ]
+    },
+    {
+        "name": "\\App\\Notifications\\InnovationStatusChanged",
+        "size": 3000,
+        "relations": [
+            "\\Illuminate\\Notifications\\Notification",
+            "\\Illuminate\\Contracts\\Queue\\ShouldQueue",
+            "\\App\\Models\\Innovation"
+        ]
+    },
+    {
+        "name": "\\App\\Notifications\\InnovationReviewRequested",
+        "size": 3000,
+        "relations": [
+            "\\Illuminate\\Notifications\\Notification",
+            "\\Illuminate\\Contracts\\Queue\\ShouldQueue",
+            "\\App\\Models\\Innovation"
+        ]
+    },
+    {
+        "name": "\\Illuminate\\Support\\Facades\\Notification",
+        "size": 3000,
+        "relations": []
+    },
+    {
+        "name": "\\App\\Http\\Controllers\\InnovationTypeController",
+        "size": 3000,
+        "relations": [
+            "\\App\\Http\\Controllers\\Controller",
+            "\\Illuminate\\View\\View",
+            "\\App\\Models\\InnovationType",
+            "\\Illuminate\\Http\\JsonResponse",
+            "\\Illuminate\\Http\\Request",
+            "\\Illuminate\\Support\\Str"
         ]
     },
     {
@@ -1089,10 +1135,12 @@
         "relations": [
             "\\App\\Models\\Task",
             "\\App\\Models\\Project",
+            "\\Illuminate\\Support\\Facades\\DB",
             "\\Exception",
             "\\App\\Models\\User",
             "\\App\\Notifications\\TaskAssigned",
             "\\App\\Services\\ProjectActionService",
+            "\\Illuminate\\Support\\Facades\\Storage",
             "\\Illuminate\\Support\\Facades\\Auth"
         ]
     },
@@ -1112,6 +1160,17 @@
             "\\Illuminate\\Foundation\\Http\\FormRequest",
             "\\App\\Models\\Project",
             "\\Carbon\\Carbon"
+        ]
+    },
+    {
+        "name": "\\App\\Http\\Controllers\\TemporaryUploadController",
+        "size": 3000,
+        "relations": [
+            "\\App\\Http\\Controllers\\Controller",
+            "\\Illuminate\\Http\\JsonResponse",
+            "\\Illuminate\\Http\\Request",
+            "\\Illuminate\\Support\\Str",
+            "\\Illuminate\\Support\\Facades\\Storage"
         ]
     },
     {
@@ -1318,12 +1377,12 @@
         "relations": []
     },
     {
-        "name": "\\App\\Notifications\\MeetingCancellation",
+        "name": "\\Illuminate\\Contracts\\Queue\\ShouldQueue",
         "size": 3000,
         "relations": []
     },
     {
-        "name": "\\Illuminate\\Contracts\\Queue\\ShouldQueue",
+        "name": "\\App\\Notifications\\MeetingCancellation",
         "size": 3000,
         "relations": []
     },
@@ -1336,13 +1395,6 @@
         "name": "\\App\\Notifications\\MeetingResponse",
         "size": 3000,
         "relations": []
-    },
-    {
-        "name": "\\App\\Services\\NotificationPreferenceService",
-        "size": 3000,
-        "relations": [
-            "\\App\\Models\\User"
-        ]
     },
     {
         "name": "\\App\\Services\\MeetingNotificationFormatService",
@@ -1430,6 +1482,13 @@
         "name": "\\Illuminate\\Contracts\\Pagination\\LengthAwarePaginator",
         "size": 3000,
         "relations": []
+    },
+    {
+        "name": "\\App\\Services\\NotificationPreferenceService",
+        "size": 3000,
+        "relations": [
+            "\\App\\Models\\User"
+        ]
     },
     {
         "name": "\\App\\Services\\ProjectAccessService",
