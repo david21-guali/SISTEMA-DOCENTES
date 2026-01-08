@@ -113,15 +113,7 @@
     </div>
 </div>
 
-<style>
-.avatar-circle {
-    width: 40px; 
-    height: 40px; 
-    border-radius: 50%; 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    font-weight: bold;
-}
-</style>
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('assets/back/css/reports.css') }}">
+@endpush
 @endsection

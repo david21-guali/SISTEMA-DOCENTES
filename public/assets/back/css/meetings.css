@@ -1,0 +1,119 @@
+/* Meetings Module Styles */
+
+.ls-1 {
+    letter-spacing: 1px;
+}
+
+.text-xs {
+    font-size: 0.75rem;
+}
+
+.transition-all {
+    transition: all 0.3s ease;
+}
+
+/* Utilities */
+.bg-blue-50 {
+    background-color: #eff6ff !important;
+}
+
+.text-purple {
+    color: #7c3aed !important;
+}
+
+.bg-indigo {
+    background-color: #6610f2 !important;
+}
+
+.text-indigo {
+    color: #6610f2 !important;
+}
+
+.bg-gradient-primary {
+    background: linear-gradient(45deg, #4e73df, #224abe);
+}
+
+/* Card Effects */
+.hover-lift:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08) !important;
+}
+
+.hover-scale:hover {
+    transform: scale(1.1);
+    z-index: 10 !important;
+    cursor: pointer;
+}
+
+.active-glow-primary:hover {
+    border-color: #4e73df !important;
+}
+
+/* Borders and Icons */
+.border-dashed {
+    border-top-style: dashed !important;
+}
+
+.icon-xxs {
+    width: 20px;
+    height: 20px;
+}
+
+/* Form Elements */
+.form-control,
+.form-select {
+    border-radius: 8px;
+    font-size: 0.95rem;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #4e73df;
+    box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.1);
+    background-color: #fff;
+}
+
+.btn-check:checked+.btn-outline-primary {
+    background-color: #e8f0fe !important;
+    color: #1a73e8 !important;
+    border-color: transparent !important;
+}
+
+.btn-outline-primary:hover {
+    background-color: #f8f9fa !important;
+    color: #1a73e8 !important;
+    border-color: transparent !important;
+}
+
+.md-radio {
+    width: 1.2em;
+    height: 1.2em;
+    margin-top: 0.1em;
+}
+
+.hover-bg-light:hover {
+    background-color: #f8f9fa;
+    cursor: pointer;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+/* Custom Scrollbar for participants */
+.participants-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.participants-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.participants-list::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 10px;
+}
+
+.participants-list::-webkit-scrollbar-thumb:hover {
+    background: #bbb;
+}

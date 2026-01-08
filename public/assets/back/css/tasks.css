@@ -1,0 +1,22 @@
+/* Tasks Module Styles */
+
+.text-xs {
+    font-size: 0.7rem;
+}
+
+/* Border accents for task cards/rows */
+.border-left-primary {
+    border-left: 4px solid #4e73df !important;
+}
+
+.border-left-success {
+    border-left: 4px solid #1cc88a !important;
+}
+
+.border-left-warning {
+    border-left: 4px solid #f6c23e !important;
+}
+
+.border-left-danger {
+    border-left: 4px solid #e74a3b !important;
+}

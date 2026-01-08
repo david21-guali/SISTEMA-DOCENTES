@@ -172,19 +172,6 @@
 </div>
 
 @push('styles')
-<style>
-    .notification-item {
-        transition: background-color 0.2s ease;
-    }
-    .notification-item:last-child {
-        border-bottom: none !important;
-    }
-    .unread-bg {
-        background-color: #f2f4f7 !important;
-    }
-    .notification-item:hover {
-        background-color: #e9ecef !important;
-    }
-</style>
+    <link rel="stylesheet" href="{{ asset('assets/back/css/notifications.css') }}">
 @endpush
 @endsection

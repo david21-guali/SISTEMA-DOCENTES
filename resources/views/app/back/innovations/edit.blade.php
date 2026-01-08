@@ -2,6 +2,9 @@
 
 @section('title', 'Editar Innovación')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('assets/back/css/innovations.css') }}">
+@endpush
 @section('contenido')
 <div class="container-fluid">
     <div class="row justify-content-center">
@@ -420,16 +423,5 @@ document.getElementById('innovationForm').addEventListener('submit', function() 
     spinner.classList.remove('d-none');
 });
 </script>
-<style>
-    .list-group-sm .list-group-item {
-        padding: 0.5rem 0.75rem;
-        font-size: 0.85rem;
-    }
-    .x-small {
-        font-size: 0.75rem;
-    }
-    .clickable-thumbnail:hover {
-        opacity: 0.8;
-    }
-</style>
+
 @endpush

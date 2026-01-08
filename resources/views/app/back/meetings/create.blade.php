@@ -204,33 +204,7 @@
 </div>
 
 @push('styles')
-<style>
-    .ls-1 { letter-spacing: 0.5px; }
-    .form-control, .form-select { border-radius: 8px; font-size: 0.95rem; }
-    .form-control:focus, .form-select:focus { border-color: #4e73df; box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.1); background-color: #fff; }
-    
-    .btn-check:checked + .btn-outline-primary {
-        background-color: #e8f0fe;
-        color: #1a73e8;
-        border-color: transparent;
-    }
-    .btn-outline-primary:hover {
-        background-color: #f8f9fa;
-        color: #1a73e8;
-        border-color: transparent;
-    }
-    
-    .md-radio { width: 1.2em; height: 1.2em; margin-top: 0.1em; }
-    
-    .hover-bg-light:hover { background-color: #f8f9fa; cursor: pointer; }
-    .cursor-pointer { cursor: pointer; }
-    
-    /* Custom Scrollbar for participants */
-    .participants-list::-webkit-scrollbar { width: 6px; }
-    .participants-list::-webkit-scrollbar-track { background: #f1f1f1; }
-    .participants-list::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
-    .participants-list::-webkit-scrollbar-thumb:hover { background: #bbb; }
-</style>
+    <link rel="stylesheet" href="{{ asset('assets/back/css/meetings.css') }}">
 @endpush
 @endsection
 

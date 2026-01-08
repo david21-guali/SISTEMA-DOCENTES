@@ -310,13 +310,7 @@
 </div>
 
 @push('styles')
-<style>
-    .text-xs { font-size: 0.7rem; }
-    .border-left-primary { border-left: 4px solid #4e73df !important; }
-    .border-left-success { border-left: 4px solid #1cc88a !important; }
-    .border-left-warning { border-left: 4px solid #f6c23e !important; }
-    .border-left-info { border-left: 4px solid #36b9cc !important; }
-</style>
+    <link rel="stylesheet" href="{{ asset('assets/back/css/projects.css') }}">
 @endpush
 @endsection
 

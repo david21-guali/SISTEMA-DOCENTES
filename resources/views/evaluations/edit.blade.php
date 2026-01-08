@@ -93,10 +93,9 @@
                                     </div>
                                 </div>
                                 
-                                <style>
-                                    .x-small-text { font-size: 0.75rem; }
-                                    .form-select-sm, .form-control-sm { padding-top: 2px; padding-bottom: 2px; }
-                                </style>
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('assets/back/css/evaluations.css') }}">
+@endpush
 
                                 <hr class="my-2">
                                 

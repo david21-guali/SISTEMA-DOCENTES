@@ -1,0 +1,66 @@
+/* Chat Module Styles */
+
+/* Container heights */
+.chat-main-card {
+    height: calc(100vh - 150px);
+}
+
+.chat-user-list {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.chat-placeholder {
+    min-height: 500px;
+}
+
+/* Avatars */
+.chat-avatar-lg {
+    width: 45px !important;
+    height: 45px !important;
+    transition: transform 0.2s ease;
+}
+
+.chat-avatar-md {
+    width: 40px !important;
+    height: 40px !important;
+}
+
+/* User item effects */
+.user-item:hover .chat-avatar-lg {
+    transform: scale(1.1);
+}
+
+/* Message bubbles */
+.chat-message-bubble {
+    max-width: 70% !important;
+    border-radius: 15px !important;
+    border: none !important;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+}
+
+.chat-message-out {
+    border-bottom-right-radius: 2px !important;
+}
+
+.chat-message-in {
+    border-bottom-left-radius: 2px !important;
+}
+
+/* Typography & Icons */
+.chat-time {
+    font-size: 0.7rem !important;
+}
+
+.chat-check-icon {
+    font-size: 0.6rem !important;
+}
+
+/* Utilities */
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.transition-200 {
+    transition: all 0.2s ease;
+}

@@ -119,25 +119,12 @@
             // Si hay errores, añadimos clase al contenedor principal para que los personajes reaccionen
             @if($errors->any())
                 document.querySelector('.blobs-container').classList.add('has-error');
+                // Also add class to the main container for styling adjustments
+                document.querySelector('.login-container').parentElement.classList.add('register-page', 'has-errors');
+            @else
+                document.querySelector('.login-container').parentElement.classList.add('register-page');
             @endif
         });
     </script>
-    <style>
-        .ls-1 { letter-spacing: 0.5px; }
-        /* Compact adjustments for Register page */
-        .form-panel { padding: 25px 25px !important; } /* Reduce panel padding */
-        .form-input { padding: 10px 15px !important; } /* Smaller inputs */
-        .form-header { margin-bottom: 15px !important; } /* Closer header */
-        .form-header h2 { font-size: 24px !important; } /* Smaller title */
-        .form-group { margin-bottom: 12px !important; } /* Tighter spacing */
-        .login-container { min-height: auto !important; max-height: 95vh; } /* Constrain height */
-        .register-link { margin-top: 15px !important; } /* Reduce bottom spacing */
-        
-        @if($errors->any())
-            .form-group { margin-bottom: 8px !important; }
-            .error-message { margin-top: 4px !important; }
-            .form-header { margin-bottom: 8px !important; }
-        @endif
-    </style>
     @endpush
 </x-guest-layout>

@@ -338,15 +338,7 @@
 </div>
 
 @push('styles')
-<style>
-    .text-xs { font-size: 0.7rem; }
-    .bg-gray-50 { background-color: #f8f9fa; }
-    .bg-gray-100 { background-color: #f8f9fc; }
-    .border-left-primary { border-left: 4px solid #4e73df !important; }
-    .border-left-success { border-left: 4px solid #1cc88a !important; }
-    .border-left-info { border-left: 4px solid #36b9cc !important; }
-    .border-left-warning { border-left: 4px solid #f6c23e !important; }
-</style>
+    <link rel="stylesheet" href="{{ asset('assets/back/css/resources.css') }}">
 @endpush
 
 @push('scripts')

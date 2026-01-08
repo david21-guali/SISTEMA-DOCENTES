@@ -102,9 +102,9 @@
             language: { url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json' },
             responsive: true,
             order: [[0, 'asc']],
-            dom: "<'row mb-3 align-items-center'<'col-sm-12 col-md-4'l><'col-sm-12 col-md-8 d-flex justify-content-md-end gap-2'Bf>>" +
+            dom: "<'row gy-3 mb-3'<'col-12 col-md-6 d-flex justify-content-center justify-content-md-start'l><'col-12 col-md-6 d-flex flex-column flex-md-row justify-content-center justify-content-md-end align-items-center gap-2'fB>>" +
                 "<'row'<'col-12'tr>>" +
-                "<'row mt-3 align-items-center'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7 d-flex justify-content-md-end'p>>",
+                "<'row mt-3 gy-2 align-items-center'<'col-12 col-md-5 d-flex justify-content-center justify-content-md-start'i><'col-12 col-md-7 d-flex justify-content-center justify-content-md-end'p>>",
             buttons: [
                 {
                     extend: 'excel',

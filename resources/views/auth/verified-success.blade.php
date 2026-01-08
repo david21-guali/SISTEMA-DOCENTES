@@ -16,18 +16,5 @@
         </a>
     </div>
 
-    @push('styles')
-    <style>
-        .ls-1 { letter-spacing: 0.5px; }
-        .w-100 { width: 100%; }
-        .success-icon {
-            animation: bounceIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        @keyframes bounceIn {
-            0% { transform: scale(0.3); opacity: 0; }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); opacity: 1; }
-        }
-    </style>
-    @endpush
+
 </x-guest-layout>

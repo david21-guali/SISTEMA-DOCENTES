@@ -1,0 +1,112 @@
+/* Calendar Module Styles */
+
+.fc-header-toolbar {
+    display: none !important;
+    /* Hide default toolbar to use our custom one */
+}
+
+.calendar-container {
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+}
+
+.fc-theme-standard td,
+.fc-theme-standard th {
+    border-color: #f0f0f0;
+}
+
+.fc-col-header-cell {
+    padding: 15px 0;
+    background-color: #f8f9fc;
+    color: #858796;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+    border-bottom: none !important;
+}
+
+.fc-daygrid-day-number {
+    color: #5a5c69;
+    font-weight: 600;
+    padding: 10px !important;
+}
+
+.fc-day-today {
+    background-color: #f8f9fc !important;
+}
+
+.fc-day-today .fc-daygrid-day-number {
+    background-color: #4e73df;
+    color: white;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 5px;
+}
+
+.fc-event {
+    border: none;
+    border-radius: 5px;
+    padding: 2px 5px;
+    font-size: 0.85rem;
+    margin-bottom: 2px;
+}
+
+/* Custom Header Styles */
+.cal-header-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2e2e2e;
+}
+
+.cal-header-date {
+    color: #2e2e2e;
+    font-weight: 400;
+    padding-left: 15px;
+    border-left: 2px solid #e0e0e0;
+    margin-left: 15px;
+}
+
+.btn-custom-light {
+    background: #fff;
+    border: 1px solid #e3e6f0;
+    color: #5a5c69;
+    font-weight: 500;
+}
+
+.btn-custom-light:hover {
+    background: #f8f9fc;
+}
+
+/* Responsive Improvements */
+@media (max-width: 768px) {
+    .cal-header-title {
+        font-size: 1.25rem;
+    }
+
+    .cal-header-date {
+        font-size: 0.9rem;
+        padding-left: 10px;
+        margin-left: 10px;
+    }
+
+    .calendar-container {
+        padding: 10px;
+        overflow-x: auto;
+        /* Allow horizontal scrolling */
+    }
+
+    .fc-col-header-cell {
+        font-size: 0.75rem;
+        padding: 10px 0;
+    }
+
+    .d-flex.align-items-center.mb-3.mb-md-0 {
+        justify-content: center;
+    }
+}

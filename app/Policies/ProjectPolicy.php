@@ -42,8 +42,8 @@ class ProjectPolicy
      */
     public function update(User $user, Project $project): bool
     {
-        // Admins can update any project
-        if ($user->hasRole('admin')) {
+        // Admins and Coordinators can update any project
+        if ($user->hasRole(['admin', 'coordinador'])) {
             return true;
         }
 

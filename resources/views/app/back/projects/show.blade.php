@@ -3,15 +3,10 @@
 @section('title', 'Detalle del Proyecto')
 
 @section('contenido')
-<style>
-    /* FIX URGENTE: Desplazar contenido a la derecha porque el sidebar lo tapa */
-    @media (min-width: 768px) {
-        .content-fix-sidebar {
-            margin-left: 260px !important;
-            width: calc(100% - 270px) !important;
-        }
-    }
-</style>
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('assets/back/css/projects.css') }}">
+@endpush
+
 <div class="content-fix-sidebar">
 <div class="container-fluid">
     <!-- Header -->
@@ -127,18 +122,7 @@
                                     </div>
                                 </div>
 
-                                <style>
-                                    .badge-xs { font-size: 0.65rem; padding: 2px 4px; }
-                                    .btn-xs-slim { 
-                                        padding: 4px 10px !important; 
-                                        font-size: 0.8rem !important; 
-                                        line-height: 1.2 !important;
-                                        display: inline-flex;
-                                        align-items: center;
-                                        gap: 4px;
-                                        height: 30px;
-                                    }
-                                </style>
+
 
                                 <!-- Comentarios Resumidos (mas discreto) -->
                                 @if($evaluation->general_comments)

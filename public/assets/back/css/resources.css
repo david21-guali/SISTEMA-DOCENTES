@@ -1,0 +1,41 @@
+/* Resources Module Styles */
+
+.text-xs {
+    font-size: 0.7rem;
+}
+
+.bg-gray-50 {
+    background-color: #f8f9fa;
+}
+
+.bg-gray-100 {
+    background-color: #f8f9fc;
+}
+
+.border-left-primary {
+    border-left: 4px solid #4e73df !important;
+}
+
+.border-left-success {
+    border-left: 4px solid #1cc88a !important;
+}
+
+.border-left-info {
+    border-left: 4px solid #36b9cc !important;
+}
+
+.border-left-warning {
+    border-left: 4px solid #f6c23e !important;
+}
+
+/* Table and Card Utilities */
+.resource-icon-circle {
+    width: 35px;
+    height: 35px;
+    background-color: #f8f9fc;
+}
+
+.resource-empty-circle {
+    width: 80px;
+    height: 80px;
+}

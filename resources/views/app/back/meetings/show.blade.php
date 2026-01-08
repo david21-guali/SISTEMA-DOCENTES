@@ -291,12 +291,7 @@
 </div>
 
 @push('styles')
-<style>
-    .ls-1 { letter-spacing: 0.5px; }
-    .text-xs { font-size: 0.7rem; }
-    .bg-blue-50 { background-color: #eff6ff; }
-    .text-purple { color: #7c3aed; }
-</style>
+    <link rel="stylesheet" href="{{ asset('assets/back/css/meetings.css') }}">
 @endpush
 
 @section('scripts')

@@ -235,47 +235,36 @@
                                 </div>
                             </td>
                             <td class="text-center">
-                                <div class="dropdown position-static">
-                                    <button class="btn btn-sm btn-link text-muted" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i class="fas fa-ellipsis-v"></i>
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-end shadow border-0">
-                                        <li>
-                                            <a class="dropdown-item" href="{{ route('tasks.show', $task) }}">
-                                                <i class="fas fa-eye me-2 text-info"></i> Ver Detalles
-                                            </a>
-                                        </li>
-                                        @if(Auth::user()->profile->id == $task->project->profile_id || Auth::user()->hasRole('admin'))
-                                            <li>
-                                                <a class="dropdown-item" href="{{ route('tasks.edit', $task) }}">
-                                                    <i class="fas fa-edit me-2 text-warning"></i> Editar
-                                                </a>
-                                            </li>
-                                        @endif
-                                        @if($task->status !== 'completada')
-                                            <li>
-                                                <form action="{{ route('tasks.complete', $task) }}" method="POST">
-                                                    @csrf
-                                                    @method('PATCH')
-                                                    <button type="submit" class="dropdown-item">
-                                                        <i class="fas fa-check me-2 text-success"></i> Marcar Completada
-                                                    </button>
-                                                </form>
-                                            </li>
-                                        @endif
-                                        @if(Auth::user()->profile->id == $task->project->profile_id || Auth::user()->hasRole('admin'))
-                                            <li><hr class="dropdown-divider"></li>
-                                            <li>
-                                                <form action="{{ route('tasks.destroy', $task) }}" method="POST" class="form-delete">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="dropdown-item text-danger">
-                                                        <i class="fas fa-trash me-2"></i> Eliminar
-                                                    </button>
-                                                </form>
-                                            </li>
-                                        @endif
-                                    </ul>
+                                <div class="d-flex justify-content-center gap-1">
+                                    <a href="{{ route('tasks.show', $task) }}" class="btn btn-sm btn-info text-white" title="Ver Detalles">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+
+                                    @if(Auth::user()->profile->id == $task->project->profile_id || Auth::user()->hasRole('admin') || Auth::user()->hasRole('coordinador'))
+                                        <a href="{{ route('tasks.edit', $task) }}" class="btn btn-sm btn-warning text-white" title="Editar">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                    @endif
+
+                                    @if($task->status !== 'completada' && Auth::user()->can('complete-tasks'))
+                                        <form action="{{ route('tasks.complete', $task) }}" method="POST" class="d-inline">
+                                            @csrf
+                                            @method('PATCH')
+                                            <button type="submit" class="btn btn-sm btn-success" title="Marcar Completada">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                        </form>
+                                    @endif
+
+                                    @if(Auth::user()->profile->id == $task->project->profile_id || Auth::user()->hasRole('admin'))
+                                        <form action="{{ route('tasks.destroy', $task) }}" method="POST" class="d-inline form-delete">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-sm btn-danger" title="Eliminar">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    @endif
                                 </div>
                             </td>
                         </tr>
@@ -363,13 +352,7 @@
 </div>
 
 @push('styles')
-<style>
-    .text-xs { font-size: 0.7rem; }
-    .border-left-primary { border-left: 4px solid #4e73df !important; }
-    .border-left-success { border-left: 4px solid #1cc88a !important; }
-    .border-left-warning { border-left: 4px solid #f6c23e !important; }
-    .border-left-danger { border-left: 4px solid #e74a3b !important; }
-</style>
+    <link rel="stylesheet" href="{{ asset('assets/back/css/tasks.css') }}">
 @endpush
 @endsection
 

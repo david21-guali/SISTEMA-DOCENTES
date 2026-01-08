@@ -97,8 +97,5 @@
             @endif
         });
     </script>
-    <style>
-        .ls-1 { letter-spacing: 0.5px; }
-    </style>
     @endpush
 </x-guest-layout>

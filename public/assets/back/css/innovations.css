@@ -1,0 +1,20 @@
+/* Innovations Module Styles */
+
+.text-xs {
+    font-size: 0.7rem;
+}
+
+.x-small {
+    font-size: 0.75rem;
+}
+
+/* List group adjustments for file lists */
+.list-group-sm .list-group-item {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+}
+
+/* Hover effects for file thumbnails */
+.clickable-thumbnail:hover {
+    opacity: 0.8;
+}

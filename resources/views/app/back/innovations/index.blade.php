@@ -313,9 +313,7 @@
 </div>
 
 @push('styles')
-<style>
-    .text-xs { font-size: 0.7rem; }
-</style>
+    <link rel="stylesheet" href="{{ asset('assets/back/css/innovations.css') }}">
 @endpush
 @endsection
 

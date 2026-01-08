@@ -24,11 +24,20 @@ class ForumController extends Controller
     {
         $request->validate(['title' => 'required', 'description' => 'required']);
 
-        ForumTopic::create([
+        $topic = ForumTopic::create([
             'profile_id' => Auth::user()->profile->id,
             'title' => $request->title,
             'description' => $request->description,
         ]);
+
+        // Notify Community (Admins, Coordinators, Teachers) about new topic
+        $recipients = \App\Models\User::role(['admin', 'coordinador', 'docente'])->get();
+        
+        foreach ($recipients as $recipient) {
+            if ($recipient->id !== Auth::id()) {
+                $recipient->notify(new \App\Notifications\NewForumTopic($topic));
+            }
+        }
 
         return redirect()->route('forum.index')->with('success', 'Tema creado.');
     }
@@ -48,12 +57,41 @@ class ForumController extends Controller
 
         // Handle both bound model or raw ID (fallback)
         $topicId = ($forum instanceof ForumTopic) ? $forum->id : $forum;
+        // Fetch topic with relations for notification logic
+        $topic = ForumTopic::with(['profile.user', 'posts.profile.user'])->find($topicId);
 
-        ForumPost::create([
+        $post = ForumPost::create([
             'topic_id' => $topicId,
             'profile_id' => Auth::user()->profile->id,
             'content' => $request->content,
         ]);
+
+        if ($topic) {
+            // Collect all unique users to notify (Thread Participants)
+            $usersToNotify = collect();
+
+            // 1. Add Topic Creator
+            if ($topic->profile && $topic->profile->user) {
+                $usersToNotify->push($topic->profile->user);
+            }
+
+            // 2. Add Authors of existing reply posts (Siblings in discussion)
+            foreach ($topic->posts as $existingPost) {
+                if ($existingPost->profile && $existingPost->profile->user) {
+                    $usersToNotify->push($existingPost->profile->user);
+                }
+            }
+
+            // 3. Filter: Unique IDs and Exclude Current Replier
+            $usersToNotify = $usersToNotify->unique('id')->reject(function ($user) {
+                return $user->id === Auth::id();
+            });
+
+            // 4. Send Notifications
+            foreach ($usersToNotify as $user) {
+                $user->notify(new \App\Notifications\NewForumReply($post));
+            }
+        }
 
         return back()->with('success', 'Respuesta publicada.');
     }

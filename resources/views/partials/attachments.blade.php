@@ -129,19 +129,7 @@
 </div>
 
 @push('styles')
-<style>
-    #dropZone {
-        transition: all 0.3s ease;
-        border-color: #dee2e6 !important;
-    }
-    #dropZone.dragover {
-        background-color: #e3f2fd !important;
-        border-color: #4e73df !important;
-    }
-    #dropZone:hover {
-        border-color: #4e73df !important;
-    }
-</style>
+    <link rel="stylesheet" href="{{ asset('assets/back/css/components/attachments.css') }}">
 @endpush
 
 @push('scripts')

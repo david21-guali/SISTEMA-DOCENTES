@@ -360,12 +360,6 @@
 @endpush
 
 @push('styles')
-<style>
-    .text-xs { font-size: 0.7rem; }
-    .border-left-primary { border-left: 4px solid var(--primary-color) !important; }
-    .border-left-success { border-left: 4px solid #1cc88a !important; }
-    .border-left-warning { border-left: 4px solid #f6c23e !important; }
-    .border-left-danger { border-left: 4px solid #e74a3b !important; }
-</style>
+    <link rel="stylesheet" href="{{ asset('assets/back/css/users.css') }}">
 @endpush
 @endsection

@@ -1,0 +1,50 @@
+/* Users Module Styles */
+
+.text-xs {
+    font-size: 0.7rem;
+}
+
+/* Status Borders for Cards */
+.border-left-primary {
+    border-left: 4px solid #4e73df !important;
+}
+
+.border-left-success {
+    border-left: 4px solid #1cc88a !important;
+}
+
+.border-left-warning {
+    border-left: 4px solid #f6c23e !important;
+}
+
+.border-left-danger {
+    border-left: 4px solid #e74a3b !important;
+}
+
+/* Profile Tabs Navigation */
+.nav-tabs .nav-link {
+    color: #6c757d;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    border: none !important;
+    background-color: transparent !important;
+    transition: all 0.3s ease;
+}
+
+.nav-tabs .nav-link:hover {
+    color: #4e73df;
+    border-bottom-color: #d1d3e2 !important;
+}
+
+.nav-tabs .nav-link.active {
+    color: #4e73df !important;
+    background-color: transparent !important;
+    border-bottom: 2px solid #4e73df !important;
+    border-top: none !important;
+    border-left: none !important;
+    border-right: none !important;
+}
+
+.tab-content {
+    border: none;
+}

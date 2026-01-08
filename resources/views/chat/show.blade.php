@@ -2,15 +2,18 @@
 
 @section('title', 'Chat con ' . $user->name)
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('assets/back/css/chat.css') }}">
+@endpush
 @section('contenido')
 <div class="container-fluid h-100">
     <div class="row h-100">
         <div class="col-md-12">
-            <div class="card shadow" style="height: calc(100vh - 150px);">
+            <div class="card shadow chat-main-card">
                 <div class="card-header bg-white border-bottom d-flex align-items-center justify-content-between">
                     <div class="d-flex align-items-center">
                         <a href="{{ route('chat.index') }}" class="btn btn-light btn-sm me-3"><i class="fas fa-arrow-left"></i></a>
-                        <div class="avatar bg-primary text-white rounded-circle me-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 40px; height: 40px;">
+                        <div class="avatar bg-primary text-white rounded-circle me-3 d-flex align-items-center justify-content-center flex-shrink-0 chat-avatar-md">
                             {{ strtoupper(substr($user->name, 0, 1)) }}
                         </div>
                         <h5 class="mb-0 text-truncate">{{ $user->name }}</h5>
@@ -40,15 +43,15 @@
                         @endif
 
                         <div class="d-flex mb-3 {{ $message->sender_id == Auth::user()->profile->id ? 'justify-content-end' : 'justify-content-start' }}">
-                            <div class="card {{ $message->sender_id == Auth::user()->profile->id ? 'bg-primary text-white border-0 shadow-sm' : 'bg-white border-0 shadow-sm' }}" style="max-width: 70%; border-radius: 15px; {{ $message->sender_id == Auth::user()->profile->id ? 'border-bottom-right-radius: 2px;' : 'border-bottom-left-radius: 2px;' }}">
+                            <div class="card chat-message-bubble {{ $message->sender_id == Auth::user()->profile->id ? 'bg-primary text-white chat-message-out' : 'bg-white chat-message-in' }}">
                                 <div class="card-body p-2 px-3">
                                     <p class="mb-1">{{ $message->content }}</p>
                                     <div class="d-flex align-items-center {{ $message->sender_id == Auth::user()->profile->id ? 'justify-content-end' : 'justify-content-start' }}">
-                                        <small class="{{ $message->sender_id == Auth::user()->profile->id ? 'text-white-50' : 'text-muted' }}" style="font-size: 0.7rem;">
+                                        <small class="chat-time {{ $message->sender_id == Auth::user()->profile->id ? 'text-white-50' : 'text-muted' }}">
                                             {{ $message->created_at->format('H:i') }}
                                         </small>
                                         @if($message->sender_id == Auth::user()->profile->id)
-                                            <i class="fas fa-check-double ms-1 {{ $message->read_at ? 'text-white' : 'text-white-50' }}" style="font-size: 0.6rem;"></i>
+                                            <i class="fas fa-check-double ms-1 chat-check-icon {{ $message->read_at ? 'text-white' : 'text-white-50' }}"></i>
                                         @endif
                                     </div>
                                 </div>
@@ -80,7 +83,9 @@
 <script>
     // Scroll al fondo
     const chatBox = document.getElementById('chatBox');
-    chatBox.scrollTop = chatBox.scrollHeight;
+    if (chatBox) {
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
 </script>
 @endsection
 

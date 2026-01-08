@@ -2,6 +2,9 @@
 
 @section('title', 'Chat Institucional')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('assets/back/css/chat.css') }}">
+@endpush
 @section('contenido')
 <div class="container-fluid">
     <div class="row">
@@ -18,10 +21,10 @@
                         <input type="text" id="userSearch" class="form-control bg-light border-start-0" placeholder="Buscar por nombre o correo..." aria-label="Buscar contacto">
                     </div>
                 </div>
-                <div class="list-group list-group-flush overflow-auto" id="userList" style="max-height: 600px;">
+                <div class="list-group list-group-flush chat-user-list" id="userList">
                     @forelse($users as $user)
                     <a href="{{ route('chat.show', $user->id) }}" class="list-group-item list-group-item-action d-flex align-items-center p-3 user-item" data-name="{{ strtolower($user->name) }}" data-email="{{ strtolower($user->email) }}">
-                        <div class="avatar bg-primary text-white rounded-circle me-3 d-flex align-items-center justify-content-center flex-shrink-0 shadow-sm" style="width: 45px; height: 45px; transition: transform 0.2s;">
+                        <div class="avatar bg-primary text-white rounded-circle me-3 d-flex align-items-center justify-content-center flex-shrink-0 shadow-sm chat-avatar-lg">
                             {{ strtoupper(substr($user->name, 0, 1)) }}
                         </div>
                         <div class="overflow-hidden">
@@ -77,14 +80,11 @@
         });
     });
 </script>
-<style>
-    .user-item:hover .avatar { transform: scale(1.1); }
-</style>
 @endsection
 
         <!-- Placeholder Chat Area -->
         <div class="col-md-8 d-none d-md-block">
-            <div class="card shadow h-100 d-flex align-items-center justify-content-center bg-light" style="min-height: 500px;">
+            <div class="card shadow h-100 d-flex align-items-center justify-content-center bg-light chat-placeholder">
                 <div class="text-center text-muted">
                     <i class="fas fa-paper-plane fa-3x mb-3"></i>
                     <h4>Selecciona un contacto para chatear</h4>

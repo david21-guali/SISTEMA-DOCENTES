@@ -1,0 +1,20 @@
+/* Evaluations Module Styles */
+
+.x-small-text {
+    font-size: 0.75rem !important;
+}
+
+.form-select-sm,
+.form-control-sm {
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+.evaluation-summary-icon {
+    font-size: 0.7rem;
+}
+
+/* Modal and Alert Utilities for Evaluations */
+.evaluation-alert-info {
+    font-size: 0.9rem;
+}

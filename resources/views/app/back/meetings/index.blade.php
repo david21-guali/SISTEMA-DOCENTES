@@ -280,19 +280,7 @@
 </div>
 
 @push('styles')
-<style>
-    .ls-1 { letter-spacing: 1px; }
-    .hover-lift:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.08) !important; }
-    .transition-all { transition: all 0.3s ease; }
-    .text-xs { font-size: 0.75rem; }
-    .hover-scale:hover { transform: scale(1.1); z-index: 10 !important; cursor: pointer; }
-    .bg-gradient-primary { background: linear-gradient(45deg, #4e73df, #224abe); }
-    .border-dashed { border-top-style: dashed !important; }
-    .active-glow-primary:hover { border-color: #4e73df !important; }
-    .icon-xxs { width: 20px; height: 20px; }
-    .bg-indigo { background-color: #6610f2; }
-    .text-indigo { color: #6610f2; }
-</style>
+    <link rel="stylesheet" href="{{ asset('assets/back/css/meetings.css') }}">
 @endpush
 
 @section('scripts')

@@ -1,0 +1,28 @@
+/* Attachments Component Styles */
+
+#dropZone {
+    transition: all 0.3s ease;
+    border-color: #dee2e6 !important;
+    cursor: pointer;
+}
+
+#dropZone.dragover {
+    background-color: #e3f2fd !important;
+    border-color: #4e73df !important;
+}
+
+#dropZone:hover {
+    border-color: #4e73df !important;
+}
+
+/* Card Preview Utility */
+.attachment-card-preview {
+    height: 120px;
+    cursor: pointer;
+    background-color: #f8f9fc;
+}
+
+.attachment-img-preview {
+    max-height: 120px;
+    object-fit: cover;
+}

@@ -271,31 +271,8 @@
 </div>
 
 @push('styles')
-<style>
-    .nav-tabs .nav-link {
-        color: #6c757d;
-        font-size: 0.85rem;
-        letter-spacing: 0.5px;
-        border: none !important;
-        background-color: transparent !important;
-    }
-    .nav-tabs .nav-link:hover {
-        color: #4e73df;
-        border-bottom-color: #d1d3e2 !important; 
-    }
-    .nav-tabs .nav-link.active {
-        color: #4e73df !important;
-        background-color: transparent !important;
-        border-bottom: 2px solid #4e73df !important;
-        border-top: none !important;
-        border-left: none !important;
-        border-right: none !important;
-    }
-    /* Hide tab content border if bootstrap adds one */
-    .tab-content {
-        border: none;
-    }
-</style>
+    <link rel="stylesheet" href="{{ asset('assets/back/css/users.css') }}">
+@endpush
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         @if(session('welcome_new_user'))
@@ -326,5 +303,5 @@
         });
     }
 </script>
-@endpush
+
 @endsection

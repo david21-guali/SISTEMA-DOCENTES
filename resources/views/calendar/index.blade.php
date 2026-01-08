@@ -5,106 +5,23 @@
 @section('head')
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/locales-all.global.min.js'></script>
-<style>
-    .fc-header-toolbar {
-        display: none !important; /* Hide default toolbar to use our custom one */
-    }
-    .calendar-container {
-        background: white;
-        border-radius: 20px;
-        padding: 20px;
-        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
-    }
-    .fc-theme-standard td, .fc-theme-standard th {
-        border-color: #f0f0f0;
-    }
-    .fc-col-header-cell {
-        padding: 15px 0;
-        background-color: #f8f9fc;
-        color: #858796;
-        text-transform: uppercase;
-        font-size: 0.75rem;
-        letter-spacing: 1px;
-        border-bottom: none !important;
-    }
-    .fc-daygrid-day-number {
-        color: #5a5c69;
-        font-weight: 600;
-        padding: 10px !important;
-    }
-    .fc-day-today {
-        background-color: #f8f9fc !important;
-    }
-    .fc-day-today .fc-daygrid-day-number {
-        background-color: #4e73df;
-        color: white;
-        border-radius: 50%;
-        width: 30px;
-        height: 30px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 5px;
-    }
-    .fc-event {
-        border: none;
-        border-radius: 5px;
-        padding: 2px 5px;
-        font-size: 0.85rem;
-        margin-bottom: 2px;
-    }
-    
-    /* Custom Header Styles */
-    .cal-header-title {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: #2e2e2e;
-    }
-    .cal-header-date {
-        color: #2e2e2e;
-        font-weight: 400;
-        padding-left: 15px;
-        border-left: 2px solid #e0e0e0;
-        margin-left: 15px;
-    }
-    .btn-custom-light {
-        background: #fff;
-        border: 1px solid #e3e6f0;
-        color: #5a5c69;
-        font-weight: 500;
-    }
-    .btn-custom-light:hover {
-        background: #f8f9fc;
-    }
-    
-    /* Responsive Improvements */
-    @media (max-width: 768px) {
-        .cal-header-title { font-size: 1.25rem; }
-        .cal-header-date { font-size: 0.9rem; padding-left: 10px; margin-left: 10px; }
-        .calendar-container { 
-            padding: 10px; 
-            overflow-x: auto; /* Allow horizontal scrolling */
-        }
-        .fc-col-header-cell { font-size: 0.75rem; padding: 10px 0; }
-        .d-flex.align-items-center.mb-3.mb-md-0 { justify-content: center; }
-        
-        /* Hide week button text on mobile if needed, or keep it */
-    }
-</style>
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('assets/back/css/calendar.css') }}">
+@endpush
 @endsection
 
 @section('contenido')
 <div class="container-fluid">
 
     <!-- Top Header (Day | Date + Actions) -->
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 bg-white p-4 rounded-3 shadow-sm">
-        <div class="d-flex align-items-center mb-3 mb-md-0">
+    <div class="d-flex flex-column flex-lg-row justify-content-between align-items-center mb-4 bg-white p-4 rounded-3 shadow-sm">
+        <div class="d-flex align-items-center mb-3 mb-lg-0">
             <div id="headerDay" class="cal-header-title">{{ now()->locale('es')->isoFormat('dddd') }}</div>
             <div id="headerDate" class="cal-header-date">{{ now()->locale('es')->isoFormat('D MMM, YYYY') }}</div>
         </div>
-        <div class="d-flex gap-2 w-100 w-md-auto justify-content-center align-items-center">
-            <div class="btn-group shadow-sm">
-                <a href="{{ route('calendar.export') }}" class="btn btn-outline-primary">
+        <div class="d-flex flex-column flex-lg-row gap-2 w-100 w-lg-auto justify-content-center align-items-stretch align-items-lg-center">
+            <div class="btn-group shadow-sm w-100 w-lg-auto">
+                <a href="{{ route('calendar.export') }}" class="btn btn-outline-primary flex-grow-1 flex-md-grow-0">
                     <i class="fas fa-calendar-check me-2"></i> Sincronizar
                 </a>
                 <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#helpCalendarModal" title="¿Cómo funciona?">
@@ -123,7 +40,7 @@
     <!-- Calendar Controls & View -->
     <div class="calendar-container">
         <!-- Custom Navigation -->
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 gap-3">
+        <div class="d-flex flex-column flex-xxl-row justify-content-between align-items-center mb-4 gap-3">
             <div class="order-2 order-md-1">
                 <button class="btn btn-custom-light px-4" onclick="calendar.today()">Hoy</button>
             </div>

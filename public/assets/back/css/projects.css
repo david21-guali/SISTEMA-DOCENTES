@@ -1,0 +1,47 @@
+/* Projects Module Styles */
+
+/* Common Utility Classes */
+.text-xs {
+    font-size: 0.7rem;
+}
+
+.badge-xs {
+    font-size: 0.65rem;
+    padding: 2px 4px;
+}
+
+/* Border accents for cards */
+.border-left-primary {
+    border-left: 4px solid #4e73df !important;
+}
+
+.border-left-success {
+    border-left: 4px solid #1cc88a !important;
+}
+
+.border-left-warning {
+    border-left: 4px solid #f6c23e !important;
+}
+
+.border-left-info {
+    border-left: 4px solid #36b9cc !important;
+}
+
+/* Sidebar fix for project detail page */
+@media (min-width: 768px) {
+    .content-fix-sidebar {
+        margin-left: 260px !important;
+        width: calc(100% - 270px) !important;
+    }
+}
+
+/* Slim action buttons */
+.btn-xs-slim {
+    padding: 4px 10px !important;
+    font-size: 0.8rem !important;
+    line-height: 1.2 !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    height: 30px;
+}

@@ -223,18 +223,7 @@
 </div>
 
 @push('styles')
-<style>
-    .ls-1 { letter-spacing: 0.5px; }
-    .form-control, .form-select { border-radius: 8px; font-size: 0.95rem; }
-    .form-control:focus, .form-select:focus { border-color: #4e73df; box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.1); background-color: #fff; }
-    .md-radio { width: 1.2em; height: 1.2em; margin-top: 0.1em; }
-    .hover-bg-light:hover { background-color: #f8f9fa; cursor: pointer; }
-    .btn-check:checked + .btn-outline-primary {
-         background-color: #e8f0fe;
-         color: #1a73e8;
-         border-color: transparent;
-    }
-</style>
+    <link rel="stylesheet" href="{{ asset('assets/back/css/meetings.css') }}">
 @endpush
 @endsection
 

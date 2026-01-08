@@ -1,0 +1,32 @@
+/* Notifications Module Styles */
+
+.notifications-container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.notification-item {
+    transition: background-color 0.2s ease;
+    cursor: pointer;
+}
+
+.notification-item:last-child {
+    border-bottom: none !important;
+}
+
+.unread-bg {
+    background-color: #f2f4f7 !important;
+}
+
+.notification-item:hover {
+    background-color: #e9ecef !important;
+}
+
+/* Specific Utilities for Notification Items */
+.text-sm {
+    font-size: 0.875rem !important;
+}
+
+.fs-5 {
+    font-size: 1.25rem !important;
+}

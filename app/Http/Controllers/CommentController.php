@@ -45,9 +45,41 @@ class CommentController extends Controller
         // Notify commentable owner if someone else comments
         /** @var Profile $profile */
         $profile = $commentable->profile;
-        $owner = $profile->user;
-        if ($owner->id !== Auth::id()) {
-            $owner->notify(new \App\Notifications\NewCommentAdded($comment));
+        if ($profile && $profile->user && $profile->user->id !== Auth::id()) {
+            $profile->user->notify(new \App\Notifications\NewCommentAdded($comment));
+        }
+
+        // Notify thread participants if this is a reply
+        if (!empty($validated['parent_id'])) {
+            /** @var Comment $parentComment */
+            $parentComment = Comment::with(['profile.user', 'replies.profile.user'])->findOrFail($validated['parent_id']);
+            
+            if ($parentComment) {
+                // Collect all unique users to notify
+                $usersToNotify = collect();
+
+                // 1. Add Parent Author
+                if ($parentComment->profile && $parentComment->profile->user) {
+                    $usersToNotify->push($parentComment->profile->user);
+                }
+
+                // 2. Add Authors of existing replies (Siblings)
+                foreach ($parentComment->replies as $reply) {
+                    if ($reply->profile && $reply->profile->user) {
+                        $usersToNotify->push($reply->profile->user);
+                    }
+                }
+
+                // 3. Filter: Unique IDs and Exclude Current User
+                $usersToNotify = $usersToNotify->unique('id')->reject(function ($user) {
+                    return $user->id === Auth::id();
+                });
+
+                // 4. Send Notifications
+                foreach ($usersToNotify as $user) {
+                    $user->notify(new \App\Notifications\CommentReplied($comment));
+                }
+            }
         }
 
         return back()->with('success', 'Comentario publicado exitosamente.');

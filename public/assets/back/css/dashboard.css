@@ -1,0 +1,38 @@
+/* Dashboard Styles */
+
+@media (max-width: 350px) {
+    .h3 {
+        font-size: 1.25rem !important;
+    }
+
+    .h4 {
+        font-size: 1.1rem !important;
+    }
+
+    .card-body {
+        padding: 0.75rem !important;
+    }
+
+    .small {
+        font-size: 0.7rem !important;
+    }
+}
+
+/* Timeline scroll area */
+.activity-timeline-scroll {
+    max-height: 280px;
+    overflow-y: auto;
+}
+
+/* Activity Icons */
+.activity-icon-circle {
+    width: 36px;
+    height: 36px;
+}
+
+/* Chart heights */
+.dashboard-chart-wrapper {
+    position: relative;
+    height: 250px;
+    width: 100%;
+}

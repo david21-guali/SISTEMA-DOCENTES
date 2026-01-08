@@ -364,7 +364,11 @@
 @endsection
 
 @section('scripts')
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('assets/back/css/dashboard.css') }}">
+@endpush
 <script>
+
     // Category Chart
     const categoryCtx = document.getElementById('categoryChart').getContext('2d');
     new Chart(categoryCtx, {
@@ -451,13 +455,5 @@
             }
         }
     });
-</script>
-<style>
-    @media (max-width: 350px) {
-        .h3 { font-size: 1.25rem !important; }
-        .h4 { font-size: 1.1rem !important; }
-        .card-body { padding: 0.75rem !important; }
-        .small { font-size: 0.7rem !important; }
-    }
-</style>
 @endsection
+

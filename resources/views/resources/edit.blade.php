@@ -158,9 +158,7 @@
 </div>
 
 @push('styles')
-<style>
-    .bg-gray-50 { background-color: #f8f9fa; }
-</style>
+    <link rel="stylesheet" href="{{ asset('assets/back/css/resources.css') }}">
 @endpush
 
 @push('scripts')

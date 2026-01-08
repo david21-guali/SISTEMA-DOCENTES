@@ -34,15 +34,7 @@
         </form>
     </div>
 
-    @push('styles')
-    <style>
-        .ls-1 { letter-spacing: 0.5px; }
-        .border-radius-10 { border-radius: 12px; }
-        .w-100 { width: 100%; }
-        .flex-col { display: flex; flex-direction: column; }
-        .gap-3 { gap: 1rem; }
-    </style>
-    @endpush
+
 
     <script>
         // "Live Verification" Polling
