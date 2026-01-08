@@ -152,12 +152,33 @@ class Meeting extends Model
     }
 
     /**
+     * Scope meetings visible to a specific user.
+     * 
      * @param \Illuminate\Database\Eloquent\Builder<Meeting> $query
-     * @param int $profileId
+     * @param \App\Models\User|int $user
      * @return \Illuminate\Database\Eloquent\Builder<Meeting>
      */
-    public function scopeForUser($query, $profileId)
+    public function scopeForUser($query, $user)
     {
+        // Handle if only an ID is passed
+        if (is_numeric($user)) {
+            $user = \App\Models\User::find($user);
+        }
+
+        if (!$user) {
+            return $query;
+        }
+
+        if ($user->hasRole(['admin', 'coordinador'])) {
+            return $query;
+        }
+
+        $profileId = $user->profile?->id;
+
+        if (!$profileId) {
+            return $query->whereRaw('1 = 0'); // Return no results if no profile
+        }
+
         return $query->where('created_by', $profileId)
                      ->orWhereHas('participants', fn($q) => $q->where('profiles.id', $profileId));
     }

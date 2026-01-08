@@ -16,7 +16,9 @@ class ProjectManagementTest extends TestCase
     public function test_authenticated_user_can_create_project(): void
     {
         // 1. Arrange: Crear usuario, perfil y categoría
+        $this->seed(\Database\Seeders\RolePermissionSeeder::class);
         $user = User::factory()->create();
+        $user->assignRole('admin');
         $this->actingAs($user);
         
         $category = Category::create(['name' => 'Investigación', 'color' => '#FF0000']);
@@ -49,7 +51,9 @@ class ProjectManagementTest extends TestCase
 
     public function test_project_requires_validation(): void
     {
+        $this->seed(\Database\Seeders\RolePermissionSeeder::class);
         $user = User::factory()->create();
+        $user->assignRole('admin');
         $this->actingAs($user);
 
         // Enviar formulario vacío

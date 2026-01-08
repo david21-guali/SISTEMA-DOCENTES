@@ -122,6 +122,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('reports/innovations/excel', [ReportController::class, 'innovationsExcel'])->name('reports.innovations.excel');
     Route::get('reports/participation', [ReportController::class, 'teacherParticipation'])->name('reports.participation');
     Route::get('reports/comparative', [ReportController::class, 'comparative'])->name('reports.comparative');
+    Route::get('reports/comparative/pdf', [ReportController::class, 'comparativePdf'])->name('reports.comparative.pdf');
+    Route::get('reports/comparative/excel', [ReportController::class, 'comparativeExcel'])->name('reports.comparative.excel');
     
     // Evaluation routes
     Route::get('projects/{project}/evaluations/create', [EvaluationController::class, 'create'])->name('evaluations.create');
@@ -152,6 +154,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Calendar routes
     Route::get('calendar', [\App\Http\Controllers\CalendarController::class, 'index'])->name('calendar.index');
     Route::get('calendar/events', [\App\Http\Controllers\CalendarController::class, 'events'])->name('calendar.events');
+    Route::get('calendar/export', [\App\Http\Controllers\CalendarController::class, 'exportIcs'])->name('calendar.export');
 
     // Attachment routes
     Route::post('attachments/{type}/{id}', [\App\Http\Controllers\AttachmentController::class, 'store'])->name('attachments.store');

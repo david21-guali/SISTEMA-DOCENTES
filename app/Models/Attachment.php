@@ -24,7 +24,7 @@ class Attachment extends Model
     /**
      * Polymorphic relationship - can belong to Project or Task
      * 
-     * @return \Illuminate\Database\Eloquent\Relations\MorphTo<\Illuminate\Database\Eloquent\Model, \App\Models\Attachment>
+     * @return \Illuminate\Database\Eloquent\Relations\MorphTo<\Illuminate\Database\Eloquent\Model, $this>
      */
     public function attachable(): \Illuminate\Database\Eloquent\Relations\MorphTo
     {

@@ -141,15 +141,37 @@ class Project extends Model
      * @param \App\Models\User $user
      * @return \Illuminate\Database\Eloquent\Builder<Project>
      */
-    public function scopeForUser($query, \App\Models\User $user)
+    /**
+     * Scope projects visible to a specific user.
+     * 
+     * @param \Illuminate\Database\Eloquent\Builder<Project> $query
+     * @param \App\Models\User|int $user
+     * @return \Illuminate\Database\Eloquent\Builder<Project>
+     */
+    public function scopeForUser($query, $user)
     {
+        // Handle if only an ID is passed
+        if (is_numeric($user)) {
+            $user = \App\Models\User::find($user);
+        }
+
+        if (!$user) {
+            return $query;
+        }
+
         if ($user->hasRole(['admin', 'coordinador'])) {
             return $query;
         }
 
-        return $query->where('profile_id', $user->profile->id)
-                     ->orWhereHas('team', function ($q) use ($user) {
-                         $q->where('profiles.id', $user->profile->id);
+        $profileId = $user->profile?->id;
+
+        if (!$profileId) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        return $query->where('profile_id', $profileId)
+                     ->orWhereHas('team', function ($q) use ($profileId) {
+                         $q->where('profiles.id', $profileId);
                      });
     }
 

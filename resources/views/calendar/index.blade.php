@@ -102,7 +102,15 @@
             <div id="headerDay" class="cal-header-title">{{ now()->locale('es')->isoFormat('dddd') }}</div>
             <div id="headerDate" class="cal-header-date">{{ now()->locale('es')->isoFormat('D MMM, YYYY') }}</div>
         </div>
-        <div class="d-flex gap-2 w-100 w-md-auto justify-content-center">
+        <div class="d-flex gap-2 w-100 w-md-auto justify-content-center align-items-center">
+            <div class="btn-group shadow-sm">
+                <a href="{{ route('calendar.export') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-calendar-check me-2"></i> Sincronizar
+                </a>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#helpCalendarModal" title="¿Cómo funciona?">
+                    <i class="fas fa-question-circle"></i>
+                </button>
+            </div>
             <button class="btn btn-custom-light" onclick="calendar.refetchEvents()">
                 <i class="fas fa-sync-alt me-2"></i> Actualizar
             </button>
@@ -139,6 +147,48 @@
         <div id='calendar'></div>
     </div>
 
+    <!-- Help Modal -->
+    <div class="modal fade" id="helpCalendarModal" tabindex="-1" aria-labelledby="helpCalendarModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-info text-white border-0">
+                    <h5 class="modal-title fw-bold" id="helpCalendarModalLabel">
+                        <i class="fas fa-info-circle me-2"></i> ¿Cómo sincronizar tu calendario?
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <p class="text-muted">La opción <strong>Sincronizar</strong> descarga un archivo <code>.ics</code> que puedes importar en tu calendario personal para recibir recordatorios automáticos.</p>
+                    
+                    <div class="mb-4">
+                        <h6 class="fw-bold text-dark"><i class="fab fa-google text-danger me-2"></i> Google Calendar</h6>
+                        <ol class="small text-muted">
+                            <li>Haz clic en "Sincronizar" para descargar el archivo.</li>
+                            <li>En tu PC, busca la sección <strong>"Otros calendarios"</strong> en la barra lateral izquierda.</li>
+                            <li>Haz clic en el botón <strong>"+"</strong> y selecciona la opción <strong>"Importar"</strong>.</li>
+                            <li>Selecciona el archivo descargado y confirma.</li>
+                        </ol>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6 class="fw-bold text-dark"><i class="fab fa-microsoft text-primary me-2"></i> Outlook / Celular</h6>
+                        <ol class="small text-muted">
+                            <li>Descarga el archivo <code>.ics</code>.</li>
+                            <li>Simplemente abre el archivo en tu computadora o envíalo a tu móvil por correo.</li>
+                            <li>El sistema te preguntará si deseas añadir los eventos a tu calendario.</li>
+                        </ol>
+                    </div>
+
+                    <div class="alert alert-light border-0 small mb-0">
+                        <i class="fas fa-lightbulb text-warning me-2"></i> <strong>Tip:</strong> El archivo es personalizado y solo contiene los eventos en los que participas.
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Entendido</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 @endsection
 

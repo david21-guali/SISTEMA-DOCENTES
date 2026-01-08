@@ -180,11 +180,33 @@ class Innovation extends Model
     }
 
     /**
+     * Scope innovations visible to a specific user.
+     * 
      * @param \Illuminate\Database\Eloquent\Builder<Innovation> $query
+     * @param \App\Models\User|int $user
      * @return \Illuminate\Database\Eloquent\Builder<Innovation>
      */
-    public function scopePendingReview($query)
+    public function scopeForUser($query, $user)
     {
-        return $query->where('status', 'en_revision');
+        // Handle if only an ID is passed
+        if (is_numeric($user)) {
+            $user = \App\Models\User::find($user);
+        }
+
+        if (!$user) {
+            return $query;
+        }
+
+        if ($user->hasRole(['admin', 'coordinador'])) {
+            return $query;
+        }
+
+        $profileId = $user->profile?->id;
+
+        if (!$profileId) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        return $query->where('profile_id', $profileId);
     }
 }

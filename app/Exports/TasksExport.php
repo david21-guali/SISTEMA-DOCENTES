@@ -3,27 +3,18 @@
 namespace App\Exports;
 
 use App\Models\Task;
-use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\WithHeadings;
-use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithStyles;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-/**
- * Export handler for tasks to Excel format.
- * Optimized for High Maintainability Index (MI >= 65).
- * @implements WithMapping<mixed>
- */
-class TasksExport implements FromCollection, WithHeadings, WithMapping, WithStyles
+class TasksExport implements FromArray, WithHeadings, WithStyles, ShouldAutoSize
 {
-    /**
-     * @var array<string, mixed> Contextual filters for the export query.
-     */
+    /** @var array<string, mixed> */
     protected $filters;
 
     /**
-     * TasksExport constructor.
-     * 
      * @param array<string, mixed> $filters
      */
     public function __construct(array $filters = [])
@@ -32,148 +23,79 @@ class TasksExport implements FromCollection, WithHeadings, WithMapping, WithStyl
     }
 
     /**
-     * Fetch the filtered dataset for export.
-     * 
-     * @return \Illuminate\Support\Collection<int, \App\Models\Task>
+     * @return array<int, array<int, mixed>>
      */
-    public function collection()
+    public function array(): array
     {
-        $query = Task::with(['project', 'assignedProfile.user']);
+        $query = Task::with(['project', 'assignedProfile.user'])
+            ->forUser(auth()->user());
+        
+        if (isset($this->filters['status'])) {
+            $query->where('status', $this->filters['status']);
+        }
 
-        $this->applyContextualFilters($query);
+        $tasks = $query->get();
+        
+        // Summary Stats
+        $stats = [
+            ['ANÁLISIS DE PRODUCTIVIDAD OPERATIVA'],
+            ['Total Tareas', $tasks->count()],
+            ['Tareas Completadas', $tasks->where('status', 'completada')->count()],
+            ['Tasa de Cumplimiento', (round($tasks->count() > 0 ? ($tasks->where('status', 'completada')->count() / $tasks->count()) * 100 : 0, 1)) . '%'],
+            [''],
+            ['DESGLOSE POR PRIORIDAD'],
+            ['Prioridad Alta', $tasks->where('priority', 'alta')->count()],
+            ['Prioridad Media', $tasks->where('priority', 'media')->count()],
+            ['Prioridad Baja', $tasks->where('priority', 'baja')->count()],
+            [''],
+            ['DETALLE DE ACTIVIDADES'],
+        ];
 
-        return $query->get();
+        // Header Row for Table
+        $rows = [
+            ['#', 'Título de la Tarea', 'Proyecto Relacionado', 'Personal Asignado', 'Prioridad', 'Estado Actual', 'Fecha Límite']
+        ];
+
+        foreach ($tasks as $index => $task) {
+            $rows[] = [
+                $index + 1,
+                $task->title,
+                $task->project->title ?? 'N/A',
+                $task->assignedUser->name ?? 'Sin asignar',
+                ucfirst($task->priority),
+                ucfirst($task->status),
+                $task->due_date ? $task->due_date->format('d/m/Y') : '-'
+            ];
+        }
+
+        return array_merge($stats, $rows);
     }
 
     /**
-     * Define the data headers for the Excel sheet.
-     * 
-     * @return array<int, string>
+     * @return array<int, array<int, string>>
      */
     public function headings(): array
     {
         return [
-            'ID',
-            'Título',
-            'Proyecto',
-            'Asignado a',
-            'Estado',
-            'Prioridad',
-            'Fecha Límite',
-            'Completada',
+            ['REPORTE DE CUMPLIMIENTO DE TAREAS'],
+            ['Generado el: ' . date('d/m/Y H:i')],
+            [''],
         ];
     }
 
     /**
-     * Transform an individual Task model into an exportable array.
-     * 
-     * @param mixed $task
-     * @return array<int, mixed>
+     * @return array<int|string, array<string, mixed>>
      */
-    public function map($task): array
+    public function styles(Worksheet $sheet): array
     {
-        if (!($task instanceof Task)) {
-            return [];
-        }
         return [
-            $task->id,
-            $task->title,
-            $this->getProjectTitle($task),
-            $this->getAssignedUserName($task),
-            $this->formatStatusLabel($task->status),
-            $this->formatPriorityLabel($task->priority),
-            $this->formatDate($task->due_date),
-            $this->formatDateTime($task->completion_date),
+            1 => ['font' => ['bold' => true, 'size' => 14]],
+            4 => ['font' => ['bold' => true]],
+            5 => ['font' => ['bold' => true]],
+            6 => ['font' => ['bold' => true]],
+            8 => ['font' => ['bold' => true]], // Priority header
+            12 => ['font' => ['bold' => true, 'size' => 12]],
+            13 => ['font' => ['bold' => true], 'fill' => ['fillType' => 'solid', 'startColor' => ['rgb' => 'F59E0B'], 'color' => ['rgb' => 'FFFFFF']]],
         ];
-    }
-
-    /**
-     * Apply bold styling to the header row.
-     * 
-     * @param Worksheet $sheet
-     * @return array<int, array<string, array<string, bool>>>
-     */
-    public function styles(Worksheet $sheet)
-    {
-        return [1 => ['font' => ['bold' => true]]];
-    }
-
-    /**
-     * Apply contextual filters to the task query.
-     * 
-     * @param \Illuminate\Database\Eloquent\Builder<\App\Models\Task> $query
-     * @return void
-     */
-    private function applyContextualFilters($query): void
-    {
-        if (isset($this->filters['status'])) {
-            $query->where('status', $this->filters['status']);
-        }
-    }
-
-    /**
-     * Get the associated project title or return a placeholder.
-     * 
-     * @param Task $task
-     * @return string
-     */
-    private function getProjectTitle($task): string
-    {
-        return $task->project->title ?? 'N/A';
-    }
-
-    /**
-     * Extract and normalize the assigned user name.
-     * 
-     * @param Task $task
-     * @return string
-     */
-    private function getAssignedUserName($task): string
-    {
-        return $task->assignedUser->name ?? 'Sin asignar';
-    }
-
-    /**
-     * Capitalize and normalize the status label.
-     * 
-     * @param string $status
-     * @return string
-     */
-    private function formatStatusLabel(string $status): string
-    {
-        return ucfirst(str_replace('_', ' ', $status));
-    }
-
-    /**
-     * Capitalize and normalize the priority label.
-     * 
-     * @param string $priority
-     * @return string
-     */
-    private function formatPriorityLabel(string $priority): string
-    {
-        return ucfirst($priority);
-    }
-
-    /**
-     * Standardize the date format for Excel.
-     * 
-     * @param mixed $date
-     * @return string
-     */
-    private function formatDate($date): string
-    {
-        return $date ? $date->format('d/m/Y') : '-';
-    }
-
-    /**
-     * Standardize the date format with time for completion info.
-     * 
-     * @param mixed $date
-     * @return string
-     */
-    private function formatDateTime($date): string
-    {
-        return $date ? $date->format('d/m/Y H:i') : '-';
     }
 }

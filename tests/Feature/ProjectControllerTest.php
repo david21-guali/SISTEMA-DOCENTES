@@ -17,8 +17,9 @@ class ProjectControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        // Set up roles and default user if necessary, or just create a user with a profile
+        $this->seed(\Database\Seeders\RolePermissionSeeder::class);
         $this->user = User::factory()->create();
+        $this->user->assignRole('admin');
         $this->profile = $this->user->profile;
     }
 

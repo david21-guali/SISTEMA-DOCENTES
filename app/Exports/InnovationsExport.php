@@ -3,27 +3,18 @@
 namespace App\Exports;
 
 use App\Models\Innovation;
-use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\WithHeadings;
-use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithStyles;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-/**
- * Export handler for pedagogical innovations to Excel format.
- * Optimized for High Maintainability Index (MI >= 65).
- * @implements WithMapping<mixed>
- */
-class InnovationsExport implements FromCollection, WithHeadings, WithMapping, WithStyles
+class InnovationsExport implements FromArray, WithHeadings, WithStyles, ShouldAutoSize
 {
-    /**
-     * @var array<string, mixed> Contextual filters for the export query.
-     */
+    /** @var array<string, mixed> */
     protected $filters;
 
     /**
-     * Initialize the export with specific search/status filters.
-     * 
      * @param array<string, mixed> $filters
      */
     public function __construct(array $filters = [])
@@ -32,148 +23,73 @@ class InnovationsExport implements FromCollection, WithHeadings, WithMapping, Wi
     }
 
     /**
-     * Fetch the filtered dataset for export.
-     * 
-     * @return \Illuminate\Support\Collection<int, \App\Models\Innovation>
+     * @return array<int, array<int, mixed>>
      */
-    public function collection()
+    public function array(): array
     {
-        $query = Innovation::with(['profile.user', 'innovationType']);
+        $query = Innovation::with(['profile.user', 'innovationType'])
+            ->forUser(auth()->user());
+        
+        if (isset($this->filters['status'])) {
+            $query->where('status', $this->filters['status']);
+        }
 
-        $this->applyContextualFilters($query);
+        $innovations = $query->get();
+        
+        // Summary Stats
+        $stats = [
+            ['INDICADORES DE IMPACTO ACADÉMICO'],
+            ['Total Innovaciones', $innovations->count()],
+            ['Impacto Promedio', (round($innovations->avg('impact_score') ?? 0, 1)) . '/10'],
+            ['Con Evidencias Registradas', $innovations->whereNotNull('evidence_files')->count()],
+            [''],
+            ['DETALLE DE INICIATIVAS'],
+        ];
 
-        return $query->get();
+        // Header Row for Table
+        $rows = [
+            ['#', 'Título de la Innovación', 'Tipo / Categoría', 'Autor Responsable', 'Estado Actual', 'Puntaje Impacto', 'Fecha Registro']
+        ];
+
+        foreach ($innovations as $index => $innovation) {
+            $rows[] = [
+                $index + 1,
+                $innovation->title,
+                $innovation->innovationType->name ?? 'N/A',
+                $innovation->profile->user->name ?? 'N/A',
+                ucfirst(str_replace('_', ' ', $innovation->status)),
+                $innovation->impact_score ? $innovation->impact_score . '/10' : '-',
+                $innovation->created_at->format('d/m/Y')
+            ];
+        }
+
+        return array_merge($stats, $rows);
     }
 
     /**
-     * Define the data headers for the Excel sheet.
-     * 
-     * @return array<int, string>
+     * @return array<int, array<int, string>>
      */
     public function headings(): array
     {
         return [
-            'ID',
-            'Título',
-            'Tipo',
-            'Responsable',
-            'Estado',
-            'Impacto',
-            'Archivos',
-            'Creado',
+            ['REPORTE DE INNOVACIÓN PEDAGÓGICA'],
+            ['Generado el: ' . date('d/m/Y H:i')],
+            [''],
         ];
     }
 
     /**
-     * Transform an individual Innovation model into an exportable array.
-     * 
-     * @param mixed $innovation
-     * @return array<int, mixed>
+     * @return array<int|string, array<string, mixed>>
      */
-    public function map($innovation): array
+    public function styles(Worksheet $sheet): array
     {
-        if (!($innovation instanceof Innovation)) {
-            return [];
-        }
         return [
-            $innovation->id,
-            $innovation->title,
-            $this->getInnovationTypeName($innovation),
-            $this->getResponsibleName($innovation),
-            $this->formatStatusLabel($innovation->status),
-            $this->formatImpactScore($innovation->impact_score),
-            $this->countEvidenceFiles($innovation),
-            $this->formatDate($innovation->created_at),
+            1 => ['font' => ['bold' => true, 'size' => 14]],
+            4 => ['font' => ['bold' => true]],
+            5 => ['font' => ['bold' => true]],
+            6 => ['font' => ['bold' => true]],
+            8 => ['font' => ['bold' => true, 'size' => 12]],
+            9 => ['font' => ['bold' => true], 'fill' => ['fillType' => 'solid', 'startColor' => ['rgb' => '06B6D4'], 'color' => ['rgb' => 'FFFFFF']]],
         ];
-    }
-
-    /**
-     * Apply bold styling to the header row.
-     * 
-     * @param Worksheet $sheet
-     * @return array<int, array<string, array<string, bool>>>
-     */
-    public function styles(Worksheet $sheet)
-    {
-        return [1 => ['font' => ['bold' => true]]];
-    }
-
-    /**
-     * Internal helper to filter innovations by their current status.
-     * 
-     * @param \Illuminate\Database\Eloquent\Builder<\App\Models\Innovation> $query
-     * @return void
-     */
-    private function applyContextualFilters($query): void
-    {
-        if (isset($this->filters['status'])) {
-            $query->where('status', $this->filters['status']);
-        }
-    }
-
-    /**
-     * Extract and normalize the responsible user name.
-     * 
-     * @param Innovation $innovation
-     * @return string
-     */
-    private function getResponsibleName($innovation): string
-    {
-        return $innovation->user->name ?? 'N/A';
-    }
-
-    /**
-     * Extract the innovation type name or return a placeholder.
-     * 
-     * @param Innovation $innovation
-     * @return string
-     */
-    private function getInnovationTypeName($innovation): string
-    {
-        return $innovation->innovationType->name ?? 'Sin tipo';
-    }
-
-    /**
-     * Convert the database status string into a human-readable label.
-     * 
-     * @param string $status
-     * @return string
-     */
-    private function formatStatusLabel(string $status): string
-    {
-        return ucfirst(str_replace('_', ' ', $status));
-    }
-
-    /**
-     * Format the numeric impact score for the export.
-     * 
-     * @param mixed $score
-     * @return string
-     */
-    private function formatImpactScore($score): string
-    {
-        return $score ? $score . '/10' : '-';
-    }
-
-    /**
-     * Calculate the number of associated evidence files.
-     * 
-     * @param Innovation $innovation
-     * @return int
-     */
-    private function countEvidenceFiles($innovation): int
-    {
-        return $innovation->evidence_files ? count($innovation->evidence_files) : 0;
-    }
-
-    /**
-     * Standardize the creation date format for Excel.
-     * 
-     * @param mixed $date
-     * @return string
-     */
-    private function formatDate($date): string
-    {
-        return $date ? $date->format('d/m/Y H:i') : '-';
     }
 }

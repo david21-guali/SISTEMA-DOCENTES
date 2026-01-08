@@ -132,6 +132,15 @@ class Task extends Model
      * @param \Illuminate\Database\Eloquent\Builder<Task> $query
      * @return \Illuminate\Database\Eloquent\Builder<Task>
      */
+    public function scopeInProgress($query)
+    {
+        return $query->where('status', 'en_progreso');
+    }
+
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<Task> $query
+     * @return \Illuminate\Database\Eloquent\Builder<Task>
+     */
     public function scopeOverdue($query)
     {
         return $query->where('due_date', '<', now())
@@ -139,11 +148,37 @@ class Task extends Model
     }
 
     /**
+     * Scope tasks visible to a specific user.
+     * 
      * @param \Illuminate\Database\Eloquent\Builder<Task> $query
+     * @param \App\Models\User|int $user
      * @return \Illuminate\Database\Eloquent\Builder<Task>
      */
-    public function scopeInProgress($query)
+    public function scopeForUser($query, $user)
     {
-        return $query->where('status', 'en_progreso');
+        // Handle if only an ID is passed
+        if (is_numeric($user)) {
+            $user = \App\Models\User::find($user);
+        }
+
+        if (!$user) {
+            return $query;
+        }
+
+        if ($user->hasRole(['admin', 'coordinador'])) {
+            return $query;
+        }
+
+        $profileId = $user->profile?->id;
+
+        if (!$profileId) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        return $query->where('assigned_to', $profileId)
+                     ->orWhereHas('project', function ($q) use ($profileId) {
+                         /** @var \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model> $q */
+                         $q->where('projects.profile_id', $profileId);
+                     });
     }
 }

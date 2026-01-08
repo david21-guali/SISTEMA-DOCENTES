@@ -23,7 +23,7 @@ class AdvancedReportTest extends TestCase
     public function test_user_can_view_participation_report()
     {
         $user = User::factory()->create();
-        $user->assignRole('docente');
+        $user->assignRole('admin');
 
         $response = $this->actingAs($user)
             ->get(route('reports.participation'));
@@ -35,7 +35,7 @@ class AdvancedReportTest extends TestCase
     public function test_user_can_view_comparative_report()
     {
         $user = User::factory()->create();
-        $user->assignRole('docente');
+        $user->assignRole('coordinador');
 
         // Create some data for periods
         Project::factory()->create(['created_at' => now()->subMonth()]);

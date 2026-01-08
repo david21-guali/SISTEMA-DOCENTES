@@ -9,9 +9,30 @@
             <h2 class="mb-1"><i class="fas fa-chart-line text-primary"></i> Reportes Comparativos</h2>
             <p class="text-muted mb-0">Compara métricas entre dos períodos de tiempo</p>
         </div>
-        <a href="{{ route('reports.index') }}" class="btn btn-outline-secondary">
-            <i class="fas fa-arrow-left"></i> Volver
-        </a>
+        <div class="d-flex gap-2">
+            @can('export-reports')
+            <div class="dropdown">
+                <button class="btn btn-success dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-download me-1"></i> Exportar
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li>
+                        <a class="dropdown-item" href="{{ route('reports.comparative.pdf', request()->all()) }}">
+                            <i class="fas fa-file-pdf text-danger me-2"></i> Descargar PDF
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="{{ route('reports.comparative.excel', request()->all()) }}">
+                            <i class="fas fa-file-excel text-success me-2"></i> Descargar Excel
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            @endcan
+            <a href="{{ route('reports.index') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+        </div>
     </div>
 
     <!-- Selector de Períodos -->

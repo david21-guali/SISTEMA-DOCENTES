@@ -37,6 +37,10 @@ class FileUploaded extends Notification
         return ['database'];
     }
 
+    /**
+     * @param object $notifiable
+     * @return array<string, mixed>
+     */
     public function toArray(object $notifiable): array
     {
         /** @var \App\Models\Project|\App\Models\Task $attachable */

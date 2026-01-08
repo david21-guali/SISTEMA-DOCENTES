@@ -36,10 +36,11 @@ class CalendarControllerTest extends TestCase
     {
         $user = User::factory()->create();
         $user->assignRole('docente');
+        $profile = $user->profile;
 
-        Project::factory()->create(['end_date' => now()->addDays(5)]);
-        Task::factory()->create(['due_date' => now()->addDays(2), 'priority' => 'alta']);
-        Meeting::factory()->create(['meeting_date' => now()->addDays(1), 'status' => 'pendiente']);
+        Project::factory()->create(['profile_id' => $profile->id, 'end_date' => now()->addDays(5)]);
+        Task::factory()->create(['assigned_to' => $profile->id, 'due_date' => now()->addDays(2), 'priority' => 'alta']);
+        Meeting::factory()->create(['created_by' => $profile->id, 'meeting_date' => now()->addDays(1), 'status' => 'pendiente']);
 
         $response = $this->actingAs($user)
             ->get(route('calendar.events'));

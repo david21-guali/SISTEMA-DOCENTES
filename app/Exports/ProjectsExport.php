@@ -3,27 +3,18 @@
 namespace App\Exports;
 
 use App\Models\Project;
-use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\WithHeadings;
-use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithStyles;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-/**
- * Export handler for projects to Excel format.
- * Optimized for High Maintainability Index (MI >= 65).
- * @implements WithMapping<mixed>
- */
-class ProjectsExport implements FromCollection, WithHeadings, WithMapping, WithStyles
+class ProjectsExport implements FromArray, WithHeadings, WithStyles, ShouldAutoSize
 {
-    /**
-     * @var array<string, mixed> Contextual filters for the export query.
-     */
+    /** @var array<string, mixed> */
     protected $filters;
 
     /**
-     * ProjectsExport constructor.
-     * 
      * @param array<string, mixed> $filters
      */
     public function __construct(array $filters = [])
@@ -32,156 +23,83 @@ class ProjectsExport implements FromCollection, WithHeadings, WithMapping, WithS
     }
 
     /**
-     * Fetch the filtered dataset for export.
-     * 
-     * @return \Illuminate\Support\Collection<int, \App\Models\Project>
+     * @return array<int, array<int, mixed>>
      */
-    public function collection()
+    public function array(): array
     {
-        $query = Project::with(['category', 'profile.user']);
+        $query = Project::with(['category', 'profile.user'])
+            ->forUser(auth()->user());
+        
+        if (isset($this->filters['status'])) {
+            $query->where('status', $this->filters['status']);
+        }
+        if (isset($this->filters['category_id'])) {
+            $query->where('category_id', $this->filters['category_id']);
+        }
 
-        $this->applyContextualFilters($query);
+        $projects = $query->get();
+        
+        // Summary Stats
+        $stats = [
+            ['RESUMEN EJECUTIVO DE CARTERA'],
+            ['Total Proyectos', $projects->count()],
+            ['Avance Promedio Global', (round($projects->avg('completion_percentage') ?? 0, 1)) . '%'],
+            ['Presupuesto Total Asignado', '$' . number_format($projects->sum('budget'), 2)],
+            [''],
+            ['ESTADO DE PROYECTOS'],
+            ['En Planificación', $projects->where('status', 'planificacion')->count()],
+            ['En Ejecución', $projects->where('status', 'en_progreso')->count()],
+            ['Finalizados', $projects->where('status', 'completado')->count()],
+            [''],
+            ['DETALLE DEL PORTAFOLIO'],
+        ];
 
-        return $query->get();
+        // Header Row for Table
+        $rows = [
+            ['#', 'Título del Proyecto', 'Categoría', 'Líder / Responsable', 'Estado Actual', 'Avance', 'Presupuesto', 'Fecha de Cierre']
+        ];
+
+        foreach ($projects as $index => $project) {
+            $rows[] = [
+                $index + 1,
+                $project->title,
+                $project->category->name ?? 'N/A',
+                $project->profile->user->name ?? 'N/A',
+                ucfirst(str_replace('_', ' ', $project->status)),
+                $project->completion_percentage . '%',
+                $project->budget ? '$' . number_format($project->budget, 2) : '-',
+                $project->end_date ? $project->end_date->format('d/m/Y') : '-'
+            ];
+        }
+
+        return array_merge($stats, $rows);
     }
 
     /**
-     * Define the data headers for the Excel sheet.
-     * 
-     * @return array<int, string>
+     * @return array<int, array<int, string>>
      */
     public function headings(): array
     {
         return [
-            'ID',
-            'Título',
-            'Categoría',
-            'Responsable',
-            'Estado',
-            'Avance (%)',
-            'Presupuesto',
-            'Fecha Inicio',
-            'Fecha Fin',
-            'Creado',
+            ['REPORTE INSTITUCIONAL DE GESTIÓN DE PROYECTOS'],
+            ['Fecha de Generación: ' . date('d/m/Y H:i')],
+            [''],
         ];
     }
 
     /**
-     * Transform an individual Project model into an exportable array.
-     * 
-     * @param mixed $project
-     * @return array<int, mixed>
+     * @return array<int|string, array<string, mixed>>
      */
-    public function map($project): array
+    public function styles(Worksheet $sheet): array
     {
-        if (!($project instanceof Project)) {
-            return [];
-        }
         return [
-            $project->id,
-            $project->title,
-            $this->getCategoryName($project),
-            $this->getResponsibleName($project),
-            $this->formatStatusLabel($project->status),
-            $project->completion_percentage,
-            $this->formatBudget($project->budget),
-            $this->formatDate($project->start_date),
-            $this->formatDate($project->end_date),
-            $this->formatDateTime($project->created_at),
+            1 => ['font' => ['bold' => true, 'size' => 14]],
+            4 => ['font' => ['bold' => true]],
+            5 => ['font' => ['bold' => true]],
+            6 => ['font' => ['bold' => true]],
+            8 => ['font' => ['bold' => true, 'size' => 12]], // Status header
+            14 => ['font' => ['bold' => true, 'size' => 12]], // Table title
+            15 => ['font' => ['bold' => true], 'fill' => ['fillType' => 'solid', 'startColor' => ['rgb' => '3B82F6'], 'color' => ['rgb' => 'FFFFFF']]], // Table header
         ];
-    }
-
-    /**
-     * Apply bold styling to the header row.
-     * 
-     * @param Worksheet $sheet
-     * @return array<int, array<string, array<string, bool>>>
-     */
-    public function styles(Worksheet $sheet)
-    {
-        return [1 => ['font' => ['bold' => true]]];
-    }
-
-    /**
-     * Apply contextual filters to the project query.
-     * 
-     * @param \Illuminate\Database\Eloquent\Builder<\App\Models\Project> $query
-     * @return void
-     */
-    private function applyContextualFilters($query): void
-    {
-        if (isset($this->filters['status'])) {
-            $query->where('status', $this->filters['status']);
-        }
-        
-        if (isset($this->filters['category_id'])) {
-            $query->where('category_id', $this->filters['category_id']);
-        }
-    }
-
-    /**
-     * Get the category name or return a placeholder.
-     * 
-     * @param Project $project
-     * @return string
-     */
-    private function getCategoryName($project): string
-    {
-        return $project->category->name ?? 'Sin categoría';
-    }
-
-    /**
-     * Extract and normalize the responsible user name.
-     * 
-     * @param Project $project
-     * @return string
-     */
-    private function getResponsibleName($project): string
-    {
-        return $project->profile->user->name ?? 'N/A';
-    }
-
-    /**
-     * Convert the database status string into a human-readable label.
-     * 
-     * @param string $status
-     * @return string
-     */
-    private function formatStatusLabel(string $status): string
-    {
-        return ucfirst(str_replace('_', ' ', $status));
-    }
-
-    /**
-     * Standardize the budget display format.
-     * 
-     * @param mixed $budget
-     * @return string
-     */
-    private function formatBudget($budget): string
-    {
-        return $budget ? '$' . number_format($budget, 2) : '-';
-    }
-
-    /**
-     * Standardize the date format for Excel.
-     * 
-     * @param mixed $date
-     * @return string
-     */
-    private function formatDate($date): string
-    {
-        return $date ? $date->format('d/m/Y') : '-';
-    }
-
-    /**
-     * Standardize the creation date format with time.
-     * 
-     * @param mixed $date
-     * @return string
-     */
-    private function formatDateTime($date): string
-    {
-        return $date ? $date->format('d/m/Y H:i') : '-';
     }
 }
