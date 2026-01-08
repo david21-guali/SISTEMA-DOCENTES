@@ -23,6 +23,7 @@ class MeetingQueryService
         return [
             'upcoming'  => $this->countUpcoming($baseQuery),
             'completed' => $this->countCompleted($baseQuery),
+            'cancelled' => $this->countCancelled($baseQuery),
             'total'     => $this->countTotal($baseQuery),
         ];
     }
@@ -117,6 +118,17 @@ class MeetingQueryService
     private function countCompleted($query): int
     {
         return (clone $query)->completed()->count();
+    }
+
+    /**
+     * Count cancelled meetings for the provided query scope.
+     * 
+     * @param \Illuminate\Database\Eloquent\Builder<Meeting> $query
+     * @return int
+     */
+    private function countCancelled($query): int
+    {
+        return (clone $query)->where('status', 'cancelada')->count();
     }
 
     /**

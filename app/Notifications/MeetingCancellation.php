@@ -4,11 +4,10 @@ namespace App\Notifications;
 
 use App\Models\Meeting;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class MeetingCancellation extends Notification implements ShouldQueue
+class MeetingCancellation extends Notification
 {
     use Queueable;
 

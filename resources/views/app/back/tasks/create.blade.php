@@ -11,7 +11,7 @@
                     <h4 class="mb-0"><i class="fas fa-plus-circle"></i> Crear Nueva Tarea</h4>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('tasks.store') }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('tasks.store') }}" method="POST" enctype="multipart/form-data" id="taskForm">
                         @csrf
 
                         <!-- Proyecto -->
@@ -150,12 +150,33 @@
                             <a href="{{ route('tasks.index') }}" class="btn btn-secondary">
                                 <i class="fas fa-times"></i> Cancelar
                             </a>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save"></i> Guardar Tarea
+                            <button type="submit" class="btn btn-primary" id="submitBtn">
+                                <i class="fas fa-save"></i> <span class="btn-text">Guardar Tarea</span>
+                                <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
                             </button>
                         </div>
                     </form>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Vista Previa Genérico -->
+<div class="modal fade" id="globalPreviewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="previewTitle">Vista Previa</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0 bg-dark d-flex align-items-center justify-content-center" style="min-height: 500px;">
+                <div id="previewContent" class="w-100 text-center">
+                    <!-- Contenido dinámico -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
             </div>
         </div>
     </div>
@@ -300,7 +321,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         function getFileType(file) {
-            const extension = file.name.split('.').pop().toLowerCase();
+            const fileName = file.name || file.path || '';
+            const extension = fileName.split('.').pop().toLowerCase();
             if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(extension)) return 'image';
             if (extension === 'pdf') return 'pdf';
             if (['doc', 'docx'].includes(extension)) return 'word';
@@ -336,28 +358,46 @@ document.addEventListener('DOMContentLoaded', function() {
                 const isPreviewable = (type === 'image' || type === 'pdf');
 
                 let previewHtml = '';
+                const storageUrl = '{{ url("storage-preview") }}/' + file.path;
+                
+                const onclickAction = isPreviewable ? `onclick="openGlobalPreview('${storageUrl}', '${file.name}', '${type}')" style="cursor:pointer;"` : '';
+
                 if (type === 'image') {
-                    const storageUrl = '{{ asset("storage") }}/' + file.path;
-                    previewHtml = `<div class="preview-area d-flex align-items-center justify-content-center bg-light" style="height:80px; overflow:hidden;">
+                    previewHtml = `<div class="preview-area d-flex align-items-center justify-content-center bg-light" style="height:80px; overflow:hidden;" ${onclickAction}>
                                         <img class="img-fluid" style="width:100%; height:100%; object-fit:cover;" src="${storageUrl}">
                                    </div>`;
                 } else {
                     const icon = getFileIcon(type);
-                    previewHtml = `<div class="preview-area d-flex align-items-center justify-content-center bg-light" style="height:80px;">
+                    previewHtml = `<div class="preview-area d-flex align-items-center justify-content-center bg-light" style="height:80px;" ${onclickAction}>
                                         <i class="${icon} fa-2x"></i>
                                    </div>`;
                 }
 
                 card.innerHTML = `
                     ${previewHtml}
-                    <div class="card-body p-2">
-                        <p class="mb-0 small text-truncate" title="${file.name}">${file.name}</p>
-                        <small class="text-muted">${file.size} MB</small>
-                    </div>
-                    <div class="card-footer p-1 d-flex justify-content-between bg-transparent">
-                        <button type="button" class="btn btn-sm btn-outline-danger w-100 remove-btn" title="Eliminar"><i class="fas fa-trash me-1"></i> Quitar</button>
+                    <div class="card-body p-2 text-center overflow-hidden">
+                        <p class="mb-1 small text-truncate fw-bold" title="${file.name}">${file.name}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">${file.size} MB</small>
+                            <div class="d-flex gap-1">
+                                ${isPreviewable ? `
+                                <button type="button" class="btn btn-sm btn-outline-info p-0 js-preview-btn" style="width:28px; height:28px;" title="Vista Previa">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                ` : ''}
+                                <button type="button" class="btn btn-sm btn-outline-danger p-0 remove-btn" style="width:28px; height:28px;" title="Quitar">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 `;
+                
+                if (isPreviewable) {
+                    card.querySelector('.js-preview-btn').addEventListener('click', () => {
+                        openGlobalPreview(storageUrl, file.name, type);
+                    });
+                }
                 
                 col.appendChild(card);
                 row.appendChild(col);
@@ -398,6 +438,44 @@ document.addEventListener('DOMContentLoaded', function() {
             updateHiddenInputs();
         @endif
     }
+
+    // 3. Lógica del Modal de Vista Previa
+    const globalModal = new bootstrap.Modal(document.getElementById('globalPreviewModal'));
+    const previewTitle = document.getElementById('previewTitle');
+    const previewContent = document.getElementById('previewContent');
+
+    window.openGlobalPreview = function(url, name, type) {
+        previewTitle.textContent = name;
+        previewContent.innerHTML = '';
+
+        if (type === 'image') {
+            const img = document.createElement('img');
+            img.src = url;
+            img.className = 'img-fluid';
+            img.style.maxHeight = '80vh';
+            previewContent.appendChild(img);
+        } else if (type === 'pdf') {
+            const iframe = document.createElement('iframe');
+            iframe.src = url;
+            iframe.style.width = '100%';
+            iframe.style.height = '80vh';
+            iframe.style.border = 'none';
+            previewContent.appendChild(iframe);
+        }
+
+        globalModal.show();
+    };
+});
+
+// Double submission protection
+document.getElementById('taskForm').addEventListener('submit', function() {
+    const btn = document.getElementById('submitBtn');
+    const text = btn.querySelector('.btn-text');
+    const spinner = btn.querySelector('.spinner-border');
+    
+    btn.disabled = true;
+    text.textContent = 'Guardando...';
+    spinner.classList.remove('d-none');
 });
 </script>
 @endsection

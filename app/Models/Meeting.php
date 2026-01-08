@@ -34,6 +34,7 @@ class Meeting extends Model
         'description',
         'meeting_date',
         'location',
+        'type',
         'created_by',
         'status',
         'notes',

@@ -28,11 +28,13 @@
                             <div class="row">
                                 <div class="col-6">
                                     <label class="form-label">Desde</label>
-                                    <input type="date" class="form-control" name="period1_start" value="{{ $period1Start }}">
+                                    <input type="date" class="form-control @error('period1_start') is-invalid @enderror" name="period1_start" value="{{ $period1Start }}">
+                                    @error('period1_start') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                 </div>
                                 <div class="col-6">
                                     <label class="form-label">Hasta</label>
-                                    <input type="date" class="form-control" name="period1_end" value="{{ $period1End }}">
+                                    <input type="date" class="form-control @error('period1_end') is-invalid @enderror" name="period1_end" value="{{ $period1End }}">
+                                    @error('period1_end') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                 </div>
                             </div>
                         </div>
@@ -45,11 +47,13 @@
                             <div class="row">
                                 <div class="col-6">
                                     <label class="form-label">Desde</label>
-                                    <input type="date" class="form-control" name="period2_start" value="{{ $period2Start }}">
+                                    <input type="date" class="form-control @error('period2_start') is-invalid @enderror" name="period2_start" value="{{ $period2Start }}">
+                                    @error('period2_start') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                 </div>
                                 <div class="col-6">
                                     <label class="form-label">Hasta</label>
-                                    <input type="date" class="form-control" name="period2_end" value="{{ $period2End }}">
+                                    <input type="date" class="form-control @error('period2_end') is-invalid @enderror" name="period2_end" value="{{ $period2End }}">
+                                    @error('period2_end') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                 </div>
                             </div>
                         </div>
@@ -392,7 +396,7 @@
                     <h5 class="mb-0"><i class="fas fa-chart-line text-primary"></i> Tendencias (Últimos 12 Meses)</h5>
                 </div>
                 <div class="card-body">
-                    <canvas id="trendsChart" height="100"></canvas>
+                    <canvas id="trendsChart" height="150"></canvas>
                 </div>
             </div>
         </div>

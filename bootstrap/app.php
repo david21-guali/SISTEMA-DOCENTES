@@ -35,6 +35,12 @@ return Application::configure(basePath: dirname(__DIR__))
             ->everyFourHours()
             ->between('8:00', '18:00')
             ->withoutOverlapping();
+        
+        // Recordatorios de proyectos: diario a las 8am para proyectos que finalizan en 3 días
+        $schedule->command('projects:send-reminders --days=3')
+            ->dailyAt('08:00')
+            ->withoutOverlapping()
+            ->appendOutputTo(storage_path('logs/project-reminders.log'));
     })
     ->withMiddleware(function (Middleware $middleware): void {
         // Register custom role middleware

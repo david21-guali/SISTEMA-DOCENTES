@@ -10,12 +10,18 @@
             <h5 class="mb-0 text-dark fw-bold"><i class="fas fa-user me-2 text-primary"></i>Perfil de Usuario</h5>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-0 mt-1" style="font-size: 0.8rem;">
-                    <li class="breadcrumb-item"><a href="{{ route('users.index') }}" class="text-decoration-none">Usuarios</a></li>
+                    <li class="breadcrumb-item">
+                        @if(auth()->user()->hasRole('admin'))
+                            <a href="{{ route('users.index') }}" class="text-decoration-none">Usuarios</a>
+                        @else
+                            <span class="text-muted">Usuarios</span>
+                        @endif
+                    </li>
                     <li class="breadcrumb-item active">{{ $user->name }}</li>
                 </ol>
             </nav>
         </div>
-        <a href="{{ route('users.index') }}" class="btn btn-outline-secondary btn-sm align-self-start align-self-sm-center">
+        <a href="{{ auth()->user()->hasRole('admin') ? route('users.index') : route('dashboard') }}" class="btn btn-outline-secondary btn-sm align-self-start align-self-sm-center">
             <i class="fas fa-arrow-left me-1"></i> Volver
         </a>
     </div>
@@ -95,7 +101,7 @@
                     <div class="card h-100 text-center">
                         <div class="card-body py-3">
                             <div class="h4 mb-0 text-success fw-bold">{{ $stats['completed_tasks'] }}</div>
-                            <small class="text-muted">Completadas</small>
+                            <small class="text-muted">Tareas Completadas</small>
                         </div>
                     </div>
                 </div>

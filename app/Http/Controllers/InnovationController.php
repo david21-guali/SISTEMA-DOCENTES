@@ -39,6 +39,7 @@ class InnovationController extends Controller
             'en_revision' => Innovation::where('status', 'en_revision')->count(),
             'rechazada' => Innovation::where('status', 'rechazada')->count(),
             'propuesta' => Innovation::where('status', 'propuesta')->count(),
+            'en_implementacion' => Innovation::where('status', 'en_implementacion')->count(),
         ];
 
         $innovations = $innovationsQuery->latest()->get(); // Get ALL for DataTables if not paginating server-side

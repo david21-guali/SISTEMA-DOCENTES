@@ -67,7 +67,12 @@ class PolicyNotificationTest extends TestCase
         $project = Project::factory()->create(['profile_id' => $user->profile->id]);
         $task = Task::factory()->create(['project_id' => $project->id]);
         $meeting = Meeting::factory()->create(['created_by' => $user->profile->id]);
-        $comment = Comment::create(['project_id' => $project->id, 'profile_id' => $user->profile->id, 'content' => 'Test']);
+        $comment = Comment::create([
+            'commentable_id' => $project->id,
+            'commentable_type' => Project::class,
+            'profile_id' => $user->profile->id,
+            'content' => 'Test'
+        ]);
 
         $notifications = [
             new AdminPasswordResetRequest($user),

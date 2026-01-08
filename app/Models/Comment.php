@@ -11,7 +11,8 @@ class Comment extends Model
     use HasFactory;
 
     protected $fillable = [
-        'project_id',
+        'commentable_id',
+        'commentable_type',
         'profile_id',
         'content',
         'parent_id',
@@ -21,11 +22,13 @@ class Comment extends Model
      * Relaciones
      */
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\Project, $this>
+     * Relación polimórfica: el modelo al que pertenece el comentario.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\MorphTo<\Illuminate\Database\Eloquent\Model, $this>
      */
-    public function project(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function commentable(): \Illuminate\Database\Eloquent\Relations\MorphTo
     {
-        return $this->belongsTo(Project::class);
+        return $this->morphTo();
     }
 
     /**

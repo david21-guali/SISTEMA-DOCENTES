@@ -31,6 +31,7 @@ class ProjectController extends Controller
      */
     public function index(Request $request): \Illuminate\View\View
     {
+        $this->authorize('viewAny', Project::class);
         $projects = $this->queryService->getProjects($request->all());
         $stats = $this->queryService->getStats();
 
@@ -45,6 +46,7 @@ class ProjectController extends Controller
      */
     public function create(): \Illuminate\View\View
     {
+        $this->authorize('create', Project::class);
         $categories = Category::all();
         $users = \App\Models\User::whereHas('profile', function($q) {
             /** @phpstan-ignore-next-line */
@@ -61,6 +63,7 @@ class ProjectController extends Controller
      */
     public function store(\App\Http\Requests\StoreProjectRequest $request): \Illuminate\Http\RedirectResponse
     {
+        $this->authorize('create', Project::class);
         $this->actionService->createProject($request->validated(), $request->file('attachments') ?? []);
 
         return redirect()->route('projects.index')
@@ -75,6 +78,7 @@ class ProjectController extends Controller
      */
     public function show(Project $project): \Illuminate\View\View
     {
+        $this->authorize('view', $project);
         $project->load(['category', 'profile', 'tasks', 'team']);
         return view('app.back.projects.show', compact('project'));
     }
@@ -87,6 +91,7 @@ class ProjectController extends Controller
      */
     public function edit(Project $project): \Illuminate\View\View
     {
+        $this->authorize('update', $project);
         $categories = Category::all();
         $users = \App\Models\User::whereHas('profile', function($q) {
             /** @phpstan-ignore-next-line */
@@ -103,6 +108,7 @@ class ProjectController extends Controller
      */
     public function update(\App\Http\Requests\UpdateProjectRequest $request, Project $project): \Illuminate\Http\RedirectResponse
     {
+        $this->authorize('update', $project);
         $this->actionService->updateProject($project, $request->validated());
 
         return redirect()->route('projects.index')
@@ -133,6 +139,7 @@ class ProjectController extends Controller
      */
     public function destroy(Project $project): \Illuminate\Http\RedirectResponse
     {
+        $this->authorize('delete', $project);
         $project->delete();
 
         return redirect()->route('projects.index')

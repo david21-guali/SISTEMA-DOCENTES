@@ -53,6 +53,10 @@ class ResourceController extends Controller
             'description'      => 'nullable|string|max:1000',
             'cost'             => 'nullable|numeric|max:9999999.99',
             'file'             => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx|max:10240',
+        ], [], [
+            'name' => 'nombre',
+            'resource_type_id' => 'tipo de recurso',
+            'cost' => 'costo',
         ]);
 
         $this->resourceService->createResource($validated, $request->file('file'));
@@ -86,6 +90,10 @@ class ResourceController extends Controller
             'description'      => 'nullable|string|max:1000',
             'cost'             => 'nullable|numeric|max:9999999.99',
             'file'             => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx|max:10240',
+        ], [], [
+            'name' => 'nombre',
+            'resource_type_id' => 'tipo de recurso',
+            'cost' => 'costo',
         ]);
 
         $this->resourceService->updateResource($resource, $validated, $request->file('file'));
@@ -114,10 +122,14 @@ class ResourceController extends Controller
     public function assignToProject(Request $request, Project $project): \Illuminate\Http\RedirectResponse
     {
         $validated = $request->validate([
-            'resource_id' => 'required|exists:resources,id',
-            'quantity' => 'required|integer|min:1',
+            'resource_id'   => 'required|exists:resources,id',
+            'quantity'      => 'required|integer|min:1',
             'assigned_date' => 'required|date',
-            'notes' => 'nullable|string',
+            'notes'         => 'nullable|string',
+        ], [], [
+            'resource_id'   => 'recurso',
+            'quantity'      => 'cantidad',
+            'assigned_date' => 'fecha de asignación',
         ]);
 
         $this->resourceService->assignToProject($project, $validated);

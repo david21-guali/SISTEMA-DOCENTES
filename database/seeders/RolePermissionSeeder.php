@@ -62,12 +62,13 @@ class RolePermissionSeeder extends Seeder
 
         // 1. Rol: Admin (todos los permisos)
         $adminRole = Role::firstOrCreate(['name' => 'admin']);
-        $adminRole->givePermissionTo(Permission::all());
+        $adminRole->syncPermissions(Permission::all());
 
         // 2. Rol: Coordinador (supervisión y evaluación)
         $coordinadorRole = Role::firstOrCreate(['name' => 'coordinador']);
-        $coordinadorRole->givePermissionTo([
+        $coordinadorRole->syncPermissions([
             'view-projects',
+            'create-projects',
             'edit-projects',
             'evaluate-projects',
             'view-tasks',
@@ -82,9 +83,8 @@ class RolePermissionSeeder extends Seeder
 
         // 3. Rol: Docente (crear y gestionar sus proyectos)
         $docenteRole = Role::firstOrCreate(['name' => 'docente']);
-        $docenteRole->givePermissionTo([
+        $docenteRole->syncPermissions([
             'view-projects',
-            'create-projects',
             'edit-projects',
             'view-tasks',
             'create-tasks',

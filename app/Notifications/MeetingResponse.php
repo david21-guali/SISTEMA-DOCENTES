@@ -6,11 +6,10 @@ use App\Models\Meeting;
 use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class MeetingResponse extends Notification implements ShouldQueue
+class MeetingResponse extends Notification
 {
     use Queueable;
     

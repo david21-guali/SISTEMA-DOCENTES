@@ -34,9 +34,10 @@ class UpdateMeetingRequest extends FormRequest
             'project_id'     => 'nullable|exists:projects,id',
             'meeting_date'   => 'required|date',
             'location'       => 'required|string|max:255',
-            'status'         => 'required|in:pendiente,completada,cancelada',
+            'type'           => 'required|in:virtual,presencial',
+            'status'         => 'nullable|in:pendiente,completada,cancelada',
             'notes'          => 'nullable|string',
-            'participants'   => $this->getParticipantRules(),
+            'participants'   => 'nullable|array',
             'participants.*' => 'exists:users,id',
         ];
     }
@@ -59,35 +60,4 @@ class UpdateMeetingRequest extends FormRequest
         ];
     }
 
-    /**
-     * Define validation logic for the participants array.
-     * 
-     * @return array<int, mixed>
-     */
-    private function getParticipantRules(): array
-    {
-        return [
-            'required',
-            'array',
-            function ($attribute, $value, $fail) {
-                $this->ensureAdditionalParticipantsInvited($value, $fail);
-            },
-        ];
-    }
-
-    /**
-     * Ensure the participant list contains more than just the current user.
-     * 
-     * @param array<int, mixed> $value
-     * @param \Closure $fail
-     * @return void
-     */
-    private function ensureAdditionalParticipantsInvited(array $value, $fail): void
-    {
-        $others = collect($value)->filter(fn($id) => $id != Auth::id());
-        
-        if ($others->isEmpty()) {
-            $fail('Debe invitar al menos a un participante adicional.');
-        }
-    }
 }

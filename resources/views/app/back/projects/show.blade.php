@@ -235,7 +235,11 @@
                             <div class="list-group-item">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
-                                        <h6 class="mb-1">{{ $task->title }}</h6>
+                                        <h6 class="mb-1">
+                                            <a href="{{ route('tasks.show', $task) }}" class="text-decoration-none text-dark fw-bold">
+                                                {{ $task->title }}
+                                            </a>
+                                        </h6>
                                         <small class="text-muted">
                                             <i class="fas fa-user"></i> {{ $task->assignedProfile->user->name ?? 'Sin asignar' }} |
                                             <i class="fas fa-calendar"></i> {{ $task->due_date->format('d/m/Y') }}
@@ -333,7 +337,7 @@
             <!-- Modal Assign Resource -->
             <div class="modal fade" id="assignResourceModal" tabindex="-1">
                 <div class="modal-dialog">
-                    <form action="{{ route('projects.resources.assign', $project->id) }}" method="POST">
+                    <form action="{{ route('projects.resources.assign', $project->id) }}" method="POST" novalidate>
                         @csrf
                         <div class="modal-content">
                             <div class="modal-header">
@@ -355,7 +359,7 @@
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Cantidad *</label>
-                                    <input type="number" name="quantity" class="form-control @error('quantity') is-invalid @enderror" value="{{ old('quantity', 1) }}" min="1">
+                                    <input type="number" name="quantity" class="form-control @error('quantity') is-invalid @enderror" value="{{ old('quantity', 1) }}">
                                     @error('quantity')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -426,20 +430,34 @@
                                     @foreach($resources as $attachment)
                                         <div class="list-group-item d-flex justify-content-between align-items-center px-0">
                                             <div class="d-flex align-items-center overflow-hidden">
-                                                <div class="me-2 text-primary"><i class="{{ $attachment->icon }} fa-lg"></i></div>
+                                                <div class="me-2 text-primary clickable-thumbnail" style="cursor: pointer;"
+                                                     onclick="openGlobalPreview('{{ route('storage.preview', $attachment->path) }}', '{{ $attachment->original_name }}', '{{ $attachment->is_image ? 'image' : ($attachment->extension == 'pdf' ? 'pdf' : 'other') }}')">
+                                                    <i class="{{ $attachment->icon }} fa-lg"></i>
+                                                </div>
                                                 <div class="text-truncate">
-                                                    <a href="{{ route('attachments.download', $attachment) }}" class="fw-bold text-dark text-decoration-none" target="_blank">
+                                                    <span class="fw-bold text-dark d-block text-truncate" title="{{ $attachment->original_name }}">
                                                         {{ $attachment->original_name }}
-                                                    </a>
+                                                    </span>
                                                     <div class="small text-muted">{{ $attachment->human_size }}</div>
                                                 </div>
                                             </div>
-                                            @if($isOwnerOrAdmin)
-                                            <form action="{{ route('attachments.destroy', $attachment) }}" method="POST" class="ms-2 form-delete">
-                                                @csrf @method('DELETE')
-                                                <button type="submit" class="btn btn-sm text-danger"><i class="fas fa-times"></i></button>
-                                            </form>
-                                            @endif
+                                            <div class="d-flex align-items-center gap-1">
+                                                @if($attachment->is_previewable)
+                                                    <button type="button" class="btn btn-sm btn-outline-primary" title="Vista Previa"
+                                                            onclick="openGlobalPreview('{{ route('storage.preview', $attachment->path) }}', '{{ $attachment->original_name }}', '{{ $attachment->is_image ? 'image' : 'pdf' }}')">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                @endif
+                                                <a href="{{ route('attachments.download', $attachment) }}" class="btn btn-sm btn-outline-secondary" title="Descargar">
+                                                    <i class="fas fa-download"></i>
+                                                </a>
+                                                @if($isOwnerOrAdmin)
+                                                    <form action="{{ route('attachments.destroy', $attachment) }}" method="POST" class="ms-1 form-delete">
+                                                        @csrf @method('DELETE')
+                                                        <button type="submit" class="btn btn-sm text-danger"><i class="fas fa-times"></i></button>
+                                                    </form>
+                                                @endif
+                                            </div>
                                         </div>
                                     @endforeach
                                 </div>
@@ -487,15 +505,24 @@
                                                     {{ strtoupper(substr($attachment->uploader->user->name ?? '?', 0, 1)) }}
                                                 </div>
                                                 <div class="text-truncate">
-                                                    <a href="{{ route('attachments.download', $attachment) }}" class="text-dark text-decoration-none" target="_blank">
+                                                    <span class="text-dark d-block text-truncate" title="{{ $attachment->original_name }}">
                                                         {{ $attachment->original_name }}
-                                                    </a>
+                                                    </span>
                                                     <div class="small text-muted" style="font-size: 0.75rem;">
-                                                        {{ $attachment->created_at->format('d/m H:i') }} - {{ Str::limit($attachment->uploader->user->name ?? '', 10) }}
+                                                        {{ $attachment->created_at->format('d/m H:i') }} - {{ Str::limit($attachment->uploader->user->name ?? '', 10) }} | {{ $attachment->human_size }}
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="d-flex align-items-center">
+                                            <div class="d-flex align-items-center gap-1">
+                                                @if($attachment->is_previewable)
+                                                    <button type="button" class="btn btn-sm btn-outline-primary" title="Vista Previa"
+                                                            onclick="openGlobalPreview('{{ route('storage.preview', $attachment->path) }}', '{{ $attachment->original_name }}', '{{ $attachment->is_image ? 'image' : 'pdf' }}')">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                @endif
+                                                <a href="{{ route('attachments.download', $attachment) }}" class="btn btn-sm btn-outline-secondary" title="Descargar">
+                                                    <i class="fas fa-download"></i>
+                                                </a>
                                                 @if(Auth::user()->profile->id == $attachment->uploaded_by || $isOwnerOrAdmin)
                                                 <form action="{{ route('attachments.destroy', $attachment) }}" method="POST" class="ms-1 form-delete">
                                                     @csrf @method('DELETE')
@@ -552,8 +579,10 @@
                 </div>
                 <div class="card-body">
                     <!-- Formulario de Nuevo Comentario -->
-                    <form action="{{ route('comments.store', $project) }}" method="POST" class="mb-4">
+                    <form action="{{ route('comments.store') }}" method="POST" class="mb-4">
                         @csrf
+                        <input type="hidden" name="commentable_id" value="{{ $project->id }}">
+                        <input type="hidden" name="commentable_type" value="project">
                         <div class="mb-2">
                             <textarea class="form-control @error('content') is-invalid @enderror" 
                                       name="content" rows="3" 
@@ -627,8 +656,10 @@
                                             <i class="fas fa-reply"></i> Responder
                                         </button>
                                         <div class="collapse mt-2" id="reply-{{ $comment->id }}">
-                                            <form action="{{ route('comments.store', $project) }}" method="POST">
+                                            <form action="{{ route('comments.store') }}" method="POST">
                                                 @csrf
+                                                <input type="hidden" name="commentable_id" value="{{ $project->id }}">
+                                                <input type="hidden" name="commentable_type" value="project">
                                                 <input type="hidden" name="parent_id" value="{{ $comment->id }}">
                                                 <div class="input-group input-group-sm">
                                                     <textarea class="form-control" name="content" rows="2" 
@@ -764,7 +795,62 @@
                 });
             });
         });
+
+        // Reopen Modals if validation errors exist
+        @if($errors->has('resource_id') || $errors->has('quantity') || $errors->has('assigned_date'))
+            const resourceModal = new bootstrap.Modal(document.getElementById('assignResourceModal'));
+            resourceModal.show();
+        @endif
+
+        @if($errors->has('file') && old('_token')) {{-- Validar que sea del form de reporte final --}}
+            const reportModal = new bootstrap.Modal(document.getElementById('uploadFinalReportModal'));
+            reportModal.show();
+        @endif
+
+        // Vista Previa Global
+        const globalModal = new bootstrap.Modal(document.getElementById('globalPreviewModal'));
+        const previewTitle = document.getElementById('previewTitle');
+        const previewContent = document.getElementById('previewContent');
+
+        window.openGlobalPreview = function(url, name, type) {
+            previewTitle.textContent = name;
+            previewContent.innerHTML = '<div class="spinner-border text-primary" role="status"></div>';
+
+            if (type === 'image') {
+                const img = document.createElement('img');
+                img.src = url;
+                img.className = 'img-fluid shadow-sm';
+                img.style.maxHeight = '80vh';
+                img.onload = () => { previewContent.innerHTML = ''; previewContent.appendChild(img); };
+            } else if (type === 'pdf') {
+                const iframe = document.createElement('iframe');
+                iframe.src = url;
+                iframe.style.width = '100%';
+                iframe.style.height = '80vh';
+                iframe.style.border = 'none';
+                previewContent.innerHTML = '';
+                previewContent.appendChild(iframe);
+            } else {
+                previewContent.innerHTML = '<div class="p-5">Este archivo no se puede previsualizar. Por favor, descárgalo.</div>';
+            }
+
+            globalModal.show();
+        };
     });
 </script>
-@endsection
 
+<!-- Modal de Vista Previa Global -->
+<div class="modal fade" id="globalPreviewModal" tabindex="-1" aria-labelledby="previewTitle" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="previewTitle">Vista Previa</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0 text-center" id="previewContent" style="min-height: 400px; display: flex; align-items: center; justify-content: center; background: #f8f9fc;">
+                <!-- El contenido se cargará dinámicamente -->
+            </div>
+        </div>
+    </div>
+</div>
+@endsection

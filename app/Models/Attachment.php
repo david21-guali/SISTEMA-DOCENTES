@@ -5,6 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
+/**
+ * @property \Illuminate\Database\Eloquent\Model $attachable
+ */
 class Attachment extends Model
 {
     protected $fillable = [
@@ -21,10 +24,9 @@ class Attachment extends Model
     /**
      * Polymorphic relationship - can belong to Project or Task
      * 
-     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
+     * @return \Illuminate\Database\Eloquent\Relations\MorphTo<\Illuminate\Database\Eloquent\Model, \App\Models\Attachment>
      */
-    /** @phpstan-ignore-next-line */
-    public function attachable()
+    public function attachable(): \Illuminate\Database\Eloquent\Relations\MorphTo
     {
         return $this->morphTo();
     }
@@ -54,8 +56,29 @@ class Attachment extends Model
     }
 
     /**
-     * Check if file is an image
+     * Check if file is an image (Attribute)
      */
+    public function getIsImageAttribute(): bool
+    {
+        return $this->isImage();
+    }
+
+    /**
+     * Check if file is a PDF (Attribute)
+     */
+    public function getIsPdfAttribute(): bool
+    {
+        return $this->isPdf();
+    }
+
+    /**
+     * Check if file can be previewed (Image or PDF)
+     */
+    public function getIsPreviewableAttribute(): bool
+    {
+        return $this->isImage() || $this->isPdf();
+    }
+
     /**
      * Check if file is an image
      */
@@ -71,9 +94,6 @@ class Attachment extends Model
         return in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg']);
     }
 
-    /**
-     * Check if file is a PDF
-     */
     /**
      * Check if file is a PDF
      */

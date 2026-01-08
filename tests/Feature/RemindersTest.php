@@ -81,7 +81,7 @@ class RemindersTest extends TestCase
         Artisan::call('meetings:send-reminders', ['--hours' => 10]);
 
         Notification::assertSentTo(
-            $participantUser->profile,
+            $participantUser,
             MeetingReminder::class
         );
     }

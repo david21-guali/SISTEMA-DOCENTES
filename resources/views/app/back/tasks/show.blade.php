@@ -166,21 +166,32 @@
                             @foreach($resources as $attachment)
                                 <div class="col-md-6">
                                     <div class="d-flex align-items-center p-2 border rounded bg-light">
-                                        <div class="me-3">
+                                        <div class="me-3 clickable-thumbnail" 
+                                             style="cursor: pointer;"
+                                             onclick="openGlobalPreview('{{ route('storage.preview', $attachment->path) }}', '{{ $attachment->original_name }}', '{{ $attachment->is_image ? 'image' : ($attachment->extension == 'pdf' ? 'pdf' : 'other') }}')">
                                             <i class="{{ $attachment->icon }} fa-2x"></i>
                                         </div>
                                         <div class="flex-grow-1 text-truncate">
-                                            <a href="{{ route('attachments.download', $attachment) }}" class="fw-bold text-dark text-decoration-none" target="_blank">
-                                                {{ $attachment->original_name }}
-                                            </a>
+                                            <span class="fw-bold text-dark d-block text-truncate">{{ $attachment->original_name }}</span>
                                             <div class="small text-muted">{{ $attachment->human_size }}</div>
                                         </div>
-                                        @if($isOwnerOrAdmin)
-                                            <form action="{{ route('attachments.destroy', $attachment) }}" method="POST" class="ms-2 form-delete">
-                                                @csrf @method('DELETE')
-                                                <button type="submit" class="btn btn-link text-danger p-0"><i class="fas fa-times"></i></button>
-                                            </form>
-                                        @endif
+                                        <div class="d-flex align-items-center gap-1">
+                                            @if($attachment->is_previewable)
+                                                <button type="button" class="btn btn-sm btn-outline-primary" title="Vista Previa"
+                                                        onclick="openGlobalPreview('{{ route('storage.preview', $attachment->path) }}', '{{ $attachment->original_name }}', '{{ $attachment->is_image ? 'image' : 'pdf' }}')">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                            @endif
+                                            <a href="{{ route('attachments.download', $attachment) }}" class="btn btn-sm btn-outline-secondary" title="Descargar">
+                                                <i class="fas fa-download"></i>
+                                            </a>
+                                            @if($isOwnerOrAdmin)
+                                                <form action="{{ route('attachments.destroy', $attachment) }}" method="POST" class="ms-1 form-delete">
+                                                    @csrf @method('DELETE')
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fas fa-times"></i></button>
+                                                </form>
+                                            @endif
+                                        </div>
                                     </div>
                                 </div>
                             @endforeach
@@ -222,21 +233,27 @@
                         <div class="list-group">
                             @foreach($deliverables as $attachment)
                                 <div class="list-group-item d-flex justify-content-between align-items-center">
-                                    <div class="d-flex align-items-center">
-                                        <div class="avatar-sm rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-3" style="width:32px; height:32px;">
+                                    <div class="d-flex align-items-center overflow-hidden">
+                                        <div class="avatar-sm rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-3 flex-shrink-0" style="width:32px; height:32px;">
                                             {{ strtoupper(substr($attachment->uploader->user->name ?? '?', 0, 1)) }}
                                         </div>
-                                        <div>
-                                            <a href="{{ route('attachments.download', $attachment) }}" class="fw-bold text-dark text-decoration-none">
-                                                {{ $attachment->original_name }}
-                                            </a>
+                                        <div class="text-truncate">
+                                            <span class="fw-bold text-dark d-block text-truncate">{{ $attachment->original_name }}</span>
                                             <div class="small text-muted">
-                                                Por: {{ $attachment->uploader->user->name ?? 'Desconocido' }} | {{ $attachment->created_at->format('d/m/Y H:i') }}
+                                                Por: {{ $attachment->uploader->user->name ?? 'Desconocido' }} | {{ $attachment->created_at->format('d/m/Y H:i') }} | <span class="badge bg-light text-dark border">{{ $attachment->human_size }}</span>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="d-flex align-items-center">
-                                        <span class="badge bg-light text-dark border me-3">{{ $attachment->human_size }}</span>
+                                    <div class="d-flex align-items-center gap-1 ms-2">
+                                        @if($attachment->is_previewable)
+                                            <button type="button" class="btn btn-sm btn-outline-primary" title="Vista Previa"
+                                                    onclick="openGlobalPreview('{{ route('storage.preview', $attachment->path) }}', '{{ $attachment->original_name }}', '{{ $attachment->is_image ? 'image' : 'pdf' }}')">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        @endif
+                                        <a href="{{ route('attachments.download', $attachment) }}" class="btn btn-sm btn-outline-secondary" title="Descargar">
+                                            <i class="fas fa-download"></i>
+                                        </a>
                                         @if(Auth::user()->profile->id == $attachment->uploaded_by || $isOwnerOrAdmin)
                                             <form action="{{ route('attachments.destroy', $attachment) }}" method="POST" class="form-delete">
                                                 @csrf @method('DELETE')
@@ -274,4 +291,54 @@
         </div>
     </div>
 </div>
+
+<!-- Modal de Vista Previa Global -->
+<div class="modal fade" id="globalPreviewModal" tabindex="-1" aria-labelledby="previewTitle" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="previewTitle">Vista Previa</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0 text-center" id="previewContent" style="min-height: 400px; display: flex; align-items: center; justify-content: center; background: #f8f9fc;">
+                <!-- El contenido se cargará dinámicamente -->
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
+
+@section('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const globalModal = new bootstrap.Modal(document.getElementById('globalPreviewModal'));
+        const previewTitle = document.getElementById('previewTitle');
+        const previewContent = document.getElementById('previewContent');
+
+        window.openGlobalPreview = function(url, name, type) {
+            previewTitle.textContent = name;
+            previewContent.innerHTML = '<div class="spinner-border text-primary" role="status"></div>';
+
+            if (type === 'image') {
+                const img = document.createElement('img');
+                img.src = url;
+                img.className = 'img-fluid shadow-sm';
+                img.style.maxHeight = '80vh';
+                img.onload = () => { previewContent.innerHTML = ''; previewContent.appendChild(img); };
+            } else if (type === 'pdf') {
+                const iframe = document.createElement('iframe');
+                iframe.src = url;
+                iframe.style.width = '100%';
+                iframe.style.height = '80vh';
+                iframe.style.border = 'none';
+                previewContent.innerHTML = '';
+                previewContent.appendChild(iframe);
+            } else {
+                previewContent.innerHTML = '<div class="p-5">Este archivo no se puede previsualizar. Por favor, descárgalo.</div>';
+            }
+
+            globalModal.show();
+        };
+    });
+</script>
 @endsection

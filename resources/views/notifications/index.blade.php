@@ -82,7 +82,7 @@
                             }
                         @endphp
 
-                        <div class="p-3 border-bottom position-relative notification-item {{ !$isRead ? 'bg-primary bg-opacity-10' : '' }}" 
+                        <div class="p-3 border-bottom position-relative notification-item {{ !$isRead ? 'unread-bg' : '' }}" 
                              onclick="window.location='{{ route('notifications.read', $notification->id) }}';"
                              style="cursor: pointer;">
                             <div class="d-flex cross-start">
@@ -179,8 +179,11 @@
     .notification-item:last-child {
         border-bottom: none !important;
     }
+    .unread-bg {
+        background-color: #f2f4f7 !important;
+    }
     .notification-item:hover {
-        background-color: #f8f9fa !important;
+        background-color: #e9ecef !important;
     }
 </style>
 @endpush

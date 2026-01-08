@@ -10,9 +10,15 @@
             <h5 class="mb-0 text-dark fw-bold"><i class="fas fa-project-diagram me-2 text-primary"></i>Proyectos</h5>
             <p class="text-muted mb-0 small text-truncate">Gestiona todos los proyectos de innovación</p>
         </div>
+        @can('create-projects')
         <a href="{{ route('projects.create') }}" class="btn btn-primary shadow-sm">
             <i class="fas fa-plus me-1"></i> Nuevo Proyecto
         </a>
+        @else
+        <button class="btn btn-secondary shadow-sm" disabled>
+            <i class="fas fa-lock me-1"></i> Sin permisos
+        </button>
+        @endcan
     </div>
 
     <!-- Stats Row -->
@@ -289,9 +295,15 @@
             <div class="card-body text-center py-5">
                 <i class="fas fa-folder-open fa-3x text-muted mb-3 d-block"></i>
                 <p class="text-muted mb-3">No hay proyectos registrados</p>
+                @can('create-projects')
                 <a href="{{ route('projects.create') }}" class="btn btn-primary shadow-sm px-4">
                     <i class="fas fa-plus me-1"></i> Crear Primer Proyecto
                 </a>
+                @else
+                <button class="btn btn-secondary shadow-sm px-4" disabled>
+                    <i class="fas fa-lock me-1"></i> Sin permisos
+                </button>
+                @endcan
             </div>
         </div>
     @endif
@@ -416,7 +428,10 @@
                     }
                 ],
                 responsive: true,
-                order: [[ 5, "desc" ]]
+                order: [[ 5, "desc" ]],
+                columnDefs: [
+                    { orderable: false, targets: 6 } // Disable sorting on 'Actions' column
+                ]
             });
         }
     });

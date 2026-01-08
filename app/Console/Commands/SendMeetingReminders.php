@@ -38,7 +38,7 @@ class SendMeetingReminders extends Command
         // Obtener reuniones pendientes que ocurrirán en las próximas X horas
         $meetings = Meeting::where('status', 'pendiente')
             ->whereBetween('meeting_date', [$now, $limit])
-            ->with(['participants', 'creator'])
+            ->with(['participants.user', 'creator'])
             ->get();
 
         if ($meetings->isEmpty()) {
@@ -57,10 +57,10 @@ class SendMeetingReminders extends Command
                 /** @var \App\Models\MeetingParticipant $pivot */
                 $pivot = $participant->pivot;
                 // Solo enviar a participantes que no han rechazado
-                if ($pivot->attendance !== 'rechazada') {
-                    $participant->notify(new MeetingReminder($meeting));
+                if ($pivot->attendance !== 'rechazada' && $participant->user) {
+                    $participant->user->notify(new MeetingReminder($meeting));
                     $notificationsSent++;
-                    $this->line("  ✅ Recordatorio enviado a: {$participant->name}");
+                    $this->line("  ✅ Recordatorio enviado a: {$participant->user->name}");
                 } else {
                     $this->line("  ⏭️ Omitido (rechazó invitación): {$participant->name}");
                 }

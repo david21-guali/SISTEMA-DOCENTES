@@ -18,7 +18,7 @@
     </div>
 
     <!-- Stats Row -->
-    <div class="row row-cols-2 row-cols-sm-2 row-cols-lg-5 g-3 mb-4">
+    <div class="row row-cols-2 row-cols-sm-2 row-cols-lg-6 g-3 mb-4">
         <div class="col">
             <div class="card text-white h-100 clickable-card" style="background: linear-gradient(135deg, #4e73df 0%, #224abe 100%); cursor: pointer;">
                 <div class="card-body p-2 p-sm-3">
@@ -114,6 +114,26 @@
                 </div>
                 <div class="card-footer bg-transparent border-top-0 pt-0 pb-2">
                     <a href="{{ route('innovations.index', ['status' => 'propuesta']) }}" class="text-white text-decoration-none" style="font-size: 0.7rem;">
+                        Ver <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card text-white h-100 clickable-card" style="background: linear-gradient(135deg, #6610f2 0%, #4b0db8 100%); cursor: pointer;">
+                <div class="card-body p-2 p-sm-3">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="small text-white-50 text-uppercase fw-bold" style="font-size: 0.65rem;">En Implementación</div>
+                            <div class="h4 mb-0 fw-bold">{{ $stats['en_implementacion'] }}</div>
+                        </div>
+                        <div class="opacity-50 d-none d-sm-block">
+                            <i class="fas fa-tools fa-lg"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-top-0 pt-0 pb-2">
+                    <a href="{{ route('innovations.index', ['status' => 'en_implementacion']) }}" class="text-white text-decoration-none" style="font-size: 0.7rem;">
                         Ver <i class="fas fa-arrow-right ms-1"></i>
                     </a>
                 </div>

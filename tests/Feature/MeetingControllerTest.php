@@ -42,6 +42,7 @@ class MeetingControllerTest extends TestCase
             'project_id' => $this->project->id,
             'meeting_date' => now()->addDays(1)->format('Y-m-d H:i:s'),
             'location' => 'Test Location',
+            'type' => 'virtual',
             'participants' => [$otherUser->id],
         ];
 
@@ -93,6 +94,7 @@ class MeetingControllerTest extends TestCase
             'project_id' => $this->project->id,
             'meeting_date' => now()->addDays(2)->format('Y-m-d H:i:s'),
             'location' => 'Online',
+            'type' => 'virtual',
             'status' => 'pendiente',
             'participants' => [$otherUser->id]
         ]);

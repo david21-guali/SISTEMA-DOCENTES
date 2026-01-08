@@ -32,6 +32,29 @@ class TaskQueryService
     }
 
     /**
+     * Get task statistics filtered by user permissions.
+     * 
+     * @param \App\Models\User $user
+     * @return array<string, int>
+     */
+    public function getTaskStats(\App\Models\User $user): array
+    {
+        $query = Task::query();
+
+        if (!$user->hasRole(['admin', 'coordinador'])) {
+            (new ProjectAccessService())->applyOwnershipFilter($query, $user->profile->id ?? 0);
+        }
+
+        return [
+            'total' => (clone $query)->count(),
+            'pendiente' => (clone $query)->pending()->count(),
+            'en_progreso' => (clone $query)->inProgress()->count(),
+            'completada' => (clone $query)->completed()->count(),
+            'atrasada' => (clone $query)->overdue()->count(),
+        ];
+    }
+
+    /**
      * @return \Illuminate\Support\Collection<int, \App\Models\Project>
      */
     public function getProjectsForUser(\App\Models\User $user): \Illuminate\Support\Collection

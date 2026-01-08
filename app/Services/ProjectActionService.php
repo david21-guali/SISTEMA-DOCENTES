@@ -6,6 +6,7 @@ use App\Models\Project;
 use App\Models\User;
 use App\Notifications\ProjectAssigned;
 use App\Notifications\ProjectStatusChanged;
+use App\Notifications\ProjectDeadlineChanged;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -50,13 +51,31 @@ class ProjectActionService
     {
         \Illuminate\Support\Facades\DB::transaction(function () use ($project, $data) {
             $oldStatus = $project->status;
+            $oldEndDate = $project->end_date;
             
             $project->update($data);
 
             $this->updateProjectTeam($project, $data['team_members'] ?? []);
             $this->handleTemporaryAttachments($project, $data['temp_attachments'] ?? []);
             $this->checkStatusChange($project, $oldStatus);
+            $this->checkDeadlineChange($project, $oldEndDate);
         });
+    }
+
+    /**
+     * Check if project end date changed and notify the team.
+     * 
+     * @param Project $project
+     * @param \Carbon\Carbon|string|null $oldEndDate
+     */
+    private function checkDeadlineChange(Project $project, $oldEndDate): void
+    {
+        $old = $oldEndDate instanceof \Carbon\Carbon ? $oldEndDate : (\Illuminate\Support\Carbon::parse($oldEndDate));
+        
+        if ($project->end_date && !$old->isSameDay($project->end_date)) {
+            $users = $project->team->pluck('user')->push($project->profile->user)->unique('id')->filter();
+            $this->notifyUsers($users, new ProjectDeadlineChanged($project, $old, $project->end_date));
+        }
     }
 
     /**

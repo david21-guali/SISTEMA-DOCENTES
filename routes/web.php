@@ -132,7 +132,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('fix-storage-link', [EvaluationController::class, 'fixStorage'])->name('storage.fix');
     
     // Comment routes
-    Route::post('projects/{project}/comments', [CommentController::class, 'store'])->name('comments.store');
+    Route::post('comments', [CommentController::class, 'store'])->name('comments.store');
     Route::delete('comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
 
     // Notification routes
@@ -161,6 +161,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Temporary upload routes
     Route::post('temp-upload', [TemporaryUploadController::class, 'store'])->name('temp.upload');
     Route::delete('temp-delete', [TemporaryUploadController::class, 'destroy'])->name('temp.delete');
+
+    // Route for safe previewing (avoids 403 direct access issues)
+    Route::get('storage-preview/{path}', [\App\Http\Controllers\AttachmentController::class, 'preview'])
+        ->where('path', '.*')
+        ->name('storage.preview');
 });
 
 require __DIR__.'/auth.php';

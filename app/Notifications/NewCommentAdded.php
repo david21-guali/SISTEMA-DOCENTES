@@ -13,7 +13,7 @@ class NewCommentAdded extends Notification
     use Queueable;
 
     /** @var \App\Models\Comment */
-    public $comment;
+    public Comment $comment;
 
     /**
      * Create a new notification instance.
@@ -40,13 +40,19 @@ class NewCommentAdded extends Notification
      */
     public function toArray(object $notifiable): array
     {
+        /** @var \App\Models\Project|\App\Models\Innovation $commentable */
+        $commentable = $this->comment->commentable;
+        $type = $commentable instanceof \App\Models\Project ? 'proyecto' : 'innovación';
+        $routeName = $commentable instanceof \App\Models\Project ? 'projects.show' : 'innovations.show';
+
         return [
-            'project_id' => $this->comment->project_id,
+            'commentable_id' => $this->comment->commentable_id,
+            'commentable_type' => $this->comment->commentable_type,
             'comment_id' => $this->comment->id,
             'user_name' => $this->comment->profile->user->name ?? 'Usuario',
             'title' => 'Nuevo comentario',
-            'message' => "{$this->comment->profile->user->name} comentó en el proyecto: {$this->comment->project->title}",
-            'link' => route('projects.show', $this->comment->project_id),
+            'message' => "{$this->comment->profile->user->name} comentó en el {$type}: {$commentable->title}",
+            'link' => route($routeName, (int) $commentable->id),
         ];
     }
 }

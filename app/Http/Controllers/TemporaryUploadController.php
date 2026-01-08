@@ -23,12 +23,12 @@ class TemporaryUploadController extends Controller
             $extension = $file->getClientOriginalExtension();
             $tempName = Str::uuid() . '.' . $extension;
             
-            // Store in a temporary directory
             $path = $file->storeAs('temp', $tempName, 'public');
 
             return response()->json([
                 'success' => true,
                 'path' => $path,
+                'url' => asset('storage/' . $path),
                 'name' => $filename,
                 'id' => $tempName, // Use UUID as ID
             ]);

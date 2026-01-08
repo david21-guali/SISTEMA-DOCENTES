@@ -44,13 +44,15 @@ class ModelMethodTest extends TestCase
         $project = Project::factory()->create(['profile_id' => $user->profile->id]);
         
         $comment = \App\Models\Comment::create([
-            'project_id' => $project->id,
+            'commentable_id' => $project->id,
+            'commentable_type' => Project::class,
             'profile_id' => $user->profile->id,
             'content' => 'Top level'
         ]);
 
         \App\Models\Comment::create([
-            'project_id' => $project->id,
+            'commentable_id' => $project->id,
+            'commentable_type' => Project::class,
             'profile_id' => $user->profile->id,
             'content' => 'Reply',
             'parent_id' => $comment->id
@@ -102,12 +104,13 @@ class ModelMethodTest extends TestCase
         $project = Project::factory()->create(['profile_id' => $user->profile->id]);
         
         $comment = Comment::create([
-            'project_id' => $project->id,
+            'commentable_id' => $project->id,
+            'commentable_type' => Project::class,
             'profile_id' => $user->profile->id,
             'content' => 'Top level'
         ]);
 
-        $this->assertEquals($project->id, $comment->project->id);
+        $this->assertEquals($project->id, $comment->commentable_id);
         $this->assertEquals($user->profile->id, $comment->profile->id);
         $this->assertNull($comment->parent);
         $this->assertEquals(0, $comment->replies->count());

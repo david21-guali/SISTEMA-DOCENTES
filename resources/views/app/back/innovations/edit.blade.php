@@ -11,7 +11,7 @@
                     <h4 class="mb-0"><i class="fas fa-edit"></i> Editar Innovación</h4>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('innovations.update', $innovation) }}" method="POST" enctype="multipart/form-data" novalidate>
+                    <form action="{{ route('innovations.update', $innovation) }}" method="POST" enctype="multipart/form-data" novalidate id="innovationForm">
                         @csrf
                         @method('PUT')
 
@@ -112,54 +112,44 @@
 
                         <!-- Archivos Existentes -->
                         @if($innovation->attachments->count() > 0)
-                        <div class="mb-3">
-                            <label class="form-label">Archivos de Evidencia Actuales</label>
-                            <div class="list-group">
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Archivos de Evidencia Actuales</label>
+                            <div class="list-group list-group-flush border-top border-bottom">
                                 @foreach($innovation->attachments as $attachment)
-                                <div class="list-group-item d-flex justify-content-between align-items-center">
-                                    <div class="d-flex align-items-center">
-                                        <i class="{{ $attachment->icon }} me-2"></i>
-                                        <div>
-                                            <!-- Logic for preview vs specific link -->
-                                            @php
-                                                $canPreview = $attachment->isImage() || $attachment->isPdf();
-                                                $previewType = $attachment->isImage() ? 'image' : ($attachment->isPdf() ? 'pdf' : 'other');
-                                            @endphp
-
-                                            @if($canPreview)
-                                                <a href="#" class="text-decoration-none fw-bold text-dark"
-                                                   data-bs-toggle="modal" 
-                                                   data-bs-target="#previewModal"
-                                                   data-url="{{ $attachment->url }}"
-                                                   data-type="{{ $previewType }}"
-                                                   data-name="{{ $attachment->original_name }}">
-                                                    {{ $attachment->original_name }}
-                                                </a>
-                                            @else
-                                                <a href="{{ $attachment->url }}" target="_blank" class="text-decoration-none fw-bold text-dark">
-                                                    {{ $attachment->original_name }}
-                                                </a>
-                                            @endif
-
-                                            <span class="text-muted small">({{ $attachment->human_size }})</span>
+                                <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                    <div class="d-flex align-items-center overflow-hidden">
+                                        @php
+                                            $canPreview = $attachment->isImage() || $attachment->isPdf();
+                                            $previewType = $attachment->isImage() ? 'image' : ($attachment->isPdf() ? 'pdf' : 'other');
+                                        @endphp
+                                        <div class="me-2 clickable-thumbnail" style="cursor: pointer;"
+                                             @if($canPreview) onclick="openGlobalPreview('{{ route('storage.preview', $attachment->path) }}', '{{ $attachment->original_name }}', '{{ $previewType }}')" @endif>
+                                            <i class="{{ $attachment->icon }} fa-lg"></i>
+                                        </div>
+                                        <div class="text-truncate">
+                                            <span class="fw-bold text-dark d-block text-truncate small" title="{{ $attachment->original_name }}">
+                                                {{ $attachment->original_name }}
+                                            </span>
+                                            <div class="small text-muted">{{ $attachment->human_size }}</div>
                                         </div>
                                     </div>
-                                    <div class="d-flex gap-2">
+                                    <div class="d-flex align-items-center gap-1">
                                         @if($canPreview)
                                         <button type="button" class="btn btn-sm btn-outline-primary"
-                                                data-bs-toggle="modal" 
-                                                data-bs-target="#previewModal"
-                                                data-url="{{ $attachment->url }}"
-                                                data-type="{{ $previewType }}"
-                                                data-name="{{ $attachment->original_name }}"
+                                                onclick="openGlobalPreview('{{ route('storage.preview', $attachment->path) }}', '{{ $attachment->original_name }}', '{{ $previewType }}')"
                                                 title="Ver Archivo">
                                             <i class="fas fa-eye"></i>
                                         </button>
                                         @endif
 
-                                        <button type="button" class="btn btn-sm btn-danger" 
-                                                onclick="confirmDeleteAttachment('{{ route('innovations.attachments.delete', [$innovation, $attachment]) }}')">
-                                            <i class="fas fa-trash"></i>
+                                        <a href="{{ route('attachments.download', $attachment) }}" class="btn btn-sm btn-outline-secondary" title="Descargar">
+                                            <i class="fas fa-download"></i>
+                                        </a>
+
+                                        <button type="button" class="btn btn-sm text-danger" 
+                                                onclick="confirmDeleteAttachment('{{ route('attachments.destroy', $attachment) }}')"
+                                                title="Eliminar">
+                                            <i class="fas fa-times"></i>
                                         </button>
                                     </div>
                                 </div>
@@ -170,12 +160,22 @@
 
                         <!-- Nuevos Archivos -->
                         <div class="mb-4">
-                            <label for="evidence_files" class="form-label">Agregar Más Archivos de Evidencia</label>
+                            <label for="evidence_files" class="form-label fw-bold">Agregar Más Archivos de Evidencia</label>
                             <input type="file" class="form-control @error('evidence_files.*') is-invalid @enderror" 
-                                   id="evidence_files" name="evidence_files[]" multiple>
+                                   id="evidence_files" name="evidence_files[]" multiple
+                                   onchange="previewFiles()">
+                            <small class="text-muted">Los nuevos archivos se añadirán a la lista actual al guardar.</small>
                             @error('evidence_files.*')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
+
+                            <!-- Contenedor para previsualización de nuevos archivos -->
+                            <div id="file-preview-container" class="mt-3" style="display: none;">
+                                <h6 class="small fw-bold text-muted mb-2"><i class="fas fa-plus-circle me-1"></i> Nuevos archivos para subir:</h6>
+                                <div id="file-list" class="list-group list-group-flush border-top border-bottom">
+                                    <!-- Se llenará con JS -->
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Botones -->
@@ -183,8 +183,9 @@
                             <a href="{{ route('innovations.index') }}" class="btn btn-secondary">
                                 <i class="fas fa-times"></i> Cancelar
                             </a>
-                            <button type="submit" class="btn btn-warning">
-                                <i class="fas fa-save"></i> Actualizar Innovación
+                            <button type="submit" class="btn btn-warning" id="submitBtn">
+                                <i class="fas fa-save"></i> <span class="btn-text">Actualizar Innovación</span>
+                                <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
                             </button>
                         </div>
                     </form>
@@ -200,27 +201,16 @@
     @method('DELETE')
 </form>
 
-<!-- Modal de Previsualización -->
-<div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
+<!-- Modal de Vista Previa Global -->
+<div class="modal fade" id="globalPreviewModal" tabindex="-1" aria-labelledby="previewTitle" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered">
-        <div class="modal-content" style="height: 90vh;">
+        <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="previewModalLabel">Previsualización de Archivo</h5>
+                <h5 class="modal-title" id="previewTitle">Vista Previa</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body p-0 d-flex justify-content-center align-items-center bg-light" style="overflow: hidden;">
-                <div id="loadingSpinner" class="spinner-border text-primary" role="status" style="display: none;">
-                    <span class="visually-hidden">Cargando...</span>
-                </div>
-                <img id="previewImage" src="" class="img-fluid" style="display: none; max-height: 100%; max-width: 100%; object-fit: contain;">
-                <iframe id="previewFrame" src="" style="display: none; width: 100%; height: 100%; border: none;"></iframe>
-                <div id="previewError" class="text-center p-5" style="display: none;">
-                    <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
-                    <p>No se puede previsualizar este archivo.</p>
-                    <a id="downloadLink" href="#" class="btn btn-primary" download>
-                        <i class="fas fa-download"></i> Descargar Archivo
-                    </a>
-                </div>
+            <div class="modal-body p-0 text-center" id="previewContent" style="min-height: 400px; display: flex; align-items: center; justify-content: center; background: #f8f9fc;">
+                <!-- El contenido se cargará dinámicamente -->
             </div>
         </div>
     </div>
@@ -231,70 +221,215 @@
 @push('scripts')
 <script>
     function confirmDeleteAttachment(url) {
-        if (confirm('¿Eliminar este archivo? NO podrás deshacer esta acción.')) {
-            const form = document.getElementById('deleteAttachmentForm');
-            form.action = url;
-            form.submit();
+        Swal.fire({
+            title: '¿Eliminar este archivo?',
+            text: "Esta acción no se puede deshacer.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#e74a3b',
+            cancelButtonColor: '#858796',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const form = document.getElementById('deleteAttachmentForm');
+                form.action = url;
+                form.submit();
+            }
+        });
+    }
+
+    let selectedFiles = [];
+
+    function previewFiles() {
+        const input = document.getElementById('evidence_files');
+        const container = document.getElementById('file-preview-container');
+        const list = document.getElementById('file-list');
+        
+        // Inicializar array si es la primera vez
+        if (selectedFiles.length === 0 || input.files.length > 0) {
+            selectedFiles = Array.from(input.files);
+        }
+        
+        renderFileList();
+    }
+
+    function renderFileList() {
+        const container = document.getElementById('file-preview-container');
+        const list = document.getElementById('file-list');
+        const input = document.getElementById('evidence_files');
+        
+        list.innerHTML = '';
+        
+        if (selectedFiles.length > 0) {
+            container.style.display = 'block';
+            
+            selectedFiles.forEach((file, index) => {
+                const { icon, color } = getFileInfo(file.name);
+                const size = (file.size / 1024).toFixed(1) + ' KB';
+                const canPreview = file.type === 'application/pdf' || file.type.startsWith('image/');
+                const previewType = file.type.startsWith('image/') ? 'image' : 'pdf';
+                
+                // Crear URL temporal para previsualización local
+                const localUrl = URL.createObjectURL(file);
+                
+                const item = document.createElement('div');
+                item.className = 'list-group-item d-flex justify-content-between align-items-center px-0 py-2 bg-transparent';
+                item.innerHTML = `
+                    <div class="d-flex align-items-center overflow-hidden">
+                        <div class="me-2 clickable-thumbnail" style="cursor: pointer;" onclick="${canPreview ? `openLocalPreview('${localUrl}', '${file.name}', '${previewType}')` : ''}">
+                            <i class="${icon} ${color} fa-lg"></i>
+                        </div>
+                        <div class="text-truncate">
+                            <span class="small fw-bold d-block text-truncate text-dark">${file.name}</span>
+                            <span class="text-muted" style="font-size: 0.75rem;">${size}</span>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center gap-1">
+                        ${canPreview ? `
+                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="openLocalPreview('${localUrl}', '${file.name}', '${previewType}')" title="Vista Previa">
+                            <i class="fas fa-eye"></i>
+                        </button>` : ''}
+                        <a href="${localUrl}" download="${file.name}" class="btn btn-sm btn-outline-secondary" title="Descargar">
+                            <i class="fas fa-download"></i>
+                        </a>
+                        <button type="button" class="btn btn-sm text-danger" onclick="removeFile(${index})" title="Eliminar de la lista">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+            
+            // Sincronizar el input de archivos real (esto es necesario para que el form envíe lo correcto)
+            const dataTransfer = new DataTransfer();
+            selectedFiles.forEach(file => dataTransfer.items.add(file));
+            input.files = dataTransfer.files;
+
+        } else {
+            container.style.display = 'none';
+            input.value = ''; // Limpiar el input si no hay archivos
         }
     }
 
-document.addEventListener('DOMContentLoaded', function() {
-    const previewModal = document.getElementById('previewModal');
-    const previewImage = document.getElementById('previewImage');
-    const previewFrame = document.getElementById('previewFrame');
-    const previewError = document.getElementById('previewError');
-    const downloadLink = document.getElementById('downloadLink');
-    const loadingSpinner = document.getElementById('loadingSpinner');
-    const modalTitle = document.getElementById('previewModalLabel');
-
-    if (previewModal) {
-        previewModal.addEventListener('show.bs.modal', function(event) {
-            // Button that triggered the modal
-            const button = event.relatedTarget;
-            const fileUrl = button.getAttribute('data-url');
-            const fileType = button.getAttribute('data-type'); // 'image' or 'pdf'
-            const fileName = button.getAttribute('data-name');
-
-            modalTitle.textContent = fileName || 'Previsualización';
-
-            // Reset displays
-            previewImage.style.display = 'none';
-            previewImage.src = '';
-            previewFrame.style.display = 'none';
-            previewFrame.src = '';
-            previewError.style.display = 'none';
-            loadingSpinner.style.display = 'block';
-
-            if (fileType === 'pdf') {
-                previewFrame.src = fileUrl;
-                previewFrame.onload = function() {
-                    loadingSpinner.style.display = 'none';
-                    previewFrame.style.display = 'block';
-                };
-            } else if (fileType === 'image') {
-                previewImage.src = fileUrl;
-                previewImage.onload = function() {
-                    loadingSpinner.style.display = 'none';
-                    previewImage.style.display = 'block';
-                };
-                previewImage.onerror = function() {
-                    loadingSpinner.style.display = 'none';
-                    previewError.style.display = 'block';
-                    downloadLink.href = fileUrl;
-                };
-            } else {
-                // Fallback
-                loadingSpinner.style.display = 'none';
-                previewError.style.display = 'block';
-                downloadLink.href = fileUrl;
+    function removeFile(index) {
+        Swal.fire({
+            title: '¿Quitar archivo?',
+            text: "El archivo se eliminará de la lista de nuevos archivos.",
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonColor: '#4e73df',
+            cancelButtonColor: '#858796',
+            confirmButtonText: 'Sí, quitar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                selectedFiles.splice(index, 1);
+                renderFileList();
             }
         });
-
-        previewModal.addEventListener('hidden.bs.modal', function () {
-            previewFrame.src = '';
-            previewImage.src = '';
-        });
     }
+
+    function openLocalPreview(url, name, type) {
+        // Usamos el mismo modal global para consistencia
+        const previewTitle = document.getElementById('previewTitle');
+        const previewContent = document.getElementById('previewContent');
+        const globalModal = new bootstrap.Modal(document.getElementById('globalPreviewModal'));
+
+        previewTitle.textContent = name;
+        previewContent.innerHTML = '';
+
+        if (type === 'image') {
+            const img = document.createElement('img');
+            img.src = url;
+            img.className = 'img-fluid shadow-sm';
+            img.style.maxHeight = '80vh';
+            previewContent.appendChild(img);
+        } else if (type === 'pdf') {
+            const iframe = document.createElement('iframe');
+            iframe.src = url;
+            iframe.style.width = '100%';
+            iframe.style.height = '80vh';
+            iframe.style.border = 'none';
+            previewContent.appendChild(iframe);
+        }
+        
+        globalModal.show();
+    }
+
+    function getFileInfo(filename) {
+        const ext = filename.split('.').pop().toLowerCase();
+        const types = {
+            'pdf':  { icon: 'fas fa-file-pdf', color: 'text-danger' },
+            'doc':  { icon: 'fas fa-file-word', color: 'text-primary' },
+            'docx': { icon: 'fas fa-file-word', color: 'text-primary' },
+            'xls':  { icon: 'fas fa-file-excel', color: 'text-success' },
+            'xlsx': { icon: 'fas fa-file-excel', color: 'text-success' },
+            'jpg':  { icon: 'fas fa-file-image', color: 'text-success' },
+            'jpeg': { icon: 'fas fa-file-image', color: 'text-success' },
+            'png':  { icon: 'fas fa-file-image', color: 'text-success' },
+            'zip':  { icon: 'fas fa-file-archive', color: 'text-muted' },
+            'rar':  { icon: 'fas fa-file-archive', color: 'text-muted' }
+        };
+        return types[ext] || { icon: 'fas fa-file', color: 'text-muted' };
+    }
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Vista Previa Global
+    const globalModal = new bootstrap.Modal(document.getElementById('globalPreviewModal'));
+    const previewTitle = document.getElementById('previewTitle');
+    const previewContent = document.getElementById('previewContent');
+
+    window.openGlobalPreview = function(url, name, type) {
+        previewTitle.textContent = name;
+        previewContent.innerHTML = '<div class="spinner-border text-primary" role="status"></div>';
+
+        if (type === 'image') {
+            const img = document.createElement('img');
+            img.src = url;
+            img.className = 'img-fluid shadow-sm';
+            img.style.maxHeight = '80vh';
+            img.onload = () => { previewContent.innerHTML = ''; previewContent.appendChild(img); };
+            img.onerror = () => { previewContent.innerHTML = '<div class="p-5">Error al cargar la imagen.</div>'; };
+        } else if (type === 'pdf') {
+            const iframe = document.createElement('iframe');
+            iframe.src = url;
+            iframe.style.width = '100%';
+            iframe.style.height = '80vh';
+            iframe.style.border = 'none';
+            previewContent.innerHTML = '';
+            previewContent.appendChild(iframe);
+        } else {
+            previewContent.innerHTML = '<div class="p-5">Este archivo no se puede previsualizar. Por favor, descárgalo.</div>';
+        }
+
+        globalModal.show();
+    };
 });
 </script>
+
+<script>
+// Double submission protection
+document.getElementById('innovationForm').addEventListener('submit', function() {
+    const btn = document.getElementById('submitBtn');
+    const text = btn.querySelector('.btn-text');
+    const spinner = btn.querySelector('.spinner-border');
+    
+    btn.disabled = true;
+    text.textContent = 'Actualizando...';
+    spinner.classList.remove('d-none');
+});
+</script>
+<style>
+    .list-group-sm .list-group-item {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.85rem;
+    }
+    .x-small {
+        font-size: 0.75rem;
+    }
+    .clickable-thumbnail:hover {
+        opacity: 0.8;
+    }
+</style>
 @endpush

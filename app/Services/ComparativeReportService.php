@@ -139,7 +139,7 @@ class ComparativeReportService
     }
 
     /**
-     * Generate historical activity data for the last 6 months.
+     * Generate historical activity data for the last 12 months.
      * 
      * @return array{projects: array<int, int>, tasks: array<int, int>, innovations: array<int, int>, labels: array<int, string>}
      */
@@ -147,7 +147,7 @@ class ComparativeReportService
     {
         $dataset = ['projects' => [], 'tasks' => [], 'innovations' => [], 'labels' => []];
 
-        for ($i = 5; $i >= 0; $i--) {
+        for ($i = 11; $i >= 0; $i--) {
             $date = now()->subMonths($i);
             $monthData = $this->getMetricsForSingleMonth($date);
             

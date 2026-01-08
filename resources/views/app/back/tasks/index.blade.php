@@ -25,7 +25,7 @@
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
                             <div class="small text-white-50 text-uppercase fw-bold">Total Tareas</div>
-                            <div class="h3 mb-0 fw-bold">{{ $tasks->total() }}</div>
+                            <div class="h3 mb-0 fw-bold">{{ $stats['total'] }}</div>
                         </div>
                         <div class="opacity-50">
                             <i class="fas fa-clipboard-list fa-2x"></i>
@@ -45,7 +45,7 @@
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
                             <div class="small text-white-50 text-uppercase fw-bold">Pendientes</div>
-                            <div class="h3 mb-0 fw-bold">{{ \App\Models\Task::pending()->count() }}</div>
+                            <div class="h3 mb-0 fw-bold">{{ $stats['pendiente'] }}</div>
                         </div>
                         <div class="opacity-50">
                             <i class="fas fa-clock fa-2x"></i>
@@ -65,7 +65,7 @@
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
                             <div class="small text-white-50 text-uppercase fw-bold">En Progreso</div>
-                            <div class="h3 mb-0 fw-bold">{{ \App\Models\Task::inProgress()->count() }}</div>
+                            <div class="h3 mb-0 fw-bold">{{ $stats['en_progreso'] }}</div>
                         </div>
                         <div class="opacity-50">
                             <i class="fas fa-spinner fa-2x"></i>
@@ -85,7 +85,7 @@
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
                             <div class="small text-white-50 text-uppercase fw-bold">Completadas</div>
-                            <div class="h3 mb-0 fw-bold">{{ \App\Models\Task::completed()->count() }}</div>
+                            <div class="h3 mb-0 fw-bold">{{ $stats['completada'] }}</div>
                         </div>
                         <div class="opacity-50">
                             <i class="fas fa-check-circle fa-2x"></i>
@@ -105,7 +105,7 @@
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
                             <div class="small text-white-50 text-uppercase fw-bold">Atrasadas</div>
-                            <div class="h3 mb-0 fw-bold">{{ \App\Models\Task::overdue()->count() }}</div>
+                            <div class="h3 mb-0 fw-bold">{{ $stats['atrasada'] }}</div>
                         </div>
                         <div class="opacity-50">
                             <i class="fas fa-exclamation-circle fa-2x"></i>
@@ -474,7 +474,10 @@
                     }
                 ],
                 responsive: true,
-                order: [[ 5, "asc" ]]
+                order: [[ 5, "asc" ]],
+                columnDefs: [
+                    { orderable: false, targets: 6 } // Disable sorting on 'Actions' column
+                ]
             });
         }
 

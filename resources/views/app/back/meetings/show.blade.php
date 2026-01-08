@@ -97,12 +97,18 @@
                                         <i class="fas fa-map-marker-alt"></i>
                                     </div>
                                     <div class="flex-grow-1">
-                                        <div class="text-xs text-uppercase text-danger fw-bold ls-1 mb-1">Ubicación / Enlace</div>
+                                        <div class="text-xs text-uppercase text-danger fw-bold ls-1 mb-1">{{ $meeting->type === 'virtual' ? 'Enlace Virtual' : 'Ubicación Física' }}</div>
                                         <div class="fw-bold text-dark text-break">{{ $meeting->location ?? 'No especificada' }}</div>
                                     </div>
-                                    @if($meeting->location && (Str::startsWith($meeting->location, ['http://', 'https://']) || filter_var($meeting->location, FILTER_VALIDATE_URL)))
-                                        <a href="{{ $meeting->location }}" target="_blank" class="btn btn-dark rounded-pill px-4 fw-bold shadow-sm hover-scale">
-                                            Unirse <i class="fas fa-external-link-alt ms-1"></i>
+                                    @if($meeting->location && ($meeting->type === 'virtual' ? (Str::startsWith($meeting->location, ['http://', 'https://']) || filter_var($meeting->location, FILTER_VALIDATE_URL)) : true))
+                                        <a href="{{ $meeting->type === 'virtual' ? $meeting->location : 'https://www.google.com/maps/search/?api=1&query='.urlencode($meeting->location) }}" 
+                                           target="_blank" 
+                                           class="btn btn-dark rounded-pill px-4 fw-bold shadow-sm hover-scale">
+                                            @if($meeting->type === 'virtual')
+                                                Unirse <i class="fas fa-external-link-alt ms-1"></i>
+                                            @else
+                                                Ver Dirección <i class="fas fa-map-marked-alt ms-1"></i>
+                                            @endif
                                         </a>
                                     @endif
                                 </div>

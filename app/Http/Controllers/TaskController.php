@@ -37,8 +37,9 @@ class TaskController extends Controller
 
         $tasks = $this->queryService->getTasks($user, $request->all());
         $tasks->appends($request->all());
+        $stats = $this->queryService->getTaskStats($user);
 
-        return view('app.back.tasks.index', compact('tasks'));
+        return view('app.back.tasks.index', compact('tasks', 'stats'));
     }
 
     /**

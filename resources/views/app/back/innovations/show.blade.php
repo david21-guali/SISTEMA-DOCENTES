@@ -11,7 +11,8 @@
                 <h2><i class="fas fa-lightbulb"></i> {{ $innovation->title }}</h2>
                 <div>
                     @if($innovation->status !== 'aprobada' && $innovation->status !== 'en_revision')
-                        @if(!auth()->user()->hasRole('admin') && !auth()->user()->hasRole('coordinador'))
+                        {{-- Solo el autor puede solicitar revisión --}}
+                        @if(auth()->user()->profile->id === $innovation->profile_id)
                             <form action="{{ route('innovations.request-review', $innovation) }}" method="POST" class="d-inline">
                                 @csrf
                                 <button type="submit" class="btn btn-info text-white me-2">
@@ -21,7 +22,7 @@
                         @endif
                     @endif
 
-                    @can('edit-innovations')
+                    @can('update', $innovation)
                     <a href="{{ route('innovations.edit', $innovation) }}" class="btn btn-warning">
                         <i class="fas fa-edit"></i> Editar
                     </a>
@@ -78,56 +79,39 @@
                     <!-- Archivos de Evidencia -->
                     <!-- Archivos de Evidencia -->
                     @if($innovation->attachments->count() > 0)
-                    <div class="card shadow">
-                        <div class="card-header bg-info text-white">
+                    <div class="card shadow mb-4">
+                        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                             <h5 class="mb-0">
-                                <i class="fas fa-paperclip"></i> Archivos de Evidencia
+                                <i class="fas fa-file-contract"></i> Archivos de Evidencia
                                 <span class="badge bg-light text-dark ms-2">{{ $innovation->attachments->count() }}</span>
                             </h5>
                         </div>
                         <div class="card-body">
-                            <div class="list-group">
+                            <div class="list-group list-group-flush mt-2">
                                 @foreach($innovation->attachments as $file)
-                                <div class="list-group-item d-flex justify-content-between align-items-center">
-                                    <div class="d-flex align-items-center">
-                                        <i class="{{ $file->icon }} fa-2x me-3"></i>
-                                        <div>
-                                            <!-- Logic for preview vs specific link -->
-                                            @php
-                                                $canPreview = $file->isImage() || $file->isPdf();
-                                                $previewType = $file->isImage() ? 'image' : ($file->isPdf() ? 'pdf' : 'other');
-                                            @endphp
-
-                                            @if($canPreview)
-                                                <a href="#" class="text-decoration-none fw-bold text-dark"
-                                                   data-bs-toggle="modal" 
-                                                   data-bs-target="#previewModal"
-                                                   data-url="{{ $file->url }}"
-                                                   data-type="{{ $previewType }}"
-                                                   data-name="{{ $file->original_name }}">
-                                                    {{ $file->original_name }}
-                                                </a>
-                                            @else
-                                                <a href="{{ $file->url }}" target="_blank" class="text-decoration-none fw-bold text-dark">
-                                                    {{ $file->original_name }}
-                                                </a>
-                                            @endif
-
-                                            <div class="small text-muted">
-                                                {{ $file->human_size }} • {{ $file->created_at->format('d/m/Y') }}
-                                            </div>
+                                <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                    <div class="d-flex align-items-center overflow-hidden">
+                                        @php
+                                            $canPreview = $file->isImage() || $file->isPdf();
+                                            $previewType = $file->isImage() ? 'image' : ($file->isPdf() ? 'pdf' : 'other');
+                                        @endphp
+                                        <div class="me-2 clickable-thumbnail" style="cursor: pointer;"
+                                             @if($canPreview) onclick="openGlobalPreview('{{ route('storage.preview', $file->path) }}', '{{ $file->original_name }}', '{{ $previewType }}')" @endif>
+                                            <i class="{{ $file->icon }} fa-lg"></i>
+                                        </div>
+                                        <div class="text-truncate">
+                                            <span class="fw-bold text-dark d-block text-truncate" title="{{ $file->original_name }}">
+                                                {{ $file->original_name }}
+                                            </span>
+                                            <div class="small text-muted">{{ $file->human_size }} • {{ $file->created_at->format('d/m/Y') }}</div>
                                         </div>
                                     </div>
                                     
-                                    <div class="d-flex gap-2">
+                                    <div class="d-flex align-items-center gap-1">
                                         @if($canPreview)
-                                        <button type="button" class="btn btn-sm btn-outline-primary"
-                                                data-bs-toggle="modal" 
-                                                data-bs-target="#previewModal"
-                                                data-url="{{ $file->url }}"
-                                                data-type="{{ $previewType }}"
-                                                data-name="{{ $file->original_name }}"
-                                                title="Ver Archivo">
+                                        <button type="button" class="btn btn-sm btn-outline-primary" 
+                                                onclick="openGlobalPreview('{{ route('storage.preview', $file->path) }}', '{{ $file->original_name }}', '{{ $previewType }}')"
+                                                title="Vista Previa">
                                             <i class="fas fa-eye"></i>
                                         </button>
                                         @endif
@@ -135,11 +119,140 @@
                                         <a href="{{ route('attachments.download', $file) }}" class="btn btn-sm btn-outline-secondary" title="Descargar">
                                             <i class="fas fa-download"></i>
                                         </a>
+
+                                        @if(Auth::user()->profile->id == $innovation->profile_id || Auth::user()->hasRole('admin'))
+                                        <form action="{{ route('attachments.destroy', $file) }}" method="POST" class="ms-1 form-delete">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-sm text-danger" title="Eliminar">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </form>
+                                        @endif
                                     </div>
                                 </div>
                                 @endforeach
                             </div>
                         </div>
+                    </div>
+                    @endif
+
+                    <!-- Comentarios y Colaboración -->
+                    @if($innovation->status === 'aprobada' || $innovation->status === 'en_implementacion' || auth()->user()->hasRole('admin'))
+                    <div class="card shadow mt-4">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="mb-0"><i class="fas fa-comments"></i> Intercambio de Experiencias</h5>
+                        </div>
+                        <div class="card-body">
+                            <!-- Formulario de Nuevo Comentario -->
+                            <form action="{{ route('comments.store') }}" method="POST" class="mb-4">
+                                @csrf
+                                <input type="hidden" name="commentable_id" value="{{ $innovation->id }}">
+                                <input type="hidden" name="commentable_type" value="innovation">
+                                <div class="mb-2">
+                                    <textarea class="form-control @error('content') is-invalid @enderror" 
+                                              name="content" rows="3" 
+                                              placeholder="Escribe un comentario o pregunta sobre esta innovación...">{{ old('content') }}</textarea>
+                                    @error('content')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <button type="submit" class="btn btn-info btn-sm">
+                                    <i class="fas fa-paper-plane"></i> Publicar Comentario
+                                </button>
+                            </form>
+
+                            <!-- Lista de Comentarios -->
+                            @php
+                                $comments = $innovation->comments()->whereNull('parent_id')->with(['profile.user', 'replies.profile.user'])->get();
+                            @endphp
+
+                            @if($comments->count() > 0)
+                                <div class="comments-list">
+                                    @foreach($comments as $comment)
+                                    <div class="card mb-3 border-light shadow-sm">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                                <div>
+                                                    <x-user-link :user="$comment->profile->user" :showAvatar="true" />
+                                                    <small class="text-muted ms-2">{{ $comment->created_at->diffForHumans() }}</small>
+                                                </div>
+                                                @if(Auth::user()->profile->id == $comment->profile_id || Auth::user()->hasRole('admin'))
+                                                <form action="{{ route('comments.destroy', $comment) }}" method="POST" class="delete-comment-form">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-sm btn-link text-danger">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                                @endif
+                                            </div>
+                                            <p class="mb-0">{{ $comment->content }}</p>
+
+                                            <!-- Respuestas -->
+                                            @if($comment->replies->count() > 0)
+                                            <div class="ms-4 mt-3 border-start border-3 border-info ps-3">
+                                                @foreach($comment->replies as $reply)
+                                                <div class="mb-2">
+                                                    <div class="d-flex justify-content-between align-items-start">
+                                                        <div>
+                                                            <strong class="small">{{ $reply->profile->user->name }}</strong>
+                                                            <small class="text-muted ms-1">{{ $reply->created_at->diffForHumans() }}</small>
+                                                        </div>
+                                                        @if(Auth::user()->profile->id == $reply->profile_id || Auth::user()->hasRole('admin'))
+                                                        <form action="{{ route('comments.destroy', $reply) }}" method="POST" class="delete-comment-form">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" class="btn btn-sm btn-link text-danger p-0">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </form>
+                                                        @endif
+                                                    </div>
+                                                    <p class="mb-0 small">{{ $reply->content }}</p>
+                                                </div>
+                                                @endforeach
+                                            </div>
+                                            @endif
+
+                                            <!-- Formulario de Respuesta -->
+                                            <div class="mt-2">
+                                                <button class="btn btn-sm btn-outline-info" type="button" 
+                                                        data-bs-toggle="collapse" data-bs-target="#reply-{{ $comment->id }}">
+                                                    <i class="fas fa-reply"></i> Responder
+                                                </button>
+                                                <div class="collapse mt-2" id="reply-{{ $comment->id }}">
+                                                    <form action="{{ route('comments.store') }}" method="POST">
+                                                        @csrf
+                                                        <input type="hidden" name="commentable_id" value="{{ $innovation->id }}">
+                                                        <input type="hidden" name="commentable_type" value="innovation">
+                                                        <input type="hidden" name="parent_id" value="{{ $comment->id }}">
+                                                        <div class="input-group input-group-sm">
+                                                            <textarea class="form-control" name="content" rows="2" 
+                                                                      placeholder="Escribe una respuesta..."></textarea>
+                                                            <button type="submit" class="btn btn-info">
+                                                                <i class="fas fa-paper-plane"></i>
+                                                            </button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @endforeach
+                                </div>
+                            @else
+                                <div class="text-center py-3">
+                                    <i class="fas fa-comments fa-2x text-muted mb-2"></i>
+                                    <p class="text-muted mb-0">No hay comentarios aún. ¡Inicia la conversación!</p>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                    @else
+                    <div class="alert alert-light border mt-4">
+                        <i class="fas fa-lock me-2 text-muted"></i>
+                        <small class="text-muted">El espacio de colaboración se activará cuando la innovación sea aprobada o esté en implementación.</small>
                     </div>
                     @endif
                 </div>
@@ -259,27 +372,16 @@
     </div>
 </div>
 
-<!-- Modal de Previsualización -->
-<div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
+<!-- Modal de Vista Previa Global -->
+<div class="modal fade" id="globalPreviewModal" tabindex="-1" aria-labelledby="previewTitle" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered">
-        <div class="modal-content" style="height: 90vh;">
+        <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="previewModalLabel">Previsualización de Archivo</h5>
+                <h5 class="modal-title" id="previewTitle">Vista Previa</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body p-0 d-flex justify-content-center align-items-center bg-light" style="overflow: hidden;">
-                <div id="loadingSpinner" class="spinner-border text-primary" role="status" style="display: none;">
-                    <span class="visually-hidden">Cargando...</span>
-                </div>
-                <img id="previewImage" src="" class="img-fluid" style="display: none; max-height: 100%; max-width: 100%; object-fit: contain;">
-                <iframe id="previewFrame" src="" style="display: none; width: 100%; height: 100%; border: none;"></iframe>
-                <div id="previewError" class="text-center p-5" style="display: none;">
-                    <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
-                    <p>No se puede previsualizar este archivo.</p>
-                    <a id="downloadLink" href="#" class="btn btn-primary" download>
-                        <i class="fas fa-download"></i> Descargar Archivo
-                    </a>
-                </div>
+            <div class="modal-body p-0 text-center" id="previewContent" style="min-height: 400px; display: flex; align-items: center; justify-content: center; background: #f8f9fc;">
+                <!-- El contenido se cargará dinámicamente -->
             </div>
         </div>
     </div>
@@ -290,62 +392,36 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const previewModal = document.getElementById('previewModal');
-    const previewImage = document.getElementById('previewImage');
-    const previewFrame = document.getElementById('previewFrame');
-    const previewError = document.getElementById('previewError');
-    const downloadLink = document.getElementById('downloadLink');
-    const loadingSpinner = document.getElementById('loadingSpinner');
-    const modalTitle = document.getElementById('previewModalLabel');
+    // Vista Previa Global
+    const globalModal = new bootstrap.Modal(document.getElementById('globalPreviewModal'));
+    const previewTitle = document.getElementById('previewTitle');
+    const previewContent = document.getElementById('previewContent');
 
-    if (previewModal) {
-        previewModal.addEventListener('show.bs.modal', function(event) {
-            // Button that triggered the modal
-            const button = event.relatedTarget;
-            const fileUrl = button.getAttribute('data-url');
-            const fileType = button.getAttribute('data-type'); // 'image' or 'pdf'
-            const fileName = button.getAttribute('data-name');
+    window.openGlobalPreview = function(url, name, type) {
+        previewTitle.textContent = name;
+        previewContent.innerHTML = '<div class="spinner-border text-primary" role="status"></div>';
 
-            modalTitle.textContent = fileName || 'Previsualización';
+        if (type === 'image') {
+            const img = document.createElement('img');
+            img.src = url;
+            img.className = 'img-fluid shadow-sm';
+            img.style.maxHeight = '80vh';
+            img.onload = () => { previewContent.innerHTML = ''; previewContent.appendChild(img); };
+            img.onerror = () => { previewContent.innerHTML = '<div class="p-5">Error al cargar la imagen.</div>'; };
+        } else if (type === 'pdf') {
+            const iframe = document.createElement('iframe');
+            iframe.src = url;
+            iframe.style.width = '100%';
+            iframe.style.height = '80vh';
+            iframe.style.border = 'none';
+            previewContent.innerHTML = '';
+            previewContent.appendChild(iframe);
+        } else {
+            previewContent.innerHTML = '<div class="p-5">Este archivo no se puede previsualizar. Por favor, descárgalo.</div>';
+        }
 
-            // Reset displays
-            previewImage.style.display = 'none';
-            previewImage.src = '';
-            previewFrame.style.display = 'none';
-            previewFrame.src = '';
-            previewError.style.display = 'none';
-            loadingSpinner.style.display = 'block';
-
-            if (fileType === 'pdf') {
-                previewFrame.src = fileUrl;
-                previewFrame.onload = function() {
-                    loadingSpinner.style.display = 'none';
-                    previewFrame.style.display = 'block';
-                };
-            } else if (fileType === 'image') {
-                previewImage.src = fileUrl;
-                previewImage.onload = function() {
-                    loadingSpinner.style.display = 'none';
-                    previewImage.style.display = 'block';
-                };
-                previewImage.onerror = function() {
-                    loadingSpinner.style.display = 'none';
-                    previewError.style.display = 'block';
-                    downloadLink.href = fileUrl;
-                };
-            } else {
-                // Fallback
-                loadingSpinner.style.display = 'none';
-                previewError.style.display = 'block';
-                downloadLink.href = fileUrl;
-            }
-        });
-
-        previewModal.addEventListener('hidden.bs.modal', function () {
-            previewFrame.src = '';
-            previewImage.src = '';
-        });
-    }
+        globalModal.show();
+    };
 });
 </script>
 @endpush

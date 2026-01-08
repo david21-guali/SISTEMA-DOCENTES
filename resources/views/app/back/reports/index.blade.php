@@ -100,16 +100,18 @@
         <!-- Reportes de Proyectos -->
         <div class="col-lg-4">
             <div class="card h-100 shadow-sm border-0 border-top border-4 border-primary">
-                <div class="card-body text-center">
-                    <div class="mb-3">
-                        <div class="rounded-circle bg-primary bg-opacity-10 mx-auto d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
-                            <i class="fas fa-project-diagram fa-2x text-primary"></i>
+                <div class="card-body text-center d-flex flex-column">
+                    <div>
+                        <div class="mb-3">
+                            <div class="rounded-circle bg-primary bg-opacity-10 mx-auto d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                <i class="fas fa-project-diagram fa-2x text-primary"></i>
+                            </div>
                         </div>
+                        <h5 class="card-title fw-bold">Reportes de Proyectos</h5>
+                        <p class="card-text text-muted small mb-4">Genera listados completos de todos los proyectos, incluyendo estados y responsables.</p>
                     </div>
-                    <h5 class="card-title fw-bold">Reportes de Proyectos</h5>
-                    <p class="card-text text-muted small mb-4">Genera listados completos de todos los proyectos, incluyendo estados y responsables.</p>
                     
-                    <div class="d-grid gap-2">
+                    <div class="d-grid gap-2 mt-auto">
                         @can('export-reports')
                         <a href="{{ route('reports.projects.pdf') }}" class="btn btn-outline-danger btn-sm">
                             <i class="fas fa-file-pdf me-2"></i> Descargar PDF
@@ -130,16 +132,18 @@
         <!-- Reportes de Tareas -->
         <div class="col-lg-4">
             <div class="card h-100 shadow-sm border-0 border-top border-4 border-warning">
-                <div class="card-body text-center">
-                    <div class="mb-3">
-                        <div class="rounded-circle bg-warning bg-opacity-10 mx-auto d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
-                            <i class="fas fa-tasks fa-2x text-warning"></i>
+                <div class="card-body text-center d-flex flex-column">
+                    <div>
+                        <div class="mb-3">
+                            <div class="rounded-circle bg-warning bg-opacity-10 mx-auto d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                <i class="fas fa-tasks fa-2x text-warning"></i>
+                            </div>
                         </div>
+                        <h5 class="card-title fw-bold">Reportes de Tareas</h5>
+                        <p class="card-text text-muted small mb-4">Obtén detalles sobre el cumplimiento de tareas y plazos asignados.</p>
                     </div>
-                    <h5 class="card-title fw-bold">Reportes de Tareas</h5>
-                    <p class="card-text text-muted small mb-4">Obtén detalles sobre el cumplimiento de tareas y plazos asignados.</p>
                     
-                    <div class="d-grid gap-2">
+                    <div class="d-grid gap-2 mt-auto">
                         @can('export-reports')
                         <a href="{{ route('reports.tasks.pdf') }}" class="btn btn-outline-danger btn-sm">
                             <i class="fas fa-file-pdf me-2"></i> Descargar PDF
@@ -160,16 +164,18 @@
         <!-- Reportes de Innovaciones -->
         <div class="col-lg-4">
             <div class="card h-100 shadow-sm border-0 border-top border-4 border-info">
-                <div class="card-body text-center">
-                    <div class="mb-3">
-                        <div class="rounded-circle bg-info bg-opacity-10 mx-auto d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
-                            <i class="fas fa-lightbulb fa-2x text-info"></i>
+                <div class="card-body text-center d-flex flex-column">
+                    <div>
+                        <div class="mb-3">
+                            <div class="rounded-circle bg-info bg-opacity-10 mx-auto d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                <i class="fas fa-lightbulb fa-2x text-info"></i>
+                            </div>
                         </div>
+                        <h5 class="card-title fw-bold">Innovaciones</h5>
+                        <p class="card-text text-muted small mb-4">Exporta el registro de iniciativas de innovación pedagógica.</p>
                     </div>
-                    <h5 class="card-title fw-bold">Innovaciones</h5>
-                    <p class="card-text text-muted small mb-4">Exporta el registro de iniciativas de innovación pedagógica.</p>
                     
-                    <div class="d-grid gap-2">
+                    <div class="d-grid gap-2 mt-auto">
                         @can('export-reports')
                         <a href="{{ route('reports.innovations.pdf') }}" class="btn btn-outline-danger btn-sm">
                             <i class="fas fa-file-pdf me-2"></i> Descargar PDF

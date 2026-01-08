@@ -28,9 +28,11 @@ class CommentControllerTest extends TestCase
         
         $commentData = [
             'content' => 'Test Comment',
+            'commentable_id' => $this->project->id,
+            'commentable_type' => 'project',
         ];
 
-        $response = $this->post(route('comments.store', $this->project), $commentData);
+        $response = $this->post(route('comments.store'), $commentData);
         
         $response->assertRedirect();
         $this->assertDatabaseHas('comments', ['content' => 'Test Comment']);
@@ -40,7 +42,8 @@ class CommentControllerTest extends TestCase
     {
         $comment = Comment::create([
             'content' => 'Test Comment',
-            'project_id' => $this->project->id,
+            'commentable_id' => $this->project->id,
+            'commentable_type' => Project::class,
             'profile_id' => $this->profile->id,
         ]);
         

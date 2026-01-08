@@ -200,11 +200,21 @@ class ReportController extends Controller
      */
     public function comparative(Request $request): \Illuminate\View\View
     {
+        $request->validate([
+            'period1_start' => 'nullable|date',
+            'period1_end'   => 'nullable|date|after_or_equal:period1_start',
+            'period2_start' => 'nullable|date',
+            'period2_end'   => 'nullable|date|after_or_equal:period2_start',
+        ], [
+            'period1_end.after_or_equal' => 'La fecha final del Período 1 debe ser mayor o igual a la inicial.',
+            'period2_end.after_or_equal' => 'La fecha final del Período 2 debe ser mayor o igual a la inicial.',
+        ]);
+
         $periods = [
             'period1Start' => $request->period1_start ?? now()->subMonths(2)->startOfMonth()->format('Y-m-d'),
-            'period1End' => $request->period1_end ?? now()->subMonth()->endOfMonth()->format('Y-m-d'),
+            'period1End'   => $request->period1_end ?? now()->subMonth()->endOfMonth()->format('Y-m-d'),
             'period2Start' => $request->period2_start ?? now()->startOfMonth()->format('Y-m-d'),
-            'period2End' => $request->period2_end ?? now()->format('Y-m-d'),
+            'period2End'   => $request->period2_end ?? now()->format('Y-m-d'),
         ];
 
         $data = $this->comparativeService->getComparativeData($periods);

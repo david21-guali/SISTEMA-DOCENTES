@@ -78,6 +78,14 @@ class Innovation extends Model
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany<\App\Models\Comment, $this>
+     */
+    public function comments(): \Illuminate\Database\Eloquent\Relations\MorphMany
+    {
+        return $this->morphMany(Comment::class, 'commentable')->latest();
+    }
+
+    /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\User, $this>
      */
     public function reviewer(): \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -117,7 +125,9 @@ class Innovation extends Model
             'rechazada' => 'danger',
             'en_revision' => 'warning',
             'propuesta' => 'info',
-            default => 'primary',
+            'en_implementacion' => 'primary',
+            'completada' => 'primary',
+            default => 'secondary',
         };
     }
 

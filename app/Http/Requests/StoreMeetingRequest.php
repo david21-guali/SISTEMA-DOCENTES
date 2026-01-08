@@ -34,6 +34,7 @@ class StoreMeetingRequest extends FormRequest
             'project_id'     => 'nullable|exists:projects,id',
             'meeting_date'   => 'required|date',
             'location'       => 'required|string|max:255',
+            'type'           => 'required|in:virtual,presencial',
             'participants'   => $this->getParticipantRules(),
             'participants.*' => 'exists:users,id',
         ];

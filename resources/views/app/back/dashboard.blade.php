@@ -39,9 +39,15 @@
                             </div>
                         @endif
                     </div>
+                    @can('create-projects')
                     <a href="{{ route('projects.create') }}" class="btn btn-light btn-sm align-self-start">
                         <i class="fas fa-plus me-1"></i> Nuevo Proyecto
                     </a>
+                    @else
+                    <button class="btn btn-light btn-sm align-self-start opacity-50" disabled>
+                        <i class="fas fa-lock me-1"></i> Sin permisos
+                    </button>
+                    @endcan
                 </div>
             </div>
         </div>

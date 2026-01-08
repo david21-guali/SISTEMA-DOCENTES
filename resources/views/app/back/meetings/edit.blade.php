@@ -71,17 +71,21 @@
 
                     <!-- Tipo (Visual) -->
                     <div class="mb-4">
+                        <label class="form-label text-uppercase text-muted fw-bold small ls-1 d-block mb-2">TIPO DE REUNIÓN *</label>
                         <div class="btn-group w-100 w-md-50" role="group">
-                            <input type="radio" class="btn-check" name="location_type" id="online" checked>
-                            <label class="btn btn-outline-primary rounded-pill me-2 border-0 fw-bold" for="online">
-                                <i class="fas fa-video me-2"></i>Online
+                            <input type="radio" class="btn-check" name="type" id="virtual" value="virtual" {{ old('type', $meeting->type) == 'virtual' ? 'checked' : '' }}>
+                            <label class="btn btn-outline-primary rounded-pill me-2 border-0 fw-bold" for="virtual">
+                                <i class="fas fa-video me-2"></i>Virtual
                             </label>
 
-                            <input type="radio" class="btn-check" name="location_type" id="offline">
-                            <label class="btn btn-outline-primary rounded-pill me-2 border-0 fw-bold" for="offline">
+                            <input type="radio" class="btn-check" name="type" id="presencial" value="presencial" {{ old('type', $meeting->type) == 'presencial' ? 'checked' : '' }}>
+                            <label class="btn btn-outline-primary rounded-pill border-0 fw-bold" for="presencial">
                                 <i class="fas fa-map-marker-alt me-2"></i>Presencial
                             </label>
                         </div>
+                        @error('type')
+                            <div class="text-danger small mt-1">{{ $message }}</div>
+                        @enderror
                     </div>
 
                     <!-- Horario -->

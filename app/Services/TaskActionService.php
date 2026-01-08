@@ -6,6 +6,8 @@ use App\Models\Task;
 use App\Models\Project;
 use App\Models\User;
 use App\Notifications\TaskAssigned;
+use App\Notifications\TaskStatusChanged;
+use App\Notifications\TaskDeadlineChanged;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -56,6 +58,9 @@ class TaskActionService
             $this->ensureValidTeamAssignment($task->project, $data['assignees']);
             $assigneeProfileIds = $this->getUserProfileIds($data['assignees']);
             
+            $oldStatus = $task->status;
+            $oldDueDate = $task->due_date;
+
             $task->update(array_merge($data, [
                 'assigned_to' => $assigneeProfileIds[0] ?? null
             ]));
@@ -63,8 +68,53 @@ class TaskActionService
             $task->assignees()->sync($assigneeProfileIds);
             $this->handleTemporaryAttachments($task, $data['temp_attachments'] ?? []);
             
+            // Check for changes and notify
+            $this->checkTaskChanges($task, $oldStatus, $oldDueDate);
+
             $this->refreshProjectProgress($task->project);
         });
+    }
+
+    /**
+     * Check if status or due date changed and notify relevant users.
+     * 
+     * @param Task $task
+     * @param string $oldStatus
+     * @param \Carbon\Carbon|string|null $oldDueDate
+     */
+    private function checkTaskChanges(Task $task, string $oldStatus, $oldDueDate): void
+    {
+        if ($oldStatus !== $task->status) {
+            $this->notifyTaskStatusChange($task, $oldStatus, $task->status);
+        }
+
+        $old = $oldDueDate instanceof \Carbon\Carbon ? $oldDueDate : ($oldDueDate ? \Illuminate\Support\Carbon::parse($oldDueDate) : null);
+
+        if ($old && $task->due_date && !$old->isSameDay($task->due_date)) {
+            $this->notifyTaskDeadlineChange($task, $old, $task->due_date);
+        }
+    }
+
+    /**
+     * Notify about task status change.
+     */
+    private function notifyTaskStatusChange(Task $task, string $old, string $new): void
+    {
+        $users = $task->assignees->pluck('user')->push($task->project->profile->user)->unique('id')->filter();
+        $this->notifyUsers($users, new TaskStatusChanged($task, $old, $new));
+    }
+
+    /**
+     * Notify about task deadline change.
+     * 
+     * @param Task $task
+     * @param \Carbon\Carbon|string|null $old
+     * @param \Carbon\Carbon|string|null $new
+     */
+    private function notifyTaskDeadlineChange(Task $task, $old, $new): void
+    {
+        $users = $task->assignees->pluck('user')->unique('id')->filter();
+        $this->notifyUsers($users, new TaskDeadlineChanged($task, $old, $new));
     }
 
     /**
@@ -91,10 +141,14 @@ class TaskActionService
      */
     public function completeTask(Task $task): void
     {
+        $oldStatus = $task->status;
+        
         $task->update([
             'status'          => 'completada',
             'completion_date' => now(),
         ]);
+
+        $this->notifyTaskStatusChange($task, $oldStatus, 'completada');
 
         if ($task->project) {
             $this->refreshProjectProgress($task->project);

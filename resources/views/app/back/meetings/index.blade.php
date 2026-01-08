@@ -26,61 +26,81 @@
 
     <!-- Stats Row (Style like Tasks) -->
     <div class="row g-2 g-md-3 mb-4">
-        <div class="col-md-4">
+        <div class="col-6 col-md-3">
             <div class="card text-white h-100" style="background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);">
-                <div class="card-body">
+                <div class="card-body p-3">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
-                            <div class="small text-white-50 text-uppercase fw-bold">Próximas</div>
-                            <div class="h3 mb-0 fw-bold">{{ $stats['upcoming'] }}</div>
+                            <div class="small text-white-50 text-uppercase fw-bold" style="font-size: 0.7rem;">Próximas</div>
+                            <div class="h4 mb-0 fw-bold">{{ $stats['upcoming'] }}</div>
                         </div>
-                        <div class="opacity-50">
-                            <i class="fas fa-clock fa-2x"></i>
+                        <div class="opacity-50 d-none d-sm-block">
+                            <i class="fas fa-clock fa-lg"></i>
                         </div>
                     </div>
                 </div>
-                <div class="card-footer bg-transparent border-top-0 pt-0">
-                    <a href="{{ route('meetings.index', ['status' => 'pendiente']) }}" class="text-white small text-decoration-none">
-                        Ver Próximas <i class="fas fa-arrow-right ms-1"></i>
+                <div class="card-footer bg-transparent border-top-0 pt-0 pb-2">
+                    <a href="{{ route('meetings.index', ['status' => 'pendiente']) }}" class="text-white small text-decoration-none" style="font-size: 0.7rem;">
+                        Ver <i class="fas fa-arrow-right ms-1"></i>
                     </a>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-6 col-md-3">
             <div class="card text-white h-100" style="background: linear-gradient(135deg, #1cc88a 0%, #13855c 100%);">
-                <div class="card-body">
+                <div class="card-body p-3">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
-                            <div class="small text-white-50 text-uppercase fw-bold">Completadas</div>
-                            <div class="h3 mb-0 fw-bold">{{ $stats['completed'] }}</div>
+                            <div class="small text-white-50 text-uppercase fw-bold" style="font-size: 0.7rem;">Completadas</div>
+                            <div class="h4 mb-0 fw-bold">{{ $stats['completed'] }}</div>
                         </div>
-                        <div class="opacity-50">
-                            <i class="fas fa-check-circle fa-2x"></i>
+                        <div class="opacity-50 d-none d-sm-block">
+                            <i class="fas fa-check-circle fa-lg"></i>
                         </div>
                     </div>
                 </div>
-                <div class="card-footer bg-transparent border-top-0 pt-0">
-                    <a href="{{ route('meetings.index', ['status' => 'completada']) }}" class="text-white small text-decoration-none">
-                        Ver Completadas <i class="fas fa-arrow-right ms-1"></i>
+                <div class="card-footer bg-transparent border-top-0 pt-0 pb-2">
+                    <a href="{{ route('meetings.index', ['status' => 'completada']) }}" class="text-white small text-decoration-none" style="font-size: 0.7rem;">
+                        Ver <i class="fas fa-arrow-right ms-1"></i>
                     </a>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card text-white h-100" style="background: linear-gradient(135deg, #f6c23e 0%, #dda20a 100%);">
-                <div class="card-body">
+        <div class="col-6 col-md-3">
+            <div class="card text-white h-100" style="background: linear-gradient(135deg, #6c757d 0%, #495057 100%);">
+                <div class="card-body p-3">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
-                            <div class="small text-white-50 text-uppercase fw-bold">Total</div>
-                            <div class="h3 mb-0 fw-bold">{{ $stats['total'] }}</div>
+                            <div class="small text-white-50 text-uppercase fw-bold" style="font-size: 0.7rem;">Canceladas</div>
+                            <div class="h4 mb-0 fw-bold">{{ $stats['cancelled'] }}</div>
                         </div>
-                        <div class="opacity-50">
-                            <i class="fas fa-calendar-alt fa-2x"></i>
+                        <div class="opacity-50 d-none d-sm-block">
+                            <i class="fas fa-times-circle fa-lg"></i>
                         </div>
                     </div>
                 </div>
-                <div class="card-footer bg-transparent border-top-0 pt-0">
-                    <a href="{{ route('meetings.index') }}" class="text-white small text-decoration-none">
+                <div class="card-footer bg-transparent border-top-0 pt-0 pb-2">
+                    <a href="{{ route('meetings.index', ['status' => 'cancelada']) }}" class="text-white small text-decoration-none" style="font-size: 0.7rem;">
+                        Ver <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card text-white h-100" style="background: linear-gradient(135deg, #f6c23e 0%, #dda20a 100%);">
+                <div class="card-body p-3">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="small text-white-50 text-uppercase fw-bold" style="font-size: 0.7rem;">Total</div>
+                            <div class="h4 mb-0 fw-bold">{{ $stats['total'] }}</div>
+                        </div>
+                        <div class="opacity-50 d-none d-sm-block">
+                            <i class="fas fa-calendar-alt fa-lg"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-top-0 pt-0 pb-2">
+                    <a href="{{ route('meetings.index') }}" class="text-white small text-decoration-none" style="font-size: 0.7rem;">
                         Todas <i class="fas fa-arrow-right ms-1"></i>
                     </a>
                 </div>
@@ -99,6 +119,9 @@
             </a>
             <a href="{{ route('meetings.index', ['status' => 'completada']) }}" class="btn btn-sm {{ request('status') == 'completada' ? 'btn-primary' : 'btn-light text-muted' }} rounded-pill px-3 fw-bold">
                 Completadas <span class="badge {{ request('status') == 'completada' ? 'bg-white text-primary' : 'bg-secondary bg-opacity-25' }} rounded-pill ms-1">{{ $stats['completed'] }}</span>
+            </a>
+            <a href="{{ route('meetings.index', ['status' => 'cancelada']) }}" class="btn btn-sm {{ request('status') == 'cancelada' ? 'btn-primary' : 'btn-light text-muted' }} rounded-pill px-3 fw-bold">
+                Canceladas <span class="badge {{ request('status') == 'cancelada' ? 'bg-white text-primary' : 'bg-secondary bg-opacity-25' }} rounded-pill ms-1">{{ $stats['cancelled'] }}</span>
             </a>
         </div>
     </div>
