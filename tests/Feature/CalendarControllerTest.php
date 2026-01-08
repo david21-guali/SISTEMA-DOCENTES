@@ -51,4 +51,24 @@ class CalendarControllerTest extends TestCase
         $response->assertJsonFragment(['type' => 'Tarea']);
         $response->assertJsonFragment(['type' => 'Reunión']);
     }
+
+    public function test_user_can_export_ics()
+    {
+        $user = User::factory()->create();
+        $user->assignRole('docente');
+        
+        // Ensure user has profile
+        $profile = $user->profile; 
+
+        // Create events
+        Project::factory()->create(['profile_id' => $profile->id, 'title' => 'Proj ICS']);
+        
+        $response = $this->actingAs($user)
+            ->get(route('calendar.export'));
+
+        $response->assertStatus(200);
+        $this->assertEquals('text/calendar; charset=utf-8', $response->headers->get('Content-Type'));
+        $this->assertTrue(str_contains($response->content(), 'BEGIN:VCALENDAR'));
+        $this->assertTrue(str_contains($response->content(), 'SUMMARY:Entrega: Proj ICS'));
+    }
 }

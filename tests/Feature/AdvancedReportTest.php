@@ -63,4 +63,29 @@ class AdvancedReportTest extends TestCase
             str_contains($contentDisposition, 'excel')
         );
     }
+
+    public function test_user_can_export_comparative_excel()
+    {
+        $user = User::factory()->create();
+        $user->assignRole('admin');
+
+        $response = $this->actingAs($user)
+            ->get(route('reports.comparative.excel'));
+
+        $response->assertStatus(200);
+        $contentDisposition = strtolower($response->headers->get('Content-Disposition') ?? '');
+        $this->assertTrue(str_contains($contentDisposition, 'xlsx') || str_contains($contentDisposition, 'comparativo'));
+    }
+
+    public function test_user_can_export_comparative_pdf()
+    {
+        $user = User::factory()->create();
+        $user->assignRole('admin');
+
+        $response = $this->actingAs($user)
+            ->get(route('reports.comparative.pdf'));
+
+        $response->assertStatus(200);
+        $this->assertEquals('application/pdf', $response->headers->get('Content-Type'));
+    }
 }

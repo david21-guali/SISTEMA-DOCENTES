@@ -21,7 +21,12 @@ class ProjectPolicy
      */
     public function view(User $user, Project $project): bool
     {
-        return $user->hasPermissionTo('view-projects');
+        if ($user->hasRole(['admin', 'coordinador'])) {
+            return true;
+        }
+
+        return $user->hasPermissionTo('view-projects') &&
+               ($user->profile->id === $project->profile_id || $project->team->contains('user_id', $user->id));
     }
 
     /**
@@ -77,5 +82,17 @@ class ProjectPolicy
     public function forceDelete(User $user, Project $project): bool
     {
         return $user->hasRole('admin');
+    }
+
+    /**
+     * Determine whether the user can upload final report.
+     */
+    public function uploadFinalReport(User $user, Project $project): bool
+    {
+        if ($user->hasRole(['admin', 'coordinador'])) {
+            return true;
+        }
+        
+        return $user->profile->id === $project->profile_id;
     }
 }
