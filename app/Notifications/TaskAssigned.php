@@ -9,10 +9,10 @@ use Illuminate\Notifications\Notification;
 
 class TaskAssigned extends Notification
 {
-    use Queueable;
+    use Queueable, \App\Traits\HasNotificationPreferences;
 
-    /** @var \App\Models\Task */
-    public $task;
+    public string $category = 'tasks';
+    public Task $task;
 
     /**
      * Create a new notification instance.
@@ -27,10 +27,7 @@ class TaskAssigned extends Notification
      *
      * @return array<int, string>
      */
-    public function via(object $notifiable): array
-    {
-        return ['database'];
-    }
+
 
 
 

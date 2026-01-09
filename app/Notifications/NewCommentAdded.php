@@ -10,7 +10,9 @@ use Illuminate\Notifications\Notification;
 
 class NewCommentAdded extends Notification
 {
-    use Queueable;
+    use Queueable, \App\Traits\HasNotificationPreferences;
+
+    public string $category = 'forum';
 
     /** @var \App\Models\Comment */
     public Comment $comment;
@@ -28,9 +30,25 @@ class NewCommentAdded extends Notification
      *
      * @return array<int, string>
      */
-    public function via(object $notifiable): array
+
+
+    /**
+     * @param object $notifiable
+     * @return MailMessage
+     */
+    public function toMail(object $notifiable): MailMessage
     {
-        return ['database'];
+        /** @var \App\Models\Project|\App\Models\Innovation $commentable */
+        $commentable = $this->comment->commentable;
+        $type = $commentable instanceof \App\Models\Project ? 'proyecto' : 'innovación';
+        $routeName = $commentable instanceof \App\Models\Project ? 'projects.show' : 'innovations.show';
+
+        return (new MailMessage)
+            ->subject('Nuevo comentario en ' . $type)
+            ->line("{$this->comment->profile->user->name} ha comentado en el {$type}: {$commentable->title}")
+            ->line('"' . \Illuminate\Support\Str::limit($this->comment->content, 100) . '"')
+            ->action('Ver Comentario', route($routeName, $commentable->id))
+            ->line('Gracias por participar.');
     }
 
     /**

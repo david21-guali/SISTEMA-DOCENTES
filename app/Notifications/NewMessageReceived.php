@@ -4,11 +4,14 @@ namespace App\Notifications;
 
 use App\Models\Message;
 use Illuminate\Bus\Queueable;
+use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 class NewMessageReceived extends Notification
 {
-    use Queueable;
+    use Queueable, \App\Traits\HasNotificationPreferences;
+
+    public string $category = 'messages';
 
     /** @var \App\Models\Message */
     public $message;
@@ -21,14 +24,16 @@ class NewMessageReceived extends Notification
         $this->message = $message;
     }
 
-    /**
-     * Get the notification's delivery channels.
-     *
-     * @return array<int, string>
-     */
-    public function via(object $notifiable): array
+
+
+    public function toMail(object $notifiable): MailMessage
     {
-        return ['database'];
+        return (new MailMessage)
+            ->subject('Nuevo mensaje de chat: ' . $this->message->sender->name)
+            ->line("Has recibido un nuevo mensaje de {$this->message->sender->name}.")
+            ->line('"' . \Illuminate\Support\Str::limit($this->message->content, 100) . '"')
+            ->action('Responder en el Chat', route('chat.show', $this->message->sender_id))
+            ->line('No respondas a este correo directamente.');
     }
 
     /**

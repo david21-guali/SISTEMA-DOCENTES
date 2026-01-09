@@ -1,6 +1,7 @@
-/* Chat Module Styles */
+/* --- ESTILOS DEL MÓDULO DE CHAT --- */
+/* Dimensiones de la interfaz, avatares dinámicos y burbujas de mensaje. */
 
-/* Container heights */
+/* Ajustes de altura del contenedor */
 .chat-main-card {
     height: calc(100vh - 150px);
 }
@@ -31,7 +32,7 @@
     transform: scale(1.1);
 }
 
-/* Message bubbles */
+/* Burbujas de chat (Enviado vs Recibido) */
 .chat-message-bubble {
     max-width: 70% !important;
     border-radius: 15px !important;

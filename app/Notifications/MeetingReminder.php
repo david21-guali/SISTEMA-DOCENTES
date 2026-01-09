@@ -9,7 +9,9 @@ use Illuminate\Notifications\Notification;
 
 class MeetingReminder extends Notification
 {
-    use Queueable;
+    use Queueable, \App\Traits\HasNotificationPreferences;
+
+    public string $category = 'meetings';
 
     /** @var Meeting */
     protected $meeting;
@@ -33,10 +35,7 @@ class MeetingReminder extends Notification
      * @param \App\Models\User $notifiable
      * @return array<int, string>
      */
-    public function via(object $notifiable): array
-    {
-        return ['database'];
-    }
+
 
     /**
      * Get the mail representation of the notification.

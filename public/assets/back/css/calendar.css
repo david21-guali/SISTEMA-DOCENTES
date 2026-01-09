@@ -1,4 +1,5 @@
-/* Calendar Module Styles */
+/* --- ESTILOS DEL MÓDULO DE CALENDARIO --- */
+/* Personalización de FullCalendar: ocultación de toolbar nativa y resaltado de día actual. */
 
 .fc-header-toolbar {
     display: none !important;
@@ -57,7 +58,7 @@
     margin-bottom: 2px;
 }
 
-/* Custom Header Styles */
+/* --- ESTILOS DE CABECERA PERSONALIZADA --- */
 .cal-header-title {
     font-size: 1.5rem;
     font-weight: 700;

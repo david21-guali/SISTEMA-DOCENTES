@@ -10,7 +10,9 @@ use Illuminate\Notifications\Notification;
 
 class CommentReplied extends Notification
 {
-    use Queueable;
+    use Queueable, \App\Traits\HasNotificationPreferences;
+
+    public string $category = 'forum';
 
     public Comment $reply;
 
@@ -22,15 +24,7 @@ class CommentReplied extends Notification
         $this->reply = $reply;
     }
 
-    /**
-     * Get the notification's delivery channels.
-     *
-     * @return array<int, string>
-     */
-    public function via(object $notifiable): array
-    {
-        return ['database']; // You can add 'mail' if needed
-    }
+
 
     /**
      * Get the mail representation of the notification.

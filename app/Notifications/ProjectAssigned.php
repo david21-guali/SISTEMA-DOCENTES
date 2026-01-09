@@ -10,10 +10,10 @@ use Illuminate\Notifications\Notification;
 
 class ProjectAssigned extends Notification
 {
-    use Queueable;
+    use Queueable, \App\Traits\HasNotificationPreferences;
 
-    /** @var \App\Models\Project */
-    public $project;
+    public string $category = 'projects';
+    public Project $project;
 
     /**
      * Create a new notification instance.
@@ -35,10 +35,7 @@ class ProjectAssigned extends Notification
      * @param \App\Models\User $notifiable
      * @return array<int, string>
      */
-    public function via(object $notifiable): array
-    {
-        return ['database'];
-    }
+
 
     /**
      * Get the mail representation of the notification.

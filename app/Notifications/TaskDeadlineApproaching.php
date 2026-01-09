@@ -9,7 +9,9 @@ use Illuminate\Notifications\Notification;
 
 class TaskDeadlineApproaching extends Notification
 {
-    use Queueable;
+    use Queueable, \App\Traits\HasNotificationPreferences;
+
+    public string $category = 'tasks';
 
     /** @var Task */
     public $task;
@@ -27,21 +29,7 @@ class TaskDeadlineApproaching extends Notification
         $this->daysLeft = $daysLeft;
     }
 
-    /**
-     * Get the notification's delivery channels.
-     *
-     * @return array<int, string>
-     */
-    /**
-     * Get the notification's delivery channels.
-     *
-     * @param \App\Models\User $notifiable
-     * @return array<int, string>
-     */
-    public function via(object $notifiable): array
-    {
-        return ['database'];
-    }
+
 
     /**
      * Get the mail representation of the notification.

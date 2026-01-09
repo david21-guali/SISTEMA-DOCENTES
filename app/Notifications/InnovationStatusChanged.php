@@ -10,7 +10,9 @@ use Illuminate\Notifications\Notification;
 
 class InnovationStatusChanged extends Notification
 {
-    use Queueable;
+    use Queueable, \App\Traits\HasNotificationPreferences;
+
+    public string $category = 'innovations';
 
     /** @var \App\Models\Innovation */
     public $innovation;
@@ -24,13 +26,22 @@ class InnovationStatusChanged extends Notification
     }
 
     /**
-     * Get the notification's delivery channels.
-     *
-     * @return array<int, string>
+     * Get the mail representation of the notification.
      */
-    public function via(object $notifiable): array
+    public function toMail(object $notifiable): MailMessage
     {
-        return ['database'];
+        $statusLabel = match($this->innovation->status) {
+            'aprobada' => 'Aprobada',
+            'rechazada' => 'Rechazada',
+            'en_revision' => 'En Revisión',
+            default => $this->innovation->status
+        };
+
+        return (new MailMessage)
+            ->subject('Actualización de Innovación: ' . $this->innovation->title)
+            ->line("Tu propuesta de innovación '{$this->innovation->title}' ha cambiado su estado a: {$statusLabel}")
+            ->action('Ver Innovación', route('innovations.show', $this->innovation->id))
+            ->line('Gracias por tu aporte a la innovación docente.');
     }
 
     /**

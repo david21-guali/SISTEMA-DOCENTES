@@ -10,7 +10,9 @@ use Illuminate\Notifications\Notification;
 
 class NewForumReply extends Notification
 {
-    use Queueable;
+    use Queueable, \App\Traits\HasNotificationPreferences;
+
+    public string $category = 'forum';
 
     public ForumPost $post;
 
@@ -19,12 +21,17 @@ class NewForumReply extends Notification
         $this->post = $post;
     }
 
-    /**
-     * @return array<int, string>
-     */
-    public function via(object $notifiable): array
+
+
+    public function toMail(object $notifiable): MailMessage
     {
-        return ['database'];
+        return (new MailMessage)
+            ->subject('Nueva respuesta en foro: ' . $this->post->topic->title)
+            ->line("{$this->post->profile->user->name} ha respondido a tu tema en el foro.")
+            ->line('Tema: ' . $this->post->topic->title)
+            ->line('"' . \Illuminate\Support\Str::limit($this->post->content, 100) . '"')
+            ->action('Ver Foro', route('forum.show', $this->post->topic_id))
+            ->line('Gracias por participar en la comunidad.');
     }
 
     /**

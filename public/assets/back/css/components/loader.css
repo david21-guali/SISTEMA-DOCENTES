@@ -1,4 +1,5 @@
-/* Loader Component Styles */
+/* --- ESTILOS DEL COMPONENTE CARGADOR (LOADER) --- */
+/* Pantalla de carga animada que aparece durante las peticiones al sistema. */
 
 #loader-wrapper {
     position: fixed;
@@ -38,6 +39,7 @@
     animation: before8 2s infinite;
 }
 
+/* Animaciones del cargador circular */
 .loader:after {
     animation: after6 2s infinite;
 }

@@ -9,7 +9,9 @@ use Illuminate\Notifications\Notification;
 
 class ProjectStatusChanged extends Notification
 {
-    use Queueable;
+    use Queueable, \App\Traits\HasNotificationPreferences;
+
+    public string $category = 'projects';
 
     /** @var \App\Models\Project */
     public $project;
@@ -28,15 +30,7 @@ class ProjectStatusChanged extends Notification
         $this->newStatus = $newStatus;
     }
 
-    /**
-     * Get the notification's delivery channels.
-     *
-     * @return array<int, string>
-     */
-    public function via(object $notifiable): array
-    {
-        return ['database'];
-    }
+
 
     /**
      * Get the mail representation of the notification.

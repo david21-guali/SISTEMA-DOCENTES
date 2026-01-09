@@ -9,7 +9,9 @@ use Illuminate\Notifications\Notification;
 
 class TaskStatusChanged extends Notification
 {
-    use Queueable;
+    use Queueable, \App\Traits\HasNotificationPreferences;
+
+    public string $category = 'tasks';
 
     /** @var \App\Models\Task */
     public $task;
@@ -25,13 +27,21 @@ class TaskStatusChanged extends Notification
         $this->newStatus = $newStatus;
     }
 
+
+
     /**
-     * @param \App\Models\User $notifiable
-     * @return array<int, string>
+     * @param object $notifiable
+     * @return MailMessage
      */
-    public function via(object $notifiable): array
+    public function toMail(object $notifiable): MailMessage
     {
-        return ['database'];
+        return (new MailMessage)
+            ->subject('Estado de Tarea Actualizado: ' . $this->task->title)
+            ->line("La tarea '{$this->task->title}' ha cambiado su estado.")
+            ->line("Estado anterior: {$this->oldStatus}")
+            ->line("Nuevo estado: {$this->newStatus}")
+            ->action('Ver Tarea', route('tasks.show', $this->task->id))
+            ->line('Gracias por tu compromiso.');
     }
 
     /**

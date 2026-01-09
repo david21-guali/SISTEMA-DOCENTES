@@ -50,8 +50,13 @@ class CommentController extends Controller
         }
 
         // Notify thread participants if this is a reply
+        // Si es una respuesta, buscamos el comentario padre y notificamos a los participantes
         if (!empty($validated['parent_id'])) {
-            /** @var Comment $parentComment */
+            /** 
+             * Obtenemos el comentario padre con sus relaciones. Usamos findOrFail 
+             * para asegurar que el objeto existe, lo cual también ayuda a PHPStan.
+             * @var Comment $parentComment 
+             */
             $parentComment = Comment::with(['profile.user', 'replies.profile.user'])->findOrFail($validated['parent_id']);
             
             if ($parentComment) {
@@ -76,6 +81,7 @@ class CommentController extends Controller
                 });
 
                 // 4. Send Notifications
+                // Enviamos la notificación a cada usuario (evitando duplicados y al autor actual)
                 foreach ($usersToNotify as $user) {
                     $user->notify(new \App\Notifications\CommentReplied($comment));
                 }

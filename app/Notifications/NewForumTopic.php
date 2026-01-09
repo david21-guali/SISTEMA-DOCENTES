@@ -10,7 +10,9 @@ use Illuminate\Notifications\Notification;
 
 class NewForumTopic extends Notification
 {
-    use Queueable;
+    use Queueable, \App\Traits\HasNotificationPreferences;
+
+    public string $category = 'forum';
 
     public ForumTopic $topic;
 
@@ -19,12 +21,20 @@ class NewForumTopic extends Notification
         $this->topic = $topic;
     }
 
+
+
     /**
-     * @return array<int, string>
+     * @param object $notifiable
+     * @return MailMessage
      */
-    public function via(object $notifiable): array
+    public function toMail(object $notifiable): MailMessage
     {
-        return ['database'];
+        return (new MailMessage)
+            ->subject('Nuevo tema en el foro: ' . $this->topic->title)
+            ->line("{$this->topic->profile->user->name} ha publicado un nuevo tema en el foro.")
+            ->line('Título: ' . $this->topic->title)
+            ->action('Ver Tema', route('forum.show', $this->topic->id))
+            ->line('Te invitamos a participar en la discusión.');
     }
 
     /**

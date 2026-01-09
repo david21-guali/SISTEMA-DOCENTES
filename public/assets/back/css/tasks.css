@@ -1,10 +1,11 @@
-/* Tasks Module Styles */
+/* --- ESTILOS DEL MÓDULO DE TAREAS --- */
+/* Representación visual de tareas y sus prioridades mediante bordes laterales. */
 
 .text-xs {
     font-size: 0.7rem;
 }
 
-/* Border accents for task cards/rows */
+/* Bordes de acento para tarjetas o filas de tareas */
 .border-left-primary {
     border-left: 4px solid #4e73df !important;
 }

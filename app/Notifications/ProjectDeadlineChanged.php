@@ -9,7 +9,9 @@ use Illuminate\Notifications\Notification;
 
 class ProjectDeadlineChanged extends Notification
 {
-    use Queueable;
+    use Queueable, \App\Traits\HasNotificationPreferences;
+
+    public string $category = 'projects';
 
     /** @var \App\Models\Project */
     public $project;
@@ -30,13 +32,24 @@ class ProjectDeadlineChanged extends Notification
         $this->newDate = $newDate;
     }
 
+
+
     /**
-     * @param \App\Models\User $notifiable
-     * @return array<int, string>
+     * @param object $notifiable
+     * @return MailMessage
      */
-    public function via(object $notifiable): array
+    public function toMail(object $notifiable): MailMessage
     {
-        return ['database'];
+        $old = $this->oldDate instanceof \Carbon\Carbon ? $this->oldDate->format('d/m/Y') : $this->oldDate;
+        $new = $this->newDate instanceof \Carbon\Carbon ? $this->newDate->format('d/m/Y') : $this->newDate;
+
+        return (new MailMessage)
+            ->subject('Fecha de Proyecto Modificada: ' . $this->project->title)
+            ->line("Se ha actualizado la fecha de finalización del proyecto '{$this->project->title}'.")
+            ->line("Fecha anterior: {$old}")
+            ->line("Nueva fecha: {$new}")
+            ->action('Ver Proyecto', route('projects.show', $this->project->id))
+            ->line('Gracias por tu atención.');
     }
 
     /**

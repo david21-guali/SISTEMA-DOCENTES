@@ -10,10 +10,10 @@ use Illuminate\Notifications\Notification;
 
 class InnovationReviewRequested extends Notification
 {
-    use Queueable;
+    use Queueable, \App\Traits\HasNotificationPreferences;
 
-    /** @var \App\Models\Innovation */
-    public $innovation;
+    public string $category = 'innovations';
+    public Innovation $innovation;
 
     /**
      * Create a new notification instance.
@@ -28,9 +28,20 @@ class InnovationReviewRequested extends Notification
      *
      * @return array<int, string>
      */
-    public function via(object $notifiable): array
+
+
+    /**
+     * @param object $notifiable
+     * @return MailMessage
+     */
+    public function toMail(object $notifiable): MailMessage
     {
-        return ['database'];
+        return (new MailMessage)
+            ->subject('Nueva solicitud de revisión: ' . $this->innovation->title)
+            ->line("El docente " . ($this->innovation->profile->user->name ?? 'N/A') . " ha solicitado la revisión de una innovación.")
+            ->line("Título: {$this->innovation->title}")
+            ->action('Revisar Innovación', route('innovations.show', $this->innovation->id))
+            ->line('Por favor, procede con la revisión correspondiente.');
     }
 
     /**

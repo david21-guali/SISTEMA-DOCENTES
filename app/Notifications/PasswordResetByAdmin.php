@@ -9,7 +9,9 @@ use Illuminate\Notifications\Notification;
 
 class PasswordResetByAdmin extends Notification
 {
-    use Queueable;
+    use Queueable, \App\Traits\HasNotificationPreferences;
+
+    public string $category = 'reminders';
 
     /** @var string */
     protected $newPassword;
@@ -26,19 +28,7 @@ class PasswordResetByAdmin extends Notification
         $this->newPassword = $newPassword;
     }
 
-    /**
-     * Get the notification's delivery channels.
-     */
-    /**
-     * Get the notification's delivery channels.
-     * 
-     * @param \App\Models\User $notifiable
-     * @return array<int, string>
-     */
-    public function via(object $notifiable): array
-    {
-        return ['database', 'mail'];
-    }
+
 
     /**
      * Get the mail representation of the notification.

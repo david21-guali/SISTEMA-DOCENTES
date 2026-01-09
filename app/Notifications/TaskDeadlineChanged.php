@@ -9,7 +9,9 @@ use Illuminate\Notifications\Notification;
 
 class TaskDeadlineChanged extends Notification
 {
-    use Queueable;
+    use Queueable, \App\Traits\HasNotificationPreferences;
+
+    public string $category = 'tasks';
 
     /** @var \App\Models\Task */
     public $task;
@@ -30,13 +32,24 @@ class TaskDeadlineChanged extends Notification
         $this->newDate = $newDate;
     }
 
+
+
     /**
-     * @param \App\Models\User $notifiable
-     * @return array<int, string>
+     * @param object $notifiable
+     * @return MailMessage
      */
-    public function via(object $notifiable): array
+    public function toMail(object $notifiable): MailMessage
     {
-        return ['database'];
+        $old = $this->oldDate instanceof \Carbon\Carbon ? $this->oldDate->format('d/m/Y') : $this->oldDate;
+        $new = $this->newDate instanceof \Carbon\Carbon ? $this->newDate->format('d/m/Y') : $this->newDate;
+
+        return (new MailMessage)
+            ->subject('Fecha de Tarea Modificada: ' . $this->task->title)
+            ->line("Se ha modificado la fecha límite de la tarea '{$this->task->title}'.")
+            ->line("Fecha anterior: {$old}")
+            ->line("Nueva fecha: {$new}")
+            ->action('Ver Tarea', route('tasks.show', $this->task->id))
+            ->line('Por favor, ajusta tu cronograma si es necesario.');
     }
 
     /**

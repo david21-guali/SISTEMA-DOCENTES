@@ -184,45 +184,68 @@
                     <div class="col-lg-8 offset-lg-2">
                         <div class="card shadow-sm border-0 mb-4">
                             <div class="card-body p-4">
+                                <!-- TÍTULO: PREFERENCIAS DE NOTIFICACIÓN -->
                                 <h6 class="fw-bold mb-4">Preferencias de Notificación</h6>
-                                <p class="text-muted small mb-4">Elige qué tipos de actualizaciones deseas recibir.</p>
+                                <p class="text-muted small mb-4">Elige qué tipos de actualizaciones deseas recibir personalmente.</p>
 
                                 <div class="mb-4">
-                                    <h6 class="small text-muted text-uppercase fw-bold mb-3">Notificaciones del Sistema</h6>
+                                    <h6 class="small text-muted text-uppercase text-uppercase-bold fw-bold mb-3">Notificaciones del Sistema</h6>
                                     
                                     @php 
                                         $prefs = auth()->user()->profile->notification_preferences ?? []; 
                                     @endphp
 
-                                    <div class="form-check mb-2">
-                                        <input class="form-check-input" type="checkbox" name="notification_preferences[meetings]" id="notifyMeetings" 
-                                            {{ ($prefs['meetings'] ?? true) ? 'checked' : '' }}>
-                                        <label class="form-check-label text-dark" for="notifyMeetings">Nuevas reuniones programadas</label>
-                                    </div>
-                                    <div class="form-check mb-2">
-                                        <input class="form-check-input" type="checkbox" name="notification_preferences[projects]" id="notifyProjects"
-                                            {{ ($prefs['projects'] ?? true) ? 'checked' : '' }}>
-                                        <label class="form-check-label text-dark" for="notifyProjects">Actualizaciones de proyectos</label>
-                                    </div>
-                                    <div class="form-check mb-2">
-                                        <input class="form-check-input" type="checkbox" name="notification_preferences[tasks]" id="notifyTasks"
-                                            {{ ($prefs['tasks'] ?? true) ? 'checked' : '' }}>
-                                        <label class="form-check-label text-dark" for="notifyTasks">Asignación y vencimiento de tareas</label>
-                                    </div>
-                                    <div class="form-check mb-2">
-                                        <input class="form-check-input" type="checkbox" name="notification_preferences[resources]" id="notifyResources"
-                                            {{ ($prefs['resources'] ?? true) ? 'checked' : '' }}>
-                                        <label class="form-check-label text-dark" for="notifyResources">Recursos compartidos</label>
-                                    </div>
-                                    <div class="form-check mb-2">
-                                        <input class="form-check-input" type="checkbox" name="notification_preferences[reminders]" id="notifyReminders"
-                                            {{ ($prefs['reminders'] ?? true) ? 'checked' : '' }}>
-                                        <label class="form-check-label text-dark" for="notifyReminders">Recordatorios generales</label>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-check mb-3">
+                                                <input class="form-check-input" type="checkbox" name="notification_preferences[meetings]" id="notifyMeetings" 
+                                                    {{ ($prefs['meetings'] ?? true) ? 'checked' : '' }}>
+                                                <label class="form-check-label text-dark" for="notifyMeetings">Nuevas reuniones programadas</label>
+                                            </div>
+                                            <div class="form-check mb-3">
+                                                <input class="form-check-input" type="checkbox" name="notification_preferences[projects]" id="notifyProjects"
+                                                    {{ ($prefs['projects'] ?? true) ? 'checked' : '' }}>
+                                                <label class="form-check-label text-dark" for="notifyProjects">Actualizaciones de proyectos</label>
+                                            </div>
+                                            <div class="form-check mb-3">
+                                                <input class="form-check-input" type="checkbox" name="notification_preferences[tasks]" id="notifyTasks"
+                                                    {{ ($prefs['tasks'] ?? true) ? 'checked' : '' }}>
+                                                <label class="form-check-label text-dark" for="notifyTasks">Asignación y vencimiento de tareas</label>
+                                            </div>
+                                            <div class="form-check mb-3">
+                                                <input class="form-check-input" type="checkbox" name="notification_preferences[innovations]" id="notifyInnovations"
+                                                    {{ ($prefs['innovations'] ?? true) ? 'checked' : '' }}>
+                                                <label class="form-check-label text-dark" for="notifyInnovations">Innovaciones y revisiones</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-check mb-3">
+                                                <input class="form-check-input" type="checkbox" name="notification_preferences[resources]" id="notifyResources"
+                                                    {{ ($prefs['resources'] ?? true) ? 'checked' : '' }}>
+                                                <label class="form-check-label text-dark" for="notifyResources">Recursos compartidos</label>
+                                            </div>
+                                            <div class="form-check mb-3">
+                                                <input class="form-check-input" type="checkbox" name="notification_preferences[forum]" id="notifyForum"
+                                                    {{ ($prefs['forum'] ?? true) ? 'checked' : '' }}>
+                                                <label class="form-check-label text-dark" for="notifyForum">Actividad en foros y comentarios</label>
+                                            </div>
+                                            <div class="form-check mb-3">
+                                                <input class="form-check-input" type="checkbox" name="notification_preferences[messages]" id="notifyMessages"
+                                                    {{ ($prefs['messages'] ?? true) ? 'checked' : '' }}>
+                                                <label class="form-check-label text-dark" for="notifyMessages">Mensajes directos recibidos</label>
+                                            </div>
+                                            <div class="form-check mb-3">
+                                                <input class="form-check-input" type="checkbox" name="notification_preferences[reminders]" id="notifyReminders"
+                                                    {{ ($prefs['reminders'] ?? true) ? 'checked' : '' }}>
+                                                <label class="form-check-label text-dark" for="notifyReminders">Recordatorios generales</label>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
+                                <!-- SECCIÓN: CANALES DE COMUNICACIÓN (EMAIL GLOBAL) -->
                                 <div class="mb-4 pt-3 border-top">
-                                    <h6 class="small text-muted text-uppercase fw-bold mb-3">Canales de Comunicación</h6>
+                                    <h6 class="small text-muted text-uppercase text-uppercase-bold fw-bold mb-3">Canales de Comunicación</h6>
                                     
                                     <div class="form-check form-switch mb-3">
                                         <input class="form-check-input" type="checkbox" name="notification_preferences[email_enabled]" id="emailEnabled"
@@ -234,11 +257,12 @@
                                     </div>
                                 </div>
 
-                                <div class="d-flex justify-content-end">
-                                    <button type="submit" class="btn btn-primary px-4 fw-bold shadow-sm">
-                                        GUARDAR PREFERENCIAS
+                                <div class="d-flex justify-content-end mt-4">
+                                    <button type="submit" class="btn btn-gradient-save btn-wow px-4 py-2">
+                                        <i class="fas fa-save me-2"></i> GUARDAR PREFERENCIAS
                                     </button>
                                 </div>
+
                             </div>
                         </div>
                     </div>
@@ -271,7 +295,50 @@
 </div>
 
 @push('styles')
+    <!-- Cargamos estilos específicos para el módulo de usuarios/perfil -->
     <link rel="stylesheet" href="{{ asset('assets/back/css/users.css') }}">
+    <style>
+        /* ESTILOS PERSONALIZADOS PARA EL BOTÓN DE GUARDADO (WOW FACTOR) */
+        /* Forzamos estos estilos directamente para asegurar una experiencia premium inmediata */
+        .btn-gradient-save {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%) !important;
+            border: none !important;
+            color: #ffffff !important;
+            padding: 12px 30px !important;
+            border-radius: 50px !important;
+            font-size: 0.85rem !important;
+            letter-spacing: 1.5px !important;
+            text-transform: uppercase !important;
+            font-weight: 700 !important;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+            box-shadow: 0 8px 20px rgba(37, 117, 252, 0.3) !important;
+            cursor: pointer !important;
+            outline: none !important;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-gradient-save:hover {
+            transform: translateY(-3px) scale(1.02) !important;
+            box-shadow: 0 12px 25px rgba(37, 117, 252, 0.4) !important;
+            background: linear-gradient(135deg, #2575fc 0%, #6a11cb 100%) !important;
+        }
+
+        .btn-gradient-save:active {
+            transform: translateY(0) scale(0.98) !important;
+        }
+
+        /* Pulse effect for a "wow" first impression */
+        @keyframes pulse-save {
+            0% { box-shadow: 0 0 0 0 rgba(37, 117, 252, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(37, 117, 252, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(37, 117, 252, 0); }
+        }
+
+        .btn-wow {
+            animation: pulse-save 2s infinite;
+        }
+    </style>
 @endpush
 <script>
     document.addEventListener('DOMContentLoaded', function() {

@@ -1,10 +1,11 @@
-/* Reports Module Styles */
+/* --- ESTILOS DEL MÓDULO DE REPORTES --- */
+/* Formatos para exportaciones, tablas de métricas y círculos de participación de usuarios. */
 
 .text-xs {
     font-size: 0.7rem;
 }
 
-/* Status Borders for Cards */
+/* Bordes laterales para diferenciar estados en tarjetas de reporte */
 .border-left-primary {
     border-left: 4px solid #4e73df !important;
 }

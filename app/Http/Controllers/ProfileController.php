@@ -64,12 +64,26 @@ class ProfileController extends Controller
 
         $user->save();
 
+        // Procesar las preferencias de notificación si el formulario enviado es de ese tipo
         if ($request->form_type === 'notifications') {
             $prefs = $request->input('notification_preferences', []);
-            $allKeys = ['meetings', 'projects', 'tasks', 'resources', 'reminders', 'email_enabled'];
+            
+            // Lista completa de llaves que permitimos guardar para evitar inyecciones de datos no deseados
+            $allKeys = [
+                'meetings', 
+                'projects', 
+                'tasks', 
+                'resources', 
+                'reminders', 
+                'innovations', 
+                'forum', 
+                'messages', 
+                'email_enabled'
+            ];
             
             $finalPrefs = [];
             foreach ($allKeys as $key) {
+                // Si el checkbox está marcado llega en el request, de lo contrario lo seteamos como false
                 $finalPrefs[$key] = isset($prefs[$key]);
             }
             $profileData['notification_preferences'] = $finalPrefs;

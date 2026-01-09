@@ -1,6 +1,7 @@
-/* Projects Module Styles */
+/* --- ESTILOS DEL MÓDULO DE PROYECTOS --- */
+/* Clases de utilidad y bordes de acento para representar estados de proyectos. */
 
-/* Common Utility Classes */
+/* Clases de utilidad comunes */
 .text-xs {
     font-size: 0.7rem;
 }
@@ -10,7 +11,7 @@
     padding: 2px 4px;
 }
 
-/* Border accents for cards */
+/* Bordes de acento para tarjetas según su estado */
 .border-left-primary {
     border-left: 4px solid #4e73df !important;
 }

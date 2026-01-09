@@ -9,7 +9,9 @@ use Illuminate\Notifications\Notification;
 
 class FileUploaded extends Notification
 {
-    use Queueable;
+    use Queueable, \App\Traits\HasNotificationPreferences;
+
+    public string $category = 'resources';
 
     /** @var \App\Models\Attachment */
     public Attachment $attachment;
@@ -32,9 +34,28 @@ class FileUploaded extends Notification
      * @param \App\Models\User $notifiable
      * @return array<int, string>
      */
-    public function via(object $notifiable): array
+
+
+    /**
+     * @param object $notifiable
+     * @return MailMessage
+     */
+    public function toMail(object $notifiable): MailMessage
     {
-        return ['database'];
+        /** @var \App\Models\Project|\App\Models\Task $attachable */
+        $attachable = $this->attachment->attachable;
+        $title = $attachable->title ?? $attachable->name ?? 'Elemento';
+        
+        $filesText = $this->count > 1 ? "{$this->count} archivos" : "'{$this->attachment->original_name}'";
+        $subject = $this->count > 1 ? "Nuevos archivos en {$this->modelName}" : "Nuevo archivo en {$this->modelName}";
+
+        return (new MailMessage)
+            ->subject($subject . ": " . $title)
+            ->line("{$this->uploaderName} ha subido {$filesText} en el {$this->modelName}: {$title}")
+            ->action('Ver elemento', $this->modelName === 'Proyecto' 
+                      ? route('projects.show', $attachable->id) 
+                      : route('tasks.show', $attachable->id))
+            ->line('Gracias por tu colaboración.');
     }
 
     /**

@@ -11,7 +11,9 @@ use Illuminate\Notifications\Notification;
 
 class MeetingResponse extends Notification
 {
-    use Queueable;
+    use Queueable, \App\Traits\HasNotificationPreferences;
+
+    public string $category = 'meetings';
     
     /** @var Meeting */
     public $meeting;
@@ -36,15 +38,7 @@ class MeetingResponse extends Notification
         $this->reason = $reason;
     }
 
-    /**
-     * Get the notification's delivery channels.
-     *
-     * @return array<int, string>
-     */
-    public function via(object $notifiable): array
-    {
-        return ['database'];
-    }
+
 
     /**
      * Get the mail representation of the notification.

@@ -1,9 +1,11 @@
-/* Resources Module Styles */
+/* --- ESTILOS DEL MÓDULO DE RECURSOS --- */
+/* Utilidades para la gestión de archivos, iconos de recursos y estados de la tabla. */
 
 .text-xs {
     font-size: 0.7rem;
 }
 
+/* Colores de fondo claros para filas y secciones */
 .bg-gray-50 {
     background-color: #f8f9fa;
 }

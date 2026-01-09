@@ -1,3 +1,4 @@
+/* --- VARIABLES DE COLOR Y TEMA --- */
 :root {
     --primary-color: #4e73df;
     --primary-gradient: linear-gradient(135deg, #4e73df 0%, #6f42c1 100%);
@@ -19,7 +20,8 @@ body {
     color: var(--text-dark);
 }
 
-/* Sidebar - Estilo SB Admin Pro */
+/* --- ESTILOS DE BARRA LATERAL (SIDEBAR) --- */
+/* Estilo SB Admin Pro */
 .sidebar {
     position: fixed;
     top: 0;
@@ -99,7 +101,8 @@ body {
     color: var(--primary-color);
 }
 
-/* Topbar - Estilo SB Admin Pro */
+/* --- ESTILOS DE BARRA SUPERIOR (TOPBAR) --- */
+/* Estilo SB Admin Pro */
 .topbar {
     position: fixed;
     top: 0;
@@ -143,7 +146,8 @@ body {
     word-break: break-word;
 }
 
-/* Cards - Estilo SB Admin Pro */
+/* --- ESTILOS DE TARJETAS (CARDS) --- */
+/* Estilo SB Admin Pro */
 .card {
     border: none;
     border-radius: 0.35rem;
@@ -244,7 +248,7 @@ body {
     z-index: 1045 !important;
 }
 
-/* --- DATATABLES FIXES (Force styles over Tailwind) --- */
+/* --- AJUSTES PARA DATATABLES (SOBREESCRITURA DE TAILWIND) --- */
 div.dataTables_wrapper div.dataTables_length select {
     width: auto !important;
     display: inline-block !important;

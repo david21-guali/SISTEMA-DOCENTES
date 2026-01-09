@@ -1,4 +1,5 @@
-/* Notifications Module Styles */
+/* --- ESTILOS DEL MÓDULO DE NOTIFICACIONES --- */
+/* Define la apariencia de la lista de notificaciones y sus estados de lectura. */
 
 .notifications-container {
     max-width: 1000px;
@@ -14,6 +15,7 @@
     border-bottom: none !important;
 }
 
+/* Fondo para notificaciones no leídas */
 .unread-bg {
     background-color: #f2f4f7 !important;
 }
