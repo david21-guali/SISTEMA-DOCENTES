@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
+use App\Traits\HasCalendarEvents;
 
 /**
  * App\Models\Task
@@ -27,7 +28,7 @@ use Carbon\Carbon;
 class Task extends Model
 {
     /** @use HasFactory<\Database\Factories\TaskFactory> */
-    use HasFactory, \App\Traits\CleansNotifications;
+    use HasFactory, \App\Traits\CleansNotifications, HasCalendarEvents;
 
     protected $fillable = [
         'project_id',
@@ -111,13 +112,10 @@ class Task extends Model
      * Scopes
      */
     /**
-     * @param \Illuminate\Database\Eloquent\Builder<Task> $query
-     * @return \Illuminate\Database\Eloquent\Builder<Task>
+     * Get the calendar URL for the task.
      */
-    public function scopePending($query)
-    {
-        return $query->where('status', 'pendiente');
-    }
+    protected function getCalendarUrl(): string { return route('tasks.show', $this->id); }
+    protected function getCalendarColor(): string { return '#10b981'; }
 
     /**
      * @param \Illuminate\Database\Eloquent\Builder<Task> $query
@@ -145,6 +143,17 @@ class Task extends Model
     {
         return $query->where('due_date', '<', now())
                      ->where('status', '!=', 'completada');
+    }
+
+    /**
+     * Scope a query to only include pending tasks.
+     * 
+     * @param \Illuminate\Database\Eloquent\Builder<Task> $query
+     * @return \Illuminate\Database\Eloquent\Builder<Task>
+     */
+    public function scopePending($query)
+    {
+        return $query->where('status', 'pendiente');
     }
 
     /**

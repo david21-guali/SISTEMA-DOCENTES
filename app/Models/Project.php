@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\HasCalendarEvents;
 use Carbon\Carbon;
 
 /**
@@ -23,7 +24,7 @@ use Carbon\Carbon;
 class Project extends Model
 {
     /** @use HasFactory<\Database\Factories\ProjectFactory> */
-    use HasFactory, \App\Traits\CleansNotifications;
+    use HasFactory, HasCalendarEvents, \App\Traits\CleansNotifications;
 
     protected $fillable = [
         'title',
@@ -136,14 +137,14 @@ class Project extends Model
      */
     /**
      * Scope projects visible to a specific user.
-     * 
+     *
      * @param \Illuminate\Database\Eloquent\Builder<Project> $query
      * @param \App\Models\User $user
      * @return \Illuminate\Database\Eloquent\Builder<Project>
      */
     /**
      * Scope projects visible to a specific user.
-     * 
+     *
      * @param \Illuminate\Database\Eloquent\Builder<Project> $query
      * @param \App\Models\User|int $user
      * @return \Illuminate\Database\Eloquent\Builder<Project>
@@ -174,6 +175,9 @@ class Project extends Model
                          $q->where('profiles.id', $profileId);
                      });
     }
+
+    protected function getCalendarUrl(): string { return route('projects.show', $this->id); }
+    protected function getCalendarColor(): string { return '#3b82f6'; }
 
     /**
      * Atributos computados

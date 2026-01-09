@@ -68,7 +68,7 @@ class ProjectsExport implements FromArray, WithHeadings, WithStyles, ShouldAutoS
                 ucfirst(str_replace('_', ' ', $project->status)),
                 $project->completion_percentage . '%',
                 $project->budget ? '$' . number_format($project->budget, 2) : '-',
-                $project->end_date ? $project->end_date->format('d/m/Y') : '-'
+                $project->end_date instanceof \Carbon\Carbon ? $project->end_date->format('d/m/Y') : '-'
             ];
         }
 

@@ -108,7 +108,7 @@ class UpdateTaskRequest extends FormRequest
      */
     private function checkStartDateBound(Project $project, Carbon $date, $fail): void
     {
-        if ($project->start_date && $date->lt($project->start_date->startOfDay())) {
+        if ($project->start_date instanceof \Carbon\Carbon && $date->lt($project->start_date->startOf('day'))) {
             $fail('La fecha de vencimiento no puede ser anterior al inicio del proyecto (' . $project->start_date->format('d/m/Y') . ').');
         }
     }
@@ -123,7 +123,7 @@ class UpdateTaskRequest extends FormRequest
      */
     private function checkEndDateBound(Project $project, Carbon $date, $fail): void
     {
-        if ($project->end_date && $date->gt($project->end_date->endOfDay())) {
+        if ($project->end_date instanceof \Carbon\Carbon && $date->gt($project->end_date->endOf('day'))) {
             $fail('La fecha de vencimiento no puede ser posterior al fin del proyecto (' . $project->end_date->format('d/m/Y') . ').');
         }
     }

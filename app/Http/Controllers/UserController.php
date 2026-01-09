@@ -101,20 +101,10 @@ class UserController extends Controller
         return redirect()->route('users.index')->with('success', 'Usuario actualizado exitosamente.');
     }
 
-    /**
-     * Remove the specified user.
-     */
-    /**
-     * Remove the specified user.
-     */
     public function destroy(Request $request, User $user): \Illuminate\Http\RedirectResponse
     {
-        $request->validate(['admin_password' => ['required', 'string']]);
-        $result = $this->actionService->deleteUser($user, $request->admin_password);
-
-        if ($result !== true) return back()->with('error', $result);
-
-        return redirect()->route('users.index')->with('success', 'Usuario eliminado.');
+        $result = $this->actionService->deleteUser($user, $request->validate(['admin_password' => 'required|string'])['admin_password']);
+        return ($result === true) ? redirect()->route('users.index')->with('success', 'Eliminado.') : back()->with('error', $result);
     }
 
     /**
@@ -133,19 +123,9 @@ class UserController extends Controller
         return response()->json(['success' => true, 'message' => 'Rol actualizado.']);
     }
 
-    /**
-     * Reset user password by admin.
-     */
-    /**
-     * Reset user password by admin.
-     */
     public function manualPasswordReset(Request $request, User $user): \Illuminate\Http\RedirectResponse
     {
-        $request->validate(['password' => ['required', 'string', 'min:8']]);
-        $result = $this->mgmtService->resetPassword($user, $request->password);
-
-        if ($result !== true) return back()->with('error', $result);
-
-        return back()->with('success', 'Contraseña actualizada y correo enviado.');
+        $result = $this->mgmtService->resetPassword($user, $request->validate(['password' => 'required|string|min:8'])['password']);
+        return ($result === true) ? back()->with('success', 'Contraseña resetada.') : back()->with('error', $result);
     }
 }

@@ -38,16 +38,11 @@ class ChatController extends Controller
 
     public function store(Request $request, User $user): \Illuminate\Http\RedirectResponse
     {
-        $request->validate(['content' => 'required']);
-
-        $message = Message::create([
+        Message::create([
             'sender_id' => Auth::user()->profile->id,
             'receiver_id' => $user->profile->id,
-            'content' => $request->content,
+            'content' => $request->validate(['content' => 'required'])['content'],
         ]);
-
-        // Notificar al receptor
-        $user->notify(new \App\Notifications\NewMessageReceived($message));
 
         return back();
     }

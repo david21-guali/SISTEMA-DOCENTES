@@ -67,7 +67,9 @@ class TaskController extends Controller
     public function store(\App\Http\Requests\StoreTaskRequest $request): \Illuminate\Http\RedirectResponse
     {
         try {
-            $this->actionService->createTask($request->validated(), $request->file('attachments', []));
+            /** @var array{project_id: int, assignees: array<int, int>, temp_attachments?: array<int, string>, title: string} $validated */
+            $validated = $request->validated();
+            $this->actionService->createTask($validated, $request->file('attachments', []));
             return redirect()->route('tasks.index')->with('success', 'Tarea creada exitosamente.');
         } catch (\Exception $e) {
             return back()->withInput()->with('swal_error', $e->getMessage());
@@ -111,7 +113,9 @@ class TaskController extends Controller
     public function update(\App\Http\Requests\UpdateTaskRequest $request, Task $task): \Illuminate\Http\RedirectResponse
     {
         try {
-            $this->actionService->updateTask($task, $request->validated());
+            /** @var array{assignees: array<int, int>, temp_attachments?: array<int, string>} $validated */
+            $validated = $request->validated();
+            $this->actionService->updateTask($task, $validated);
             return redirect()->route('tasks.index')->with('success', 'Tarea actualizada.');
         } catch (\Exception $e) {
             return back()->withInput()->with('swal_error', $e->getMessage());

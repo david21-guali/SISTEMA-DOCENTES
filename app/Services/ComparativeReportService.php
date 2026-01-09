@@ -14,6 +14,21 @@ use Carbon\Carbon;
 class ComparativeReportService
 {
     /**
+     * Validate and format comparison periods.
+     * @param array<string, mixed> $data
+     * @return array{period1Start: string, period1End: string, period2Start: string, period2End: string}
+     */
+    public function getValidatedPeriods(array $data): array
+    {
+        return [
+            'period1Start' => data_get($data, 'period1_start') ?: now()->subMonths(2)->startOfMonth()->format('Y-m-d'),
+            'period1End'   => data_get($data, 'period1_end') ?: now()->subMonth()->endOfMonth()->format('Y-m-d'),
+            'period2Start' => data_get($data, 'period2_start') ?: now()->startOfMonth()->format('Y-m-d'),
+            'period2End'   => data_get($data, 'period2_end') ?: now()->format('Y-m-d'),
+        ];
+    }
+
+    /**
      * Generate comparative datasets for two different periods and historical graph data.
      * 
      * @param array{period1Start: string, period1End: string, period2Start: string, period2End: string} $periods

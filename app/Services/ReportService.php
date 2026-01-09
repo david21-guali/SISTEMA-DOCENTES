@@ -14,6 +14,50 @@ use Carbon\Carbon;
  */
 class ReportService
 {
+
+    /**
+     * Get projects filtered by request parameters.
+     * 
+     * @param array<string, mixed> $filters
+     * @return \Illuminate\Support\Collection<int, Project>
+     */
+    public function getFilteredProjects(array $filters): \Illuminate\Support\Collection
+    {
+        return Project::with(['category', 'profile.user'])
+            ->forUser(auth()->user())
+            ->when(data_get($filters, 'status'), fn($q, $s) => $q->where('status', $s))
+            ->when(data_get($filters, 'category_id'), fn($q, $c) => $q->where('category_id', $c))
+            ->get();
+    }
+
+    /**
+     * Get tasks filtered by request parameters.
+     * 
+     * @param array<string, mixed> $filters
+     * @return \Illuminate\Support\Collection<int, Task>
+     */
+    public function getFilteredTasks(array $filters): \Illuminate\Support\Collection
+    {
+        return Task::with(['project', 'assignedProfile.user'])
+            ->forUser(auth()->user())
+            ->when(data_get($filters, 'status'), fn($q, $s) => $q->where('status', $s))
+            ->get();
+    }
+
+    /**
+     * Get innovations filtered by request parameters.
+     * 
+     * @param array<string, mixed> $filters
+     * @return \Illuminate\Support\Collection<int, Innovation>
+     */
+    public function getFilteredInnovations(array $filters): \Illuminate\Support\Collection
+    {
+        return Innovation::with(['profile.user', 'innovationType'])
+            ->forUser(auth()->user())
+            ->when(data_get($filters, 'status'), fn($q, $s) => $q->where('status', $s))
+            ->get();
+    }
+
     /**
      * Aggregate system-wide statistics for the main dashboard.
      * 
@@ -22,15 +66,15 @@ class ReportService
     public function getDashboardStats(): array
     {
         return [
-            'total_projects'        => $this->getTotalProjectsCount(),
-            'active_projects'       => $this->getActiveProjectsCount(),
-            'finished_projects'     => $this->getFinishedProjectsCount(),
-            'at_risk_projects'      => $this->getAtRiskProjectsCount(),
-            'total_tasks'           => $this->getTotalTasksCount(),
-            'pending_tasks'         => $this->getPendingTasksCount(),
-            'overdue_tasks'         => $this->getOverdueTasksCount(),
-            'total_innovations'     => $this->getTotalInnovationsCount(),
-            'completed_innovations' => $this->getCompletedInnovationsCount(),
+            'total_projects'        => Project::count(),
+            'active_projects'       => Project::where('status', 'en_progreso')->count(),
+            'finished_projects'     => Project::finished()->count(),
+            'at_risk_projects'      => Project::atRisk()->count(),
+            'total_tasks'           => Task::count(),
+            'pending_tasks'         => Task::pending()->count(),
+            'overdue_tasks'         => Task::overdue()->count(),
+            'total_innovations'     => Innovation::count(),
+            'completed_innovations' => Innovation::completed()->count(),
         ];
     }
 
@@ -100,75 +144,70 @@ class ReportService
             ->get();
     }
 
+
     /**
-     * @return int Total projects in the system.
+     * Calculate summary statistics for a collection of projects.
+     * 
+     * @param \Illuminate\Support\Collection<int, Project> $items
+     * @return array<string, int|float>
      */
-    private function getTotalProjectsCount(): int
+    public function getProjectsStats(\Illuminate\Support\Collection $items): array
     {
-        return Project::count();
+        $total = $items->count() ?: 1;
+        
+        return [
+            'total'          => $items->count(),
+            'active'         => ($active = $items->where('status', 'en_progreso')->count()),
+            'finished'       => ($finished = $items->where('status', 'completado')->count()),
+            'pending'        => ($pending = $items->where('status', 'planificacion')->count()),
+            'total_budget'   => $items->sum('budget'),
+            'avg_completion' => $items->avg('completion_percentage') ?? 0,
+            'pct_pending'    => ($pending / $total) * 100,
+            'pct_active'     => ($active / $total) * 100,
+            'pct_finished'   => ($finished / $total) * 100,
+        ];
     }
 
     /**
-     * @return int Projects that are currently in progress.
+     * Calculate summary statistics for a collection of tasks.
+     * 
+     * @param \Illuminate\Support\Collection<int, Task> $items
+     * @return array<string, int|float>
      */
-    private function getActiveProjectsCount(): int
+    public function getTasksStats(\Illuminate\Support\Collection $items): array
     {
-        return Project::query()->where('status', 'en_progreso')->count();
+        $total = $items->count() ?: 1;
+
+        return [
+            'total'          => $items->count(),
+            'pending'        => $items->where('status', 'pendiente')->count(),
+            'completed'      => ($completed = $items->where('status', 'completada')->count()),
+            'atrasada'       => $items->where('status', 'atrasada')->count(),
+            'avg_compliance' => ($completed / $total) * 100,
+            'pct_alta'       => ($items->where('priority', 'alta')->count() / $total) * 100,
+            'pct_media'      => ($items->where('priority', 'media')->count() / $total) * 100,
+            'pct_baja'       => ($items->where('priority', 'baja')->count() / $total) * 100,
+        ];
     }
 
     /**
-     * @return int Projects that have reached completion.
+     * Calculate summary statistics for a collection of innovations.
+     * 
+     * @param \Illuminate\Support\Collection<int, Innovation> $items
+     * @return array<string, int|float>
      */
-    private function getFinishedProjectsCount(): int
+    public function getInnovationsStats(\Illuminate\Support\Collection $items): array
     {
-        return Project::finished()->count();
-    }
+        $total = $items->count() ?: 1;
 
-    /**
-     * @return int Projects marked as "at risk".
-     */
-    private function getAtRiskProjectsCount(): int
-    {
-        return Project::atRisk()->count();
-    }
-
-    /**
-     * @return int Total tasks across all projects.
-     */
-    private function getTotalTasksCount(): int
-    {
-        return Task::count();
-    }
-
-    /**
-     * @return int Tasks still awaiting completion.
-     */
-    private function getPendingTasksCount(): int
-    {
-        return Task::pending()->count();
-    }
-
-    /**
-     * @return int Tasks that have passed their due date.
-     */
-    private function getOverdueTasksCount(): int
-    {
-        return Task::overdue()->count();
-    }
-
-    /**
-     * @return int Total innovation initiatives.
-     */
-    private function getTotalInnovationsCount(): int
-    {
-        return Innovation::count();
-    }
-
-    /**
-     * @return int Innovations that are fully reviewed or completed.
-     */
-    private function getCompletedInnovationsCount(): int
-    {
-        return Innovation::completed()->count();
+        return [
+            'total'         => $items->count(),
+            'avg_impact'    => $items->avg('impact_score') ?? 0,
+            'best_impact'   => $items->max('impact_score') ?? 0,
+            'with_evidence' => $items->whereNotNull('evidence_files')->count(),
+            'pct_high'      => ($items->where('impact_score', '>=', 8)->count() / $total) * 100,
+            'pct_mid'       => ($items->whereBetween('impact_score', [5, 7.9])->count() / $total) * 100,
+            'pct_low'       => ($items->where('impact_score', '<', 5)->count() / $total) * 100,
+        ];
     }
 }

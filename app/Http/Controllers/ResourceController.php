@@ -15,28 +15,18 @@ class ResourceController extends Controller
         $this->resourceService = $resourceService;
     }
 
-    /**
-     * Display a listing of the resource catalog.
-     */
-    /**
-     * Display a listing of the resource catalog.
-     */
     public function index(): \Illuminate\View\View
     {
-        $resources = Resource::with('type')->get();
-        $types = \App\Models\ResourceType::all();
+        $distributionData = \App\Models\ResourceType::withCount('resources')
+            ->get()
+            ->filter(fn($t) => $t->resources_count > 0)
+            ->map(fn($t) => ['label' => $t->name, 'count' => $t->resources_count]);
         
-        // Prepare data for distribution chart
-        $distributionData = $types->map(function($type) use ($resources) {
-            return [
-                'label' => $type->name,
-                'count' => $resources->where('resource_type_id', $type->id)->count()
-            ];
-        })->filter(function($item) {
-            return $item['count'] > 0; // Only show types with resources
-        })->values();
-        
-        return view('resources.index', compact('resources', 'types', 'distributionData'));
+        return view('resources.index', [
+            'resources'        => Resource::with('type')->get(),
+            'types'            => \App\Models\ResourceType::all(),
+            'distributionData' => $distributionData
+        ]);
     }
 
     /**

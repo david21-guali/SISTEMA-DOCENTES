@@ -42,43 +42,48 @@ class FileUploaded extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
-        /** @var \App\Models\Project|\App\Models\Task $attachable */
-        $attachable = $this->attachment->attachable;
-        $title = $attachable->title ?? $attachable->name ?? 'Elemento';
-        
-        $filesText = $this->count > 1 ? "{$this->count} archivos" : "'{$this->attachment->original_name}'";
-        $subject = $this->count > 1 ? "Nuevos archivos en {$this->modelName}" : "Nuevo archivo en {$this->modelName}";
-
+        $meta = $this->getNotificationMeta();
         return (new MailMessage)
-            ->subject($subject . ": " . $title)
-            ->line("{$this->uploaderName} ha subido {$filesText} en el {$this->modelName}: {$title}")
-            ->action('Ver elemento', $this->modelName === 'Proyecto' 
-                      ? route('projects.show', $attachable->id) 
-                      : route('tasks.show', $attachable->id))
+            ->subject("{$meta['subject']}: {$meta['title']}")
+            ->line("{$this->uploaderName} ha subido {$meta['filesText']} en el {$this->modelName}: {$meta['title']}")
+            ->action('Ver elemento', route($meta['route'], $meta['id']))
             ->line('Gracias por tu colaboración.');
     }
 
     /**
      * @param object $notifiable
-     * @return array<string, mixed>
+     * @return array{attachment_id: int, title: string, message: string, uploader: string, link: string}
      */
     public function toArray(object $notifiable): array
     {
-        /** @var \App\Models\Project|\App\Models\Task $attachable */
-        $attachable = $this->attachment->attachable;
-        $title = $attachable->title ?? $attachable->name ?? 'Elemento';
-        
-        $filesText = $this->count > 1 ? "{$this->count} archivos" : "'{$this->attachment->original_name}'";
-        $message = "{$this->uploaderName} ha subido {$filesText} en el {$this->modelName}: {$title}";
-
+        $meta = $this->getNotificationMeta();
         return [
             'attachment_id' => $this->attachment->id,
             'title' => $this->count > 1 ? 'Nuevos archivos subidos' : 'Nuevo archivo subido',
-            'message' => $message,
+            'message' => "{$this->uploaderName} ha subido {$meta['filesText']} en el {$this->modelName}: {$meta['title']}",
             'uploader' => $this->uploaderName,
-            'link' => $this->modelName === 'Proyecto' 
-                      ? route('projects.show', $attachable->id) 
-                      : route('tasks.show', $attachable->id),
+            'link' => route($meta['route'], $meta['id']),
+        ];
+    }
+
+    /**
+     * @return array{id: int, title: string, filesText: string, subject: string, route: string}
+     */
+    private function getNotificationMeta(): array
+    {
+        $m = $this->attachment->attachable;
+        
+        $title = 'Elemento';
+        if ($m instanceof \App\Models\Project || $m instanceof \App\Models\Task) {
+            $title = $m->title ?: 'Elemento';
+        }
+
+        return [
+            'id' => (int) ($m->id ?? 0),
+            'title' => $title,
+            'filesText' => $this->count > 1 ? "{$this->count} archivos" : "'{$this->attachment->original_name}'",
+            'subject' => ($this->count > 1 ? "Nuevos archivos" : "Nuevo archivo") . " en {$this->modelName}",
+            'route' => $this->modelName === 'Proyecto' ? 'projects.show' : 'tasks.show'
         ];
     }
 }

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use App\Traits\HasCalendarEvents;
 use Carbon\Carbon;
 
 /**
@@ -26,7 +27,7 @@ use Carbon\Carbon;
 class Meeting extends Model
 {
     /** @use HasFactory<\Database\Factories\MeetingFactory> */
-    use HasFactory, \App\Traits\CleansNotifications;
+    use HasFactory, HasCalendarEvents, \App\Traits\CleansNotifications;
 
     protected $fillable = [
         'project_id',
@@ -108,6 +109,9 @@ class Meeting extends Model
     {
         return $this->meeting_date < now();
     }
+
+    protected function getCalendarUrl(): string { return route('meetings.show', $this->id); }
+    protected function getCalendarColor(): string { return '#f59e0b'; }
 
     /**
      * Scopes

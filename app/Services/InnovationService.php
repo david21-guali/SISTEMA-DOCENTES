@@ -13,6 +13,23 @@ use Illuminate\Support\Facades\Storage;
 class InnovationService
 {
     /**
+     * Get statistics for innovations by status.
+     * 
+     * @return array<string, int>
+     */
+    public function getStats(): array
+    {
+        return [
+            'total'             => Innovation::count(),
+            'aprobada'          => Innovation::where('status', 'aprobada')->count(),
+            'en_revision'       => Innovation::where('status', 'en_revision')->count(),
+            'rechazada'         => Innovation::where('status', 'rechazada')->count(),
+            'propuesta'         => Innovation::where('status', 'propuesta')->count(),
+            'en_implementacion' => Innovation::where('status', 'en_implementacion')->count(),
+        ];
+    }
+
+    /**
      * Create a new innovation proposal and handle initial attachments.
      * 
      * @param array<string, mixed> $data Basic innovation details.
@@ -74,23 +91,48 @@ class InnovationService
      */
     public function deleteAttachment(Innovation $innovation, int $attachmentId): void
     {
-        $attachment = $innovation->attachments()->findOrFail($attachmentId);
-        
-        $attachment->delete();
+        $innovation->attachments()->findOrFail($attachmentId)->delete();
     }
 
     /**
-     * Iterate through uploaded files and link them to the innovation.
+     * Approve an innovation and save review notes.
+     * 
+     * @param array{review_notes: string} $data
+     */
+    public function approve(Innovation $innovation, array $data): void
+    {
+        $innovation->update(array_merge($data, [
+            'status' => 'aprobada', 'reviewed_by' => Auth::id(), 'reviewed_at' => now()
+        ]));
+    }
+
+    /**
+     * Reject an innovation and save review notes.
+     * 
+     * @param array{review_notes: string} $data
+     */
+    public function reject(Innovation $innovation, array $data): void
+    {
+        $innovation->update(array_merge($data, [
+            'status' => 'rechazada', 'reviewed_by' => Auth::id(), 'reviewed_at' => now()
+        ]));
+    }
+
+    public function requestReview(Innovation $innovation): void
+    {
+        abort_if(in_array($innovation->status, ['aprobada', 'en_revision']), 400);
+        $innovation->update(['status' => 'en_revision']);
+    }
+
+    /**
+     * Process evidence attachments.
      * 
      * @param Innovation $innovation
      * @param array<int, \Illuminate\Http\UploadedFile> $files
-     * @return void
      */
     private function processAttachments(Innovation $innovation, array $files): void
     {
-        foreach ($files as $file) {
-            $this->storeAndLinkAttachment($innovation, $file);
-        }
+        collect($files)->each(fn($f) => $this->storeAndLinkAttachment($innovation, $f));
     }
 
     /**

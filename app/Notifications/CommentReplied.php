@@ -32,14 +32,13 @@ class CommentReplied extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         $commentable = $this->reply->commentable;
-        $title = $commentable instanceof \App\Models\Project ? $commentable->title : ($commentable->title ?? 'Elemento');
-        $url = url('/'); // Determine generic or specific url based on type
-
-        if ($this->reply->commentable_type === \App\Models\Project::class) {
-             $url = route('projects.show', $this->reply->commentable_id);
-        } elseif ($this->reply->commentable_type === \App\Models\Innovation::class) {
-             $url = route('innovations.show', $this->reply->commentable_id);
-        }
+        $title = $commentable->title ?? 'Elemento';
+        
+        $url = match($this->reply->commentable_type) {
+            \App\Models\Project::class => route('projects.show', $this->reply->commentable_id),
+            \App\Models\Innovation::class => route('innovations.show', $this->reply->commentable_id),
+            default => url('/')
+        };
 
         return (new MailMessage)
                     ->line('Alguien respondió a tu comentario en: ' . $title)
@@ -56,8 +55,8 @@ class CommentReplied extends Notification
     public function toArray(object $notifiable): array
     {
         $commentable = $this->reply->commentable;
-        $type = $commentable instanceof \App\Models\Project ? 'proyecto' : ($commentable instanceof \App\Models\Innovation ? 'innovación' : 'elemento');
-        $routeName = $commentable instanceof \App\Models\Project ? 'projects.show' : ($commentable instanceof \App\Models\Innovation ? 'innovations.show' : 'home');
+        $type = ($commentable instanceof \App\Models\Project) ? 'proyecto' : 'innovación';
+        $routeName = ($commentable instanceof \App\Models\Project) ? 'projects.show' : 'innovations.show';
 
         return [
             'commentable_id' => $this->reply->commentable_id,

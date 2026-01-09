@@ -49,7 +49,7 @@
 <div class="page">
     <div class="content content-first">
         <div class="report-details">
-            Created at 2026-01-07 15:32:44        , with PHPMetrics v2.9.1 (<a href="https://twitter.com/Halleck45">Jean-François Lépine</a>).
+            Created at 2026-01-09 18:10:23        , with PHPMetrics v2.9.1 (<a href="https://twitter.com/Halleck45">Jean-François Lépine</a>).
         </div>
 
         
@@ -93,7 +93,7 @@
                             <path d="M0 0h24v24H0z" fill="none">
                             <path d="M20 8h-2.81c-.45-.78-1.07-1.45-1.82-1.96L17 4.41 15.59 3l-2.17 2.17C12.96 5.06 12.49 5 12 5c-.49 0-.96.06-1.41.17L8.41 3 7 4.41l1.62 1.63C7.88 6.55 7.26 7.22 6.81 8H4v2h2.09c-.05.33-.09.66-.09 1v1H4v2h2v1c0 .34.04.67.09 1H4v2h2.81c1.04 1.79 2.97 3 5.19 3s4.15-1.21 5.19-3H20v-2h-2.09c.05-.33.09-.66.09-1v-1h2v-2h-2v-1c0-.34-.04-.67-.09-1H20V8zm-6 8h-4v-2h4v2zm0-4h-4v-2h4v2z">
                         </svg>
-                        Violations (14)
+                        Violations (19)
                     </a>
                 </li>
                                     <li>
@@ -325,12 +325,12 @@
         ]
     },
     {
-        "name": "\\App\\Exports\\InnovationsExport",
+        "name": "\\App\\Exports\\ComparativeExport",
         "size": 3000,
         "relations": []
     },
     {
-        "name": "\\Maatwebsite\\Excel\\Concerns\\FromCollection",
+        "name": "\\Maatwebsite\\Excel\\Concerns\\FromArray",
         "size": 3000,
         "relations": []
     },
@@ -340,22 +340,27 @@
         "relations": []
     },
     {
-        "name": "\\Maatwebsite\\Excel\\Concerns\\WithMapping",
-        "size": 3000,
-        "relations": []
-    },
-    {
         "name": "\\Maatwebsite\\Excel\\Concerns\\WithStyles",
         "size": 3000,
         "relations": []
     },
     {
-        "name": "\\App\\Models\\Innovation",
+        "name": "\\Maatwebsite\\Excel\\Concerns\\ShouldAutoSize",
         "size": 3000,
         "relations": []
     },
     {
         "name": "\\PhpOffice\\PhpSpreadsheet\\Worksheet\\Worksheet",
+        "size": 3000,
+        "relations": []
+    },
+    {
+        "name": "\\App\\Exports\\InnovationsExport",
+        "size": 3000,
+        "relations": []
+    },
+    {
+        "name": "\\App\\Models\\Innovation",
         "size": 3000,
         "relations": []
     },
@@ -374,13 +379,12 @@
         "size": 3000,
         "relations": [
             "\\App\\Http\\Controllers\\Controller",
+            "\\App\\Services\\AttachmentService",
             "\\Illuminate\\Http\\Request",
-            "\\App\\Models\\Project",
-            "\\App\\Models\\Task",
-            "\\Illuminate\\Support\\Facades\\Auth",
             "\\Symfony\\Component\\HttpFoundation\\BinaryFileResponse",
             "\\App\\Models\\Attachment",
-            "\\Illuminate\\Support\\Facades\\Storage"
+            "\\Illuminate\\Support\\Facades\\Storage",
+            "\\Illuminate\\Support\\Facades\\Auth"
         ]
     },
     {
@@ -389,12 +393,12 @@
         "relations": []
     },
     {
-        "name": "\\Illuminate\\Http\\Request",
+        "name": "\\App\\Services\\AttachmentService",
         "size": 3000,
         "relations": []
     },
     {
-        "name": "\\Illuminate\\Support\\Facades\\Auth",
+        "name": "\\Illuminate\\Http\\Request",
         "size": 3000,
         "relations": []
     },
@@ -406,15 +410,15 @@
     {
         "name": "\\App\\Models\\Attachment",
         "size": 3000,
-        "relations": [
-            "\\Illuminate\\Database\\Eloquent\\Model",
-            "\\Illuminate\\Database\\Eloquent\\Relations\\BelongsTo",
-            "\\Illuminate\\Support\\Facades\\Storage",
-            "\\static"
-        ]
+        "relations": []
     },
     {
         "name": "\\Illuminate\\Support\\Facades\\Storage",
+        "size": 3000,
+        "relations": []
+    },
+    {
+        "name": "\\Illuminate\\Support\\Facades\\Auth",
         "size": 3000,
         "relations": []
     },
@@ -597,9 +601,17 @@
         "size": 3000,
         "relations": [
             "\\App\\Http\\Controllers\\Controller",
+            "\\App\\Services\\CalendarService",
             "\\Illuminate\\View\\View",
             "\\Illuminate\\Http\\JsonResponse",
-            "\\Illuminate\\Http\\Request",
+            "\\Illuminate\\Http\\Response"
+        ]
+    },
+    {
+        "name": "\\App\\Services\\CalendarService",
+        "size": 3000,
+        "relations": [
+            "\\Illuminate\\Support\\Collection",
             "\\App\\Models\\Project",
             "\\App\\Models\\Task",
             "\\App\\Models\\Meeting"
@@ -607,6 +619,11 @@
     },
     {
         "name": "\\Illuminate\\Http\\JsonResponse",
+        "size": 3000,
+        "relations": []
+    },
+    {
+        "name": "\\Illuminate\\Http\\Response",
         "size": 3000,
         "relations": []
     },
@@ -638,8 +655,7 @@
             "\\App\\Models\\User",
             "\\App\\Models\\Message",
             "\\Illuminate\\Http\\RedirectResponse",
-            "\\Illuminate\\Http\\Request",
-            "\\App\\Notifications\\NewMessageReceived"
+            "\\Illuminate\\Http\\Request"
         ]
     },
     {
@@ -648,38 +664,32 @@
         "relations": []
     },
     {
-        "name": "\\App\\Notifications\\NewMessageReceived",
-        "size": 3000,
-        "relations": [
-            "\\Illuminate\\Notifications\\Notification",
-            "\\App\\Models\\Message"
-        ]
-    },
-    {
         "name": "\\App\\Http\\Controllers\\CommentController",
         "size": 3000,
         "relations": [
             "\\App\\Http\\Controllers\\Controller",
+            "\\App\\Services\\CommentService",
             "\\Illuminate\\Http\\RedirectResponse",
             "\\Illuminate\\Http\\Request",
-            "\\App\\Models\\Project",
-            "\\Illuminate\\Support\\Facades\\Auth",
             "\\App\\Models\\Comment",
-            "\\App\\Notifications\\NewCommentAdded"
+            "\\Illuminate\\Support\\Facades\\Auth"
+        ]
+    },
+    {
+        "name": "\\App\\Services\\CommentService",
+        "size": 3000,
+        "relations": [
+            "\\App\\Models\\Comment",
+            "\\modelClass",
+            "\\Illuminate\\Support\\Facades\\Auth",
+            "\\App\\Notifications\\NewCommentAdded",
+            "\\App\\Notifications\\CommentReplied"
         ]
     },
     {
         "name": "\\App\\Models\\Comment",
         "size": 3000,
         "relations": []
-    },
-    {
-        "name": "\\App\\Notifications\\NewCommentAdded",
-        "size": 3000,
-        "relations": [
-            "\\Illuminate\\Notifications\\Notification",
-            "\\App\\Models\\Comment"
-        ]
     },
     {
         "name": "\\App\\Http\\Controllers\\DashboardController",
@@ -744,29 +754,63 @@
         "size": 3000,
         "relations": [
             "\\App\\Http\\Controllers\\Controller",
+            "\\App\\Services\\ForumService",
             "\\Illuminate\\View\\View",
             "\\App\\Models\\ForumTopic",
             "\\Illuminate\\Http\\RedirectResponse",
-            "\\Illuminate\\Http\\Request",
+            "\\App\\Http\\Requests\\StoreForumTopicRequest",
+            "\\App\\Http\\Requests\\StoreForumPostRequest"
+        ]
+    },
+    {
+        "name": "\\App\\Services\\ForumService",
+        "size": 3000,
+        "relations": [
+            "\\App\\Models\\ForumTopic",
             "\\Illuminate\\Support\\Facades\\Auth",
-            "\\App\\Models\\ForumPost"
+            "\\App\\Models\\ForumPost",
+            "\\App\\Models\\User",
+            "\\App\\Notifications\\NewForumTopic",
+            "\\App\\Notifications\\NewForumReply"
         ]
     },
     {
         "name": "\\App\\Models\\ForumTopic",
         "size": 3000,
+        "relations": []
+    },
+    {
+        "name": "\\App\\Http\\Requests\\StoreForumTopicRequest",
+        "size": 3000,
         "relations": [
-            "\\Illuminate\\Database\\Eloquent\\Model",
-            "\\Illuminate\\Database\\Eloquent\\Relations\\BelongsTo",
-            "\\Illuminate\\Database\\Eloquent\\Relations\\HasMany"
+            "\\Illuminate\\Foundation\\Http\\FormRequest"
         ]
     },
     {
-        "name": "\\App\\Models\\ForumPost",
+        "name": "\\App\\Http\\Requests\\StoreForumPostRequest",
         "size": 3000,
         "relations": [
-            "\\Illuminate\\Database\\Eloquent\\Model",
-            "\\Illuminate\\Database\\Eloquent\\Relations\\BelongsTo"
+            "\\Illuminate\\Foundation\\Http\\FormRequest"
+        ]
+    },
+    {
+        "name": "\\App\\Http\\Controllers\\InnovationActionController",
+        "size": 3000,
+        "relations": [
+            "\\App\\Http\\Controllers\\Controller",
+            "\\App\\Services\\InnovationService",
+            "\\Illuminate\\Http\\RedirectResponse",
+            "\\Illuminate\\Http\\Request",
+            "\\App\\Models\\Innovation"
+        ]
+    },
+    {
+        "name": "\\App\\Services\\InnovationService",
+        "size": 3000,
+        "relations": [
+            "\\App\\Models\\Innovation",
+            "\\Illuminate\\Support\\Facades\\Auth",
+            "\\Illuminate\\Support\\Facades\\DB"
         ]
     },
     {
@@ -781,21 +825,7 @@
             "\\App\\Models\\InnovationType",
             "\\Illuminate\\Http\\RedirectResponse",
             "\\App\\Http\\Requests\\StoreInnovationRequest",
-            "\\App\\Http\\Requests\\UpdateInnovationRequest",
-            "\\Illuminate\\Support\\Facades\\Auth",
-            "\\App\\Notifications\\InnovationStatusChanged",
-            "\\App\\Models\\User",
-            "\\App\\Notifications\\InnovationReviewRequested",
-            "\\Illuminate\\Support\\Facades\\Notification"
-        ]
-    },
-    {
-        "name": "\\App\\Services\\InnovationService",
-        "size": 3000,
-        "relations": [
-            "\\App\\Models\\Innovation",
-            "\\Illuminate\\Support\\Facades\\Auth",
-            "\\Illuminate\\Support\\Facades\\DB"
+            "\\App\\Http\\Requests\\UpdateInnovationRequest"
         ]
     },
     {
@@ -819,29 +849,6 @@
         "relations": [
             "\\Illuminate\\Foundation\\Http\\FormRequest"
         ]
-    },
-    {
-        "name": "\\App\\Notifications\\InnovationStatusChanged",
-        "size": 3000,
-        "relations": [
-            "\\Illuminate\\Notifications\\Notification",
-            "\\Illuminate\\Contracts\\Queue\\ShouldQueue",
-            "\\App\\Models\\Innovation"
-        ]
-    },
-    {
-        "name": "\\App\\Notifications\\InnovationReviewRequested",
-        "size": 3000,
-        "relations": [
-            "\\Illuminate\\Notifications\\Notification",
-            "\\Illuminate\\Contracts\\Queue\\ShouldQueue",
-            "\\App\\Models\\Innovation"
-        ]
-    },
-    {
-        "name": "\\Illuminate\\Support\\Facades\\Notification",
-        "size": 3000,
-        "relations": []
     },
     {
         "name": "\\App\\Http\\Controllers\\InnovationTypeController",
@@ -868,8 +875,8 @@
             "\\Illuminate\\Http\\RedirectResponse",
             "\\App\\Http\\Requests\\StoreMeetingRequest",
             "\\App\\Models\\Meeting",
-            "\\App\\Http\\Requests\\UpdateMeetingRequest",
-            "\\Illuminate\\Support\\Facades\\Auth"
+            "\\Illuminate\\Support\\Facades\\Auth",
+            "\\App\\Http\\Requests\\UpdateMeetingRequest"
         ]
     },
     {
@@ -906,8 +913,7 @@
         "name": "\\App\\Http\\Requests\\UpdateMeetingRequest",
         "size": 3000,
         "relations": [
-            "\\Illuminate\\Foundation\\Http\\FormRequest",
-            "\\Illuminate\\Support\\Facades\\Auth"
+            "\\Illuminate\\Foundation\\Http\\FormRequest"
         ]
     },
     {
@@ -977,7 +983,14 @@
     {
         "name": "\\App\\Services\\ProjectActionService",
         "size": 3000,
-        "relations": []
+        "relations": [
+            "\\App\\Services\\AttachmentService",
+            "\\App\\Models\\Project",
+            "\\Illuminate\\Support\\Facades\\Auth",
+            "\\Illuminate\\Support\\Facades\\DB",
+            "\\App\\Models\\ResourceType",
+            "\\App\\Models\\Resource"
+        ]
     },
     {
         "name": "\\App\\Http\\Requests\\StoreProjectRequest",
@@ -1009,20 +1022,18 @@
             "\\Maatwebsite\\Excel\\Facades\\Excel",
             "\\App\\Exports\\TasksExport",
             "\\App\\Exports\\InnovationsExport",
-            "\\Illuminate\\Support\\Collection",
-            "\\App\\Models\\Project",
-            "\\App\\Models\\Task",
-            "\\App\\Models\\Innovation"
+            "\\App\\Exports\\ComparativeExport"
         ]
     },
     {
         "name": "\\App\\Services\\ReportService",
         "size": 3000,
         "relations": [
-            "\\App\\Models\\User",
+            "\\Illuminate\\Support\\Collection",
             "\\App\\Models\\Project",
             "\\App\\Models\\Task",
-            "\\App\\Models\\Innovation"
+            "\\App\\Models\\Innovation",
+            "\\App\\Models\\User"
         ]
     },
     {
@@ -1035,11 +1046,6 @@
         ]
     },
     {
-        "name": "\\Illuminate\\Http\\Response",
-        "size": 3000,
-        "relations": []
-    },
-    {
         "name": "\\Barryvdh\\DomPDF\\Facade\\Pdf",
         "size": 3000,
         "relations": []
@@ -1050,19 +1056,14 @@
         "relations": []
     },
     {
-        "name": "\\Illuminate\\Support\\Collection",
-        "size": 3000,
-        "relations": []
-    },
-    {
         "name": "\\App\\Http\\Controllers\\ResourceController",
         "size": 3000,
         "relations": [
             "\\App\\Http\\Controllers\\Controller",
             "\\App\\Services\\ResourceService",
             "\\Illuminate\\View\\View",
-            "\\App\\Models\\Resource",
             "\\App\\Models\\ResourceType",
+            "\\App\\Models\\Resource",
             "\\Illuminate\\Http\\RedirectResponse",
             "\\Illuminate\\Http\\Request",
             "\\App\\Models\\Project",
@@ -1080,12 +1081,12 @@
         ]
     },
     {
-        "name": "\\App\\Models\\Resource",
+        "name": "\\App\\Models\\ResourceType",
         "size": 3000,
         "relations": []
     },
     {
-        "name": "\\App\\Models\\ResourceType",
+        "name": "\\App\\Models\\Resource",
         "size": 3000,
         "relations": []
     },
@@ -1133,15 +1134,12 @@
         "name": "\\App\\Services\\TaskActionService",
         "size": 3000,
         "relations": [
+            "\\App\\Services\\AttachmentService",
             "\\App\\Models\\Task",
             "\\App\\Models\\Project",
             "\\Illuminate\\Support\\Facades\\DB",
             "\\Exception",
-            "\\App\\Models\\User",
-            "\\App\\Notifications\\TaskAssigned",
-            "\\App\\Services\\ProjectActionService",
-            "\\Illuminate\\Support\\Facades\\Storage",
-            "\\Illuminate\\Support\\Facades\\Auth"
+            "\\App\\Models\\User"
         ]
     },
     {
@@ -1281,6 +1279,11 @@
         "relations": []
     },
     {
+        "name": "\\Illuminate\\Database\\Eloquent\\Relations\\MorphTo",
+        "size": 3000,
+        "relations": []
+    },
+    {
         "name": "\\Illuminate\\Database\\Eloquent\\Relations\\BelongsTo",
         "size": 3000,
         "relations": []
@@ -1292,6 +1295,11 @@
     },
     {
         "name": "\\Illuminate\\Database\\Eloquent\\Relations\\HasMany",
+        "size": 3000,
+        "relations": []
+    },
+    {
+        "name": "\\App\\Models\\ForumPost",
         "size": 3000,
         "relations": []
     },
@@ -1377,7 +1385,22 @@
         "relations": []
     },
     {
-        "name": "\\Illuminate\\Contracts\\Queue\\ShouldQueue",
+        "name": "\\App\\Notifications\\CommentReplied",
+        "size": 3000,
+        "relations": []
+    },
+    {
+        "name": "\\App\\Notifications\\FileUploaded",
+        "size": 3000,
+        "relations": []
+    },
+    {
+        "name": "\\App\\Notifications\\InnovationReviewRequested",
+        "size": 3000,
+        "relations": []
+    },
+    {
+        "name": "\\App\\Notifications\\InnovationStatusChanged",
         "size": 3000,
         "relations": []
     },
@@ -1406,12 +1429,42 @@
         ]
     },
     {
+        "name": "\\App\\Notifications\\NewCommentAdded",
+        "size": 3000,
+        "relations": []
+    },
+    {
+        "name": "\\App\\Notifications\\NewForumReply",
+        "size": 3000,
+        "relations": []
+    },
+    {
+        "name": "\\App\\Notifications\\NewForumTopic",
+        "size": 3000,
+        "relations": []
+    },
+    {
+        "name": "\\App\\Notifications\\NewMessageReceived",
+        "size": 3000,
+        "relations": []
+    },
+    {
         "name": "\\App\\Notifications\\PasswordResetByAdmin",
         "size": 3000,
         "relations": []
     },
     {
         "name": "\\App\\Notifications\\ProjectAssigned",
+        "size": 3000,
+        "relations": [
+            "\\Illuminate\\Notifications\\Notification",
+            "\\App\\Models\\Project",
+            "\\Illuminate\\Notifications\\Messages\\MailMessage",
+            "\\Illuminate\\Support\\Str"
+        ]
+    },
+    {
+        "name": "\\App\\Notifications\\ProjectDeadlineChanged",
         "size": 3000,
         "relations": []
     },
@@ -1426,6 +1479,104 @@
         "relations": []
     },
     {
+        "name": "\\App\\Notifications\\TaskDeadlineChanged",
+        "size": 3000,
+        "relations": [
+            "\\Illuminate\\Notifications\\Notification",
+            "\\App\\Models\\Task",
+            "\\Illuminate\\Notifications\\Messages\\MailMessage"
+        ]
+    },
+    {
+        "name": "\\App\\Notifications\\TaskStatusChanged",
+        "size": 3000,
+        "relations": []
+    },
+    {
+        "name": "\\App\\Observers\\AttachmentObserver",
+        "size": 3000,
+        "relations": [
+            "\\App\\Models\\Attachment",
+            "\\App\\Notifications\\FileUploaded"
+        ]
+    },
+    {
+        "name": "\\App\\Observers\\CommentObserver",
+        "size": 3000,
+        "relations": [
+            "\\App\\Models\\Comment",
+            "\\App\\Notifications\\NewCommentAdded",
+            "\\App\\Models\\User"
+        ]
+    },
+    {
+        "name": "\\App\\Observers\\ForumObserver",
+        "size": 3000,
+        "relations": [
+            "\\App\\Models\\ForumTopic",
+            "\\App\\Models\\User",
+            "\\App\\Notifications\\NewForumTopic"
+        ]
+    },
+    {
+        "name": "\\App\\Observers\\InnovationObserver",
+        "size": 3000,
+        "relations": [
+            "\\App\\Models\\Innovation",
+            "\\App\\Models\\User",
+            "\\App\\Notifications\\InnovationReviewRequested",
+            "\\Illuminate\\Support\\Facades\\Notification",
+            "\\App\\Notifications\\InnovationStatusChanged"
+        ]
+    },
+    {
+        "name": "\\Illuminate\\Support\\Facades\\Notification",
+        "size": 3000,
+        "relations": []
+    },
+    {
+        "name": "\\App\\Observers\\MeetingObserver",
+        "size": 3000,
+        "relations": [
+            "\\App\\Models\\Meeting",
+            "\\App\\Notifications\\MeetingInvitation",
+            "\\Illuminate\\Support\\Facades\\Notification",
+            "\\App\\Notifications\\MeetingReminder"
+        ]
+    },
+    {
+        "name": "\\App\\Observers\\MessageObserver",
+        "size": 3000,
+        "relations": [
+            "\\App\\Models\\Message",
+            "\\App\\Notifications\\NewMessageReceived"
+        ]
+    },
+    {
+        "name": "\\App\\Observers\\ProjectObserver",
+        "size": 3000,
+        "relations": [
+            "\\App\\Models\\Project",
+            "\\App\\Notifications\\ProjectStatusChanged",
+            "\\Illuminate\\Support\\Carbon",
+            "\\App\\Notifications\\ProjectDeadlineChanged"
+        ]
+    },
+    {
+        "name": "\\Illuminate\\Support\\Carbon",
+        "size": 3000,
+        "relations": []
+    },
+    {
+        "name": "\\App\\Observers\\TaskObserver",
+        "size": 3000,
+        "relations": [
+            "\\App\\Models\\Task",
+            "\\App\\Notifications\\TaskAssigned",
+            "\\App\\Notifications\\TaskStatusChanged"
+        ]
+    },
+    {
         "name": "\\App\\Policies\\InnovationPolicy",
         "size": 3000,
         "relations": [
@@ -1434,11 +1585,27 @@
         ]
     },
     {
+        "name": "\\App\\Policies\\ProjectPolicy",
+        "size": 3000,
+        "relations": [
+            "\\App\\Models\\User",
+            "\\App\\Models\\Project"
+        ]
+    },
+    {
         "name": "\\App\\Providers\\AppServiceProvider",
         "size": 3000,
         "relations": [
             "\\Illuminate\\Support\\ServiceProvider",
-            "\\Illuminate\\Support\\Facades\\Gate"
+            "\\Illuminate\\Support\\Facades\\Gate",
+            "\\App\\Models\\Task",
+            "\\App\\Models\\Project",
+            "\\App\\Models\\Attachment",
+            "\\App\\Models\\Comment",
+            "\\App\\Models\\ForumTopic",
+            "\\App\\Models\\Innovation",
+            "\\App\\Models\\Meeting",
+            "\\App\\Models\\Message"
         ]
     },
     {
@@ -1448,6 +1615,21 @@
     },
     {
         "name": "\\Illuminate\\Support\\Facades\\Gate",
+        "size": 3000,
+        "relations": []
+    },
+    {
+        "name": "\\Illuminate\\Http\\UploadedFile",
+        "size": 3000,
+        "relations": []
+    },
+    {
+        "name": "\\Illuminate\\Support\\Collection",
+        "size": 3000,
+        "relations": []
+    },
+    {
+        "name": "\\modelClass",
         "size": 3000,
         "relations": []
     },
@@ -1528,6 +1710,19 @@
         "relations": []
     },
     {
+        "name": "\\App\\Traits\\HandlesAttachmentLogic",
+        "size": 3000,
+        "relations": [
+            "\\Illuminate\\Database\\Eloquent\\Model",
+            "\\"
+        ]
+    },
+    {
+        "name": "\\",
+        "size": 3000,
+        "relations": []
+    },
+    {
         "name": "\\App\\Traits\\HandlesNotifications",
         "size": 3000,
         "relations": [
@@ -1540,6 +1735,16 @@
     },
     {
         "name": "\\Illuminate\\Support\\Facades\\Log",
+        "size": 3000,
+        "relations": []
+    },
+    {
+        "name": "\\App\\Traits\\HasCalendarEvents",
+        "size": 3000,
+        "relations": []
+    },
+    {
+        "name": "\\App\\Traits\\HasNotificationPreferences",
         "size": 3000,
         "relations": []
     },

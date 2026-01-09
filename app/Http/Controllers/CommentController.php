@@ -11,94 +11,35 @@ use Illuminate\Support\Facades\Auth;
 
 class CommentController extends Controller
 {
-    /**
-     * Store a newly created comment in storage.
-     */
+    protected \App\Services\CommentService $commentService;
+
+    public function __construct(\App\Services\CommentService $commentService)
+    {
+        $this->commentService = $commentService;
+    }
+
     /**
      * Store a newly created comment in storage.
      */
     public function store(Request $request): \Illuminate\Http\RedirectResponse
     {
         $validated = $request->validate([
-            'content' => 'required|string|max:1000',
-            'parent_id' => 'nullable|exists:comments,id',
+            'content'          => 'required|string|max:1000',
+            'parent_id'        => 'nullable|exists:comments,id',
             'commentable_type' => 'required|string|in:project,innovation',
-            'commentable_id' => 'required|integer',
+            'commentable_id'   => 'required|integer',
         ]);
 
-        $modelClass = $validated['commentable_type'] === 'project' ? Project::class : Innovation::class;
-        /** @var Innovation|Project $commentable */
-        $commentable = $modelClass::findOrFail($validated['commentable_id']);
-
-        $comment = new Comment();
-        $comment->content = $validated['content'];
-        $comment->parent_id = $validated['parent_id'] ?? null;
-        /** @var int<0, max> $profileId */
-        $profileId = (int) Auth::user()->profile->id;
-        $comment->profile_id = $profileId;
-        $comment->commentable_type = $modelClass;
-        /** @var int<0, max> $commentableId */
-        $commentableId = (int) $commentable->id;
-        $comment->commentable_id = $commentableId;
-        $comment->save();
-
-        // Notify commentable owner if someone else comments
-        /** @var Profile $profile */
-        $profile = $commentable->profile;
-        if ($profile && $profile->user && $profile->user->id !== Auth::id()) {
-            $profile->user->notify(new \App\Notifications\NewCommentAdded($comment));
-        }
-
-        // Notify thread participants if this is a reply
-        // Si es una respuesta, buscamos el comentario padre y notificamos a los participantes
-        if (!empty($validated['parent_id'])) {
-            /** 
-             * Obtenemos el comentario padre con sus relaciones. Usamos findOrFail 
-             * para asegurar que el objeto existe, lo cual también ayuda a PHPStan.
-             * @var Comment $parentComment 
-             */
-            $parentComment = Comment::with(['profile.user', 'replies.profile.user'])->findOrFail($validated['parent_id']);
-            
-            if ($parentComment) {
-                // Collect all unique users to notify
-                $usersToNotify = collect();
-
-                // 1. Add Parent Author
-                if ($parentComment->profile && $parentComment->profile->user) {
-                    $usersToNotify->push($parentComment->profile->user);
-                }
-
-                // 2. Add Authors of existing replies (Siblings)
-                foreach ($parentComment->replies as $reply) {
-                    if ($reply->profile && $reply->profile->user) {
-                        $usersToNotify->push($reply->profile->user);
-                    }
-                }
-
-                // 3. Filter: Unique IDs and Exclude Current User
-                $usersToNotify = $usersToNotify->unique('id')->reject(function ($user) {
-                    return $user->id === Auth::id();
-                });
-
-                // 4. Send Notifications
-                // Enviamos la notificación a cada usuario (evitando duplicados y al autor actual)
-                foreach ($usersToNotify as $user) {
-                    $user->notify(new \App\Notifications\CommentReplied($comment));
-                }
-            }
-        }
+        $this->commentService->createComment($validated);
 
         return back()->with('success', 'Comentario publicado exitosamente.');
     }
-
 
     /**
      * Remove the specified comment from storage.
      */
     public function destroy(Comment $comment): \Illuminate\Http\RedirectResponse
     {
-        // Solo el autor o admin puede eliminar
-        // Author is profile. Check if auth user profile id matches comment profile id
         if (Auth::user()->profile->id !== $comment->profile_id && !Auth::user()->hasRole('admin')) {
             return back()->with('error', 'No tienes permiso para eliminar este comentario.');
         }

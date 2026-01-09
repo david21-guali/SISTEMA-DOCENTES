@@ -19,22 +19,14 @@ class EvaluationController extends Controller
         $this->evaluationService = $evaluationService;
     }
 
-    /**
-     * Show the form for creating a new evaluation.
-     */
     public function create(Project $project): \Illuminate\View\View|\Illuminate\Http\RedirectResponse
     {
         if (!Auth::user()->hasRole(['coordinador', 'admin'])) {
-            return redirect()->route('projects.show', $project)->with('error', 'Solo coordinadores pueden evaluar.');
+            return redirect()->route('projects.show', $project)->with('error', 'Solo coordinadores.');
         }
 
-        $existing = Evaluation::where('project_id', $project->id)
-            ->where('evaluator_id', Auth::user()->profile->id)
-            ->first();
-
-        if ($existing) {
-            return redirect()->route('evaluations.edit', $existing)->with('info', 'Ya existe una evaluación. Puedes editarla.');
-        }
+        $existing = Evaluation::where('project_id', $project->id)->where('evaluator_id', Auth::user()->profile->id)->first();
+        if ($existing) return redirect()->route('evaluations.edit', $existing)->with('info', 'Editando evaluación previa.');
 
         return view('evaluations.create', compact('project'));
     }

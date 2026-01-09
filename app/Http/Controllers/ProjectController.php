@@ -64,7 +64,9 @@ class ProjectController extends Controller
     public function store(\App\Http\Requests\StoreProjectRequest $request): \Illuminate\Http\RedirectResponse
     {
         $this->authorize('create', Project::class);
-        $this->actionService->createProject($request->validated(), $request->file('attachments') ?? []);
+        /** @var array{temp_attachments?: array<int, string>, title: string, category_id: int} $validated */
+        $validated = $request->validated();
+        $this->actionService->createProject($validated, $request->file('attachments') ?? []);
 
         return redirect()->route('projects.index')
             ->with('success', 'Proyecto creado exitosamente.');
@@ -109,7 +111,9 @@ class ProjectController extends Controller
     public function update(\App\Http\Requests\UpdateProjectRequest $request, Project $project): \Illuminate\Http\RedirectResponse
     {
         $this->authorize('update', $project);
-        $this->actionService->updateProject($project, $request->validated());
+        /** @var array{temp_attachments?: array<int, string>} $validated */
+        $validated = $request->validated();
+        $this->actionService->updateProject($project, $validated);
 
         return redirect()->route('projects.index')
             ->with('success', 'Proyecto actualizado exitosamente.');
@@ -117,18 +121,9 @@ class ProjectController extends Controller
 
     public function uploadFinalReport(Request $request, Project $project): \Illuminate\Http\RedirectResponse
     {
-        if (Auth::user()->profile->id !== $project->profile_id && !Auth::user()->hasRole('admin')) {
-            abort(403, 'No tienes permiso.');
-        }
-
-        $request->validate(['file' => 'required|file|mimes:pdf|max:10240']);
-
-        if ($request->hasFile('file')) {
-            $this->actionService->uploadFinalReport($project, $request->file('file'));
-            return back()->with('success', 'Informe final subido.');
-        }
-
-        return back()->with('error', 'Error.');
+        abort_unless(Auth::user()->profile->id === $project->profile_id || Auth::user()->hasRole('admin'), 403, 'Sin permiso');
+        $this->actionService->uploadFinalReport($project, $request->validate(['file' => 'required|file|mimes:pdf|max:10240'])['file']);
+        return back()->with('success', 'Reporte subido.');
     }
 
     /**
