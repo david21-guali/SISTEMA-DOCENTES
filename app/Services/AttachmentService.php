@@ -8,43 +8,9 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
-use Illuminate\Support\Facades\Notification;
-use App\Notifications\FileUploaded;
 
 class AttachmentService
 {
-    /**
-     * Notify relevant users about new uploads.
-     * 
-     * @param Model $attachable
-     * @param array<int, Attachment> $uploaded
-     * @return void
-     */
-    public function notifyUpload(Model $attachable, array $uploaded): void
-    {
-        if (empty($uploaded)) return;
-
-        $attachment = $uploaded[0];
-        $count = count($uploaded);
-        $modelName = class_basename($attachable) === 'Project' ? 'Proyecto' : 'Tarea';
-        $uploaderName = Auth::user()->name;
-
-        $usersToNotify = collect();
-
-        if ($attachable instanceof \App\Models\Project) {
-            $usersToNotify->push($attachable->profile->user);
-        } elseif ($attachable instanceof \App\Models\Task) {
-            $usersToNotify->push($attachable->project->profile->user);
-            $attachable->assignees->each(fn($p) => $usersToNotify->push($p->user));
-        }
-
-        $notification = new FileUploaded($attachment, $modelName, $count, $uploaderName);
-        
-        Notification::send(
-            $usersToNotify->filter()->unique('id')->reject(fn($u) => $u->id === Auth::id()),
-            $notification
-        );
-    }
     /**
      * Handle multiple file uploads (direct).
      *

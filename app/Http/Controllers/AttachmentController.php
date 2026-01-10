@@ -15,10 +15,14 @@ class AttachmentController extends Controller
     use \App\Traits\HandlesAttachmentLogic;
 
     protected \App\Services\AttachmentService $attachmentService;
+    protected \App\Services\AttachmentNotificationService $notificationService;
 
-    public function __construct(\App\Services\AttachmentService $attachmentService)
-    {
+    public function __construct(
+        \App\Services\AttachmentService $attachmentService,
+        \App\Services\AttachmentNotificationService $notificationService
+    ) {
         $this->attachmentService = $attachmentService;
+        $this->notificationService = $notificationService;
     }
 
     /**
@@ -34,7 +38,7 @@ class AttachmentController extends Controller
         $attachable = $this->getAttachable($type, $id);
         $uploaded = $this->attachmentService->handleUploads($attachable, $request->file('files'));
 
-        $this->attachmentService->notifyUpload($attachable, $uploaded);
+        $this->notificationService->notifyUpload($attachable, $uploaded);
 
         return $this->formatResponse(
             count($uploaded) . ' archivo(s) subido(s) correctamente.',

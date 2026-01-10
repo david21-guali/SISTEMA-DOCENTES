@@ -13,9 +13,15 @@
                 <div class="card-header bg-white border-bottom d-flex align-items-center justify-content-between">
                     <div class="d-flex align-items-center">
                         <a href="{{ route('chat.index') }}" class="btn btn-light btn-sm me-3"><i class="fas fa-arrow-left"></i></a>
-                        <div class="avatar bg-primary text-white rounded-circle me-3 d-flex align-items-center justify-content-center flex-shrink-0 chat-avatar-md">
-                            {{ strtoupper(substr($user->name, 0, 1)) }}
-                        </div>
+                        @if($user->profile && $user->profile->avatar)
+                            <img src="{{ asset('storage/' . $user->profile->avatar) }}" 
+                                 class="rounded-circle me-3 shadow-sm" 
+                                 style="width: 42px; height: 42px; object-fit: cover;">
+                        @else
+                            <div class="avatar bg-primary text-white rounded-circle me-3 d-flex align-items-center justify-content-center flex-shrink-0 chat-avatar-md">
+                                {{ strtoupper(substr($user->name, 0, 1)) }}
+                            </div>
+                        @endif
                         <h5 class="mb-0 text-truncate">{{ $user->name }}</h5>
                     </div>
                 </div>

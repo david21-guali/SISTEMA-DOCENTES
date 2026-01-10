@@ -46,7 +46,7 @@ class MeetingController extends Controller
      */
     public function create(Request $request): \Illuminate\View\View
     {
-        $projects = $this->queryService->getProjects();
+        $projects = $this->queryService->getProjects()->load('team.user');
         $users = $this->queryService->getEligibleUsers();
         $selectedProject = $request->project_id ? Project::find($request->project_id) : null;
 
@@ -88,7 +88,7 @@ class MeetingController extends Controller
         abort_unless($meeting->created_by === Auth::user()->profile->id || Auth::user()->hasRole('admin'), 403, 'Sin permiso');
         return view('app.back.meetings.edit', [
             'meeting'  => $meeting,
-            'projects' => $this->queryService->getProjects(),
+            'projects' => $this->queryService->getProjects()->load('team.user'),
             'users'    => $this->queryService->getEligibleUsers()
         ]);
     }

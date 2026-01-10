@@ -179,11 +179,18 @@
                     <div class="mb-4">
                         <div class="d-flex align-items-center ps-2">
                              @foreach($meeting->participants->take(5) as $index => $participant)
-                                <div class="avatar-sm rounded-circle bg-white border border-2 border-white text-secondary d-flex align-items-center justify-content-center fw-bold shadow-sm" 
-                                     style="width: 38px; height: 38px; margin-left: -12px; z-index: {{ 10 - $index }};"
-                                     title="{{ $participant->user->name }} ({{ ucfirst($participant->pivot->attendance) }})">
-                                    {{ strtoupper(substr($participant->user->name, 0, 1)) }}
-                                </div>
+                                @if($participant->user->profile && $participant->user->profile->avatar)
+                                    <img src="{{ asset('storage/' . $participant->user->profile->avatar) }}" 
+                                         class="rounded-circle border border-2 border-white shadow-sm" 
+                                         style="width: 38px; height: 38px; margin-left: -12px; z-index: {{ 10 - $index }}; object-fit: cover;" 
+                                         title="{{ $participant->user->name }} ({{ ucfirst($participant->pivot->attendance) }})">
+                                @else
+                                    <div class="avatar-sm rounded-circle bg-white border border-2 border-white text-secondary d-flex align-items-center justify-content-center fw-bold shadow-sm" 
+                                         style="width: 38px; height: 38px; margin-left: -12px; z-index: {{ 10 - $index }};"
+                                         title="{{ $participant->user->name }} ({{ ucfirst($participant->pivot->attendance) }})">
+                                        {{ strtoupper(substr($participant->user->name, 0, 1)) }}
+                                    </div>
+                                @endif
                             @endforeach
                             @if($meeting->participants->count() > 5)
                                 <div class="avatar-sm rounded-circle bg-light border border-2 border-white text-muted d-flex align-items-center justify-content-center fw-bold shadow-sm" 

@@ -24,9 +24,15 @@
                 <div class="list-group list-group-flush chat-user-list" id="userList">
                     @forelse($users as $user)
                     <a href="{{ route('chat.show', $user->id) }}" class="list-group-item list-group-item-action d-flex align-items-center p-3 user-item" data-name="{{ strtolower($user->name) }}" data-email="{{ strtolower($user->email) }}">
-                        <div class="avatar bg-primary text-white rounded-circle me-3 d-flex align-items-center justify-content-center flex-shrink-0 shadow-sm chat-avatar-lg">
-                            {{ strtoupper(substr($user->name, 0, 1)) }}
-                        </div>
+                        @if($user->profile && $user->profile->avatar)
+                            <img src="{{ asset('storage/' . $user->profile->avatar) }}" 
+                                 class="rounded-circle me-3 shadow-sm" 
+                                 style="width: 48px; height: 48px; object-fit: cover;">
+                        @else
+                            <div class="avatar bg-primary text-white rounded-circle me-3 d-flex align-items-center justify-content-center flex-shrink-0 shadow-sm chat-avatar-lg">
+                                {{ strtoupper(substr($user->name, 0, 1)) }}
+                            </div>
+                        @endif
                         <div class="overflow-hidden">
                             <div class="fw-bold text-truncate text-dark">{{ $user->name }}</div>
                             <small class="text-muted text-truncate d-block">{{ $user->email }}</small>

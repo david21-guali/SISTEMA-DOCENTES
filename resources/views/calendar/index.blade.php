@@ -19,19 +19,22 @@
             <div id="headerDay" class="cal-header-title">{{ now()->locale('es')->isoFormat('dddd') }}</div>
             <div id="headerDate" class="cal-header-date">{{ now()->locale('es')->isoFormat('D MMM, YYYY') }}</div>
         </div>
-        <div class="d-flex flex-column flex-lg-row gap-2 w-100 w-lg-auto justify-content-center align-items-stretch align-items-lg-center">
-            <div class="btn-group shadow-sm w-100 w-lg-auto">
-                <a href="{{ route('calendar.export') }}" class="btn btn-outline-primary flex-grow-1 flex-md-grow-0">
-                    <i class="fas fa-calendar-check me-2"></i> Sincronizar
-                </a>
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#helpCalendarModal" title="¿Cómo funciona?">
-                    <i class="fas fa-question-circle"></i>
-                </button>
-            </div>
-            <button class="btn btn-custom-light" onclick="calendar.refetchEvents()">
-                <i class="fas fa-sync-alt me-2"></i> Actualizar
+        <div class="d-flex flex-column flex-lg-row gap-2 w-100 w-lg-auto justify-content-center align-items-center">
+            
+            <a href="{{ route('calendar.export') }}" class="btn btn-outline-primary shadow-sm">
+                <i class="fas fa-calendar-check me-2"></i> Sincronizar
+            </a>
+
+            <button class="btn btn-info text-white shadow-sm rounded-circle" style="width: 38px; height: 38px; padding: 0; display: flex; align-items: center; justify-content: center;" data-bs-toggle="modal" data-bs-target="#helpCalendarModal" title="Ayuda">
+                <i class="fas fa-question"></i>
             </button>
-            <a href="{{ route('tasks.create') }}" class="btn btn-primary">
+
+            <div class="vr mx-2 d-none d-lg-block"></div>
+
+            <button class="btn btn-light border shadow-sm" onclick="calendar.refetchEvents()">
+                <i class="fas fa-sync-alt me-2 text-muted"></i> Actualizar
+            </button>
+            <a href="{{ route('tasks.create') }}" class="btn btn-primary shadow-sm">
                 <i class="fas fa-plus me-2"></i> Nueva Tarea
             </a>
         </div>

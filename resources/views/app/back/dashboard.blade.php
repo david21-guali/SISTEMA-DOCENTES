@@ -367,93 +367,116 @@
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/back/css/dashboard.css') }}">
 @endpush
-<script>
-
-    // Category Chart
-    const categoryCtx = document.getElementById('categoryChart').getContext('2d');
-    new Chart(categoryCtx, {
-        type: 'doughnut',
-        data: {
-            labels: {!! json_encode($projectsByCategory->keys()) !!},
-            datasets: [{
-                data: {!! json_encode($projectsByCategory->values()) !!},
-                backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b', '#858796'],
-                borderWidth: 0
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            cutout: '70%',
-            plugins: {
-                legend: {
-                    position: 'bottom',
-                    labels: {
-                        padding: 20,
-                        usePointStyle: true
-                    }
-                }
-            }
-        }
-    });
-
-    // Monthly Chart
-    const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
-    const monthNames = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
-    const monthlyData = {!! json_encode($projectsByMonth) !!};
-    
-    new Chart(monthlyCtx, {
-        type: 'bar',
-        data: {
-            labels: monthNames,
-            datasets: [{
-                label: 'Proyectos',
-                data: monthlyData,
-                backgroundColor: '#4e73df',
-                borderRadius: 4
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: { stepSize: 1 },
-                    grid: { drawBorder: false }
-                },
-                x: {
-                    grid: { display: false }
-                }
-            },
-            plugins: {
-                legend: { display: false }
-            }
-        }
-    });
-
-    // Tasks Donut Chart (NEW)
-    const tasksCtx = document.getElementById('tasksChart').getContext('2d');
-    new Chart(tasksCtx, {
-        type: 'doughnut',
-        data: {
-            labels: ['Pendientes', 'Completadas', 'Atrasadas'],
-            datasets: [{
-                data: [{{ $taskStats['pending'] }}, {{ $taskStats['completed'] }}, {{ $taskStats['overdue'] }}],
-                backgroundColor: ['#f6c23e', '#1cc88a', '#e74a3b'],
-                borderWidth: 0
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            cutout: '65%',
-            plugins: {
-                legend: {
-                    display: false
-                }
-            }
-        }
-    });
 @endsection
 
+@push('scripts')
+<script>
+
+    console.log('Dashboard script execution started.');
+
+    if (typeof Chart === 'undefined') {
+        console.error('Chart.js is not loaded!');
+        Swal.fire('Error', 'No se pudo cargar la librería de gráficos.', 'error');
+    } else {
+        try {
+            console.log('Initializing Dashboard Charts...');
+
+            // Category Chart
+            const categoryData = {!! json_encode($projectsByCategory->values()) !!};
+            const categoryLabels = {!! json_encode($projectsByCategory->keys()) !!};
+            console.log('Category Data:', categoryData, categoryLabels);
+
+            if (categoryData.length > 0) {
+                const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+                new Chart(categoryCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: categoryLabels,
+                        datasets: [{
+                            data: categoryData,
+                            backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b', '#858796'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '70%',
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: { padding: 20, usePointStyle: true }
+                            }
+                        }
+                    }
+                });
+            } else {
+                console.log('No category data to display.');
+            }
+
+            // Monthly Chart
+            const monthlyData = {!! json_encode($projectsByMonth) !!};
+            console.log('Monthly Data:', monthlyData);
+            
+            const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
+            const monthNames = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+            
+            new Chart(monthlyCtx, {
+                type: 'bar',
+                data: {
+                    labels: monthNames,
+                    datasets: [{
+                        label: 'Proyectos',
+                        data: monthlyData,
+                        backgroundColor: '#4e73df',
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { stepSize: 1 },
+                            grid: { drawBorder: false }
+                        },
+                        x: {
+                            grid: { display: false }
+                        }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+
+            // Tasks Donut Chart (NEW)
+            const tasksCtx = document.getElementById('tasksChart').getContext('2d');
+            const taskData = [{{ $taskStats['pending'] }}, {{ $taskStats['completed'] }}, {{ $taskStats['overdue'] }}];
+            console.log('Task Data:', taskData);
+
+            new Chart(tasksCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Pendientes', 'Completadas', 'Atrasadas'],
+                    datasets: [{
+                        data: taskData,
+                        backgroundColor: ['#f6c23e', '#1cc88a', '#e74a3b'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '65%',
+                    plugins: { legend: { display: false } }
+                }
+            });
+
+        } catch (error) {
+            console.error('Error initializing charts:', error);
+            Swal.fire('Error', 'Hubo un problema al cargar los gráficos: ' + error.message, 'error');
+        }
+    } // End else
+</script>
+@endpush
+```

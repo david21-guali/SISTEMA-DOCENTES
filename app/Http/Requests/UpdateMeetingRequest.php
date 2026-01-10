@@ -29,16 +29,36 @@ class UpdateMeetingRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title'          => 'required|string|max:255',
-            'description'    => 'required|string',
-            'project_id'     => 'nullable|exists:projects,id',
-            'meeting_date'   => 'required|date',
-            'location'       => 'required|string|max:255',
-            'type'           => 'required|in:virtual,presencial',
-            'status'         => 'nullable|in:pendiente,completada,cancelada',
-            'notes'          => 'nullable|string',
-            'participants'   => 'nullable|array',
+            'title'        => 'required|string|max:255',
+            'description'  => 'required|string',
+            'meeting_date' => 'required|date',
+            'location'     => 'required|string|max:500',
+            'type'         => 'required|in:virtual,presencial',
+            'project_id'   => 'nullable|exists:projects,id',
+            'participants' => [
+                'required',
+                'array',
+                'min:1',
+                function ($attribute, $value, $fail) {
+                    // If project is selected, validate participants belong to it
+                    if ($this->project_id) {
+                        /** @var \App\Models\Project|null $project */
+                        $project = \App\Models\Project::with('team')->find($this->project_id);
+                        
+                        if ($project) {
+                            $projectMemberIds = $project->team->pluck('user_id')->toArray();
+                            $invalidParticipants = array_diff($value, $projectMemberIds);
+                            
+                            if (!empty($invalidParticipants)) {
+                                $fail('Todos los participantes deben ser miembros del proyecto seleccionado.');
+                            }
+                        }
+                    }
+                },
+            ],
             'participants.*' => 'exists:users,id',
+            'status'       => 'required|in:pendiente,completada,cancelada',
+            'notes'        => 'nullable|string',
         ];
     }
 

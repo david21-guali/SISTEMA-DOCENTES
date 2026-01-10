@@ -36,6 +36,9 @@ class MeetingControllerTest extends TestCase
         
         $otherUser = User::factory()->create();
         
+        // IMPORTANT: Add user to project team to pass validation
+        $this->project->team()->attach($otherUser->profile->id);
+
         $meetingData = [
             'title' => 'Test Meeting',
             'description' => 'Test Description',
@@ -44,6 +47,7 @@ class MeetingControllerTest extends TestCase
             'location' => 'Test Location',
             'type' => 'virtual',
             'participants' => [$otherUser->id],
+            'status' => 'pendiente', // Adding required status
         ];
 
         $response = $this->post(route('meetings.store'), $meetingData);
@@ -88,6 +92,9 @@ class MeetingControllerTest extends TestCase
         
         $otherUser = User::factory()->create();
         
+        // IMPORTANT: Add user to project team to pass validation
+        $this->project->team()->attach($otherUser->profile->id);
+
         $response = $this->put(route('meetings.update', $meeting), [
             'title' => 'Updated Title',
             'description' => 'Updated Desc',

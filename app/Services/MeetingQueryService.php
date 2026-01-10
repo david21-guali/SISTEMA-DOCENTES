@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Meeting;
+use App\Models\Project;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -49,11 +50,18 @@ class MeetingQueryService
     /**
      * Get all projects available for associating with a meeting.
      * 
-     * @return \Illuminate\Support\Collection<int, \App\Models\Project>
+     * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\Project>
      */
-    public function getProjects(): \Illuminate\Support\Collection
+    public function getProjects(): \Illuminate\Database\Eloquent\Collection
     {
-        return \App\Models\Project::orderBy('title')->get();
+        // Only return projects where the current user is a team member or the creator
+        return Project::whereHas('team', function($query) {
+            /** @phpstan-ignore-next-line */
+            $query->where('user_id', auth()->id());
+        })
+        ->orWhere('profile_id', auth()->user()->profile->id)
+        ->orderBy('title')
+        ->get();
     }
 
     /**

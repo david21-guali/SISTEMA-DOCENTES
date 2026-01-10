@@ -29,14 +29,35 @@ class StoreMeetingRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title'          => 'required|string|max:255',
-            'description'    => 'required|string',
-            'project_id'     => 'nullable|exists:projects,id',
-            'meeting_date'   => 'required|date',
-            'location'       => 'required|string|max:255',
-            'type'           => 'required|in:virtual,presencial',
-            'participants'   => $this->getParticipantRules(),
+            'title'        => 'required|string|max:255',
+            'description'  => 'required|string',
+            'meeting_date' => 'required|date|after:now',
+            'location'     => 'required|string|max:500',
+            'type'         => 'required|in:virtual,presencial',
+            'project_id'   => 'nullable|exists:projects,id',
+            'participants' => [
+                'required',
+                'array',
+                'min:1',
+                function ($attribute, $value, $fail) {
+                    // If project is selected, validate participants belong to it
+                    if ($this->project_id) {
+                        /** @var \App\Models\Project|null $project */
+                        $project = \App\Models\Project::with('team')->find($this->project_id);
+                        
+                        if ($project) {
+                            $projectMemberIds = $project->team->pluck('user_id')->toArray();
+                            $invalidParticipants = array_diff($value, $projectMemberIds);
+                            
+                            if (!empty($invalidParticipants)) {
+                                $fail('Todos los participantes deben ser miembros del proyecto seleccionado.');
+                            }
+                        }
+                    }
+                },
+            ],
             'participants.*' => 'exists:users,id',
+            'status'       => 'required|in:pendiente,completada,cancelada',
         ];
     }
 
@@ -56,35 +77,4 @@ class StoreMeetingRequest extends FormRequest
         ];
     }
 
-    /**
-     * Define validation logic for the participants array.
-     * 
-     * @return array<int, mixed>
-     */
-    private function getParticipantRules(): array
-    {
-        return [
-            'required',
-            'array',
-            function ($attribute, $value, $fail) {
-                $this->ensureAdditionalParticipantsInvited($value, $fail);
-            },
-        ];
-    }
-
-    /**
-     * Ensure the participant list contains more than just the current user.
-     * 
-     * @param array<int, mixed> $value
-     * @param \Closure $fail
-     * @return void
-     */
-    private function ensureAdditionalParticipantsInvited(array $value, $fail): void
-    {
-        $others = collect($value)->filter(fn($id) => $id != Auth::id());
-        
-        if ($others->isEmpty()) {
-            $fail('Debe invitar al menos a un participante adicional.');
-        }
-    }
 }

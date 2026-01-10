@@ -10,6 +10,8 @@ namespace App\Traits;
  * @property string|null $name
  * @property \Carbon\Carbon|string|null $start_date
  * @property \Carbon\Carbon|string|null $end_date
+ * @property \Carbon\Carbon|string|null $due_date
+ * @property \Carbon\Carbon|string|null $meeting_date
  * @property \Carbon\Carbon|string|null $date
  * @property \Carbon\Carbon $created_at
  * @property string|null $description
@@ -24,14 +26,23 @@ trait HasCalendarEvents
      */
     public function toCalendarEvent(): array
     {
-        $start = $this->start_date ?: ($this->date ?: $this->created_at);
+        // USER REQUEST: Show only the DEADLINE/END DATE on the calendar (not a range).
+        // Priority: 1. End Date (Deadline), 2. Start Date (Meeting), 3. Date, 4. Created At
+        
+        $targetDate = $this->end_date ?: ($this->due_date ?: ($this->meeting_date ?: ($this->date ?: $this->created_at)));
+
+        if (!$targetDate instanceof \Carbon\Carbon) {
+            $targetDate = \Carbon\Carbon::parse($targetDate);
+        }
+
         return [
             'id'    => $this->id,
             'title' => $this->title ?: ($this->name ?: 'Evento'),
-            'start' => $start,
-            'end'   => $this->end_date ?: $this->date,
+            'start' => $targetDate->toIso8601String(), // Start at the deadline
+            'end'   => null, // No end date = single point in time
             'url'   => $this->getCalendarUrl(),
             'color' => $this->getCalendarColor(),
+            'allDay' => true, // Force visual block styling
             'type'  => match(class_basename($this)) {
                 'Project' => 'Proyecto',
                 'Task'    => 'Tarea',

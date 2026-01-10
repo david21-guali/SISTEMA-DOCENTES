@@ -393,19 +393,19 @@
                             <p class="small text-muted mb-3">Documentación oficial del proyecto, guías y formatos subidos por el responsable.</p>
                             @if($isOwnerOrAdmin)
                                 <div class="mb-3">
-                                    <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#uploadOfficialDoc">
-                                        <i class="fas fa-plus"></i> Agregar Documento
-                                    </button>
-                                    <div class="collapse mt-2" id="uploadOfficialDoc">
-                                        <form action="{{ route('attachments.store', ['project', $project->id]) }}" method="POST" enctype="multipart/form-data" class="border p-3 rounded">
-                                            @csrf
-                                            <input type="file" name="files[]" class="form-control mb-2 @error('files') is-invalid @enderror" multiple>
-                                            @error('files')
-                                                <div class="invalid-feedback d-block">{{ $message }}</div>
-                                            @enderror
-                                            <button type="submit" class="btn btn-primary btn-sm">Subir</button>
-                                        </form>
-                                    </div>
+                                    <h6 class="text-muted small mb-2">
+                                        <i class="fas fa-upload me-1"></i> Subir Documento Oficial
+                                    </h6>
+                                    <form action="{{ route('attachments.store', ['project', $project->id]) }}" method="POST" enctype="multipart/form-data" class="border p-3 rounded bg-light">
+                                        @csrf
+                                        <input type="file" name="files[]" class="form-control mb-2 @error('files') is-invalid @enderror" multiple>
+                                        @error('files')
+                                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                                        @enderror
+                                        <button type="submit" class="btn btn-primary btn-sm">
+                                            <i class="fas fa-cloud-upload-alt me-1"></i> Subir
+                                        </button>
+                                    </form>
                                 </div>
                             @endif
 
@@ -463,19 +463,19 @@
                             
                             <!-- Botón de subida para miembros del equipo -->
                             <div class="mb-3">
-                                <button class="btn btn-sm btn-outline-success" type="button" data-bs-toggle="collapse" data-bs-target="#uploadTeamFile">
-                                    <i class="fas fa-cloud-upload-alt"></i> Subir Archivo
-                                </button>
-                                <div class="collapse mt-2" id="uploadTeamFile">
-                                    <form action="{{ route('attachments.store', ['project', $project->id]) }}" method="POST" enctype="multipart/form-data" class="border p-3 rounded bg-light">
-                                        @csrf
-                                        <input type="file" name="files[]" class="form-control mb-2 @error('files') is-invalid @enderror" multiple>
-                                        @error('files')
-                                            <div class="invalid-feedback d-block">{{ $message }}</div>
-                                        @enderror
-                                        <button type="submit" class="btn btn-success btn-sm">Subir al Espacio de Equipo</button>
-                                    </form>
-                                </div>
+                                <h6 class="text-muted small mb-2">
+                                    <i class="fas fa-upload me-1"></i> Subir Archivo de Equipo
+                                </h6>
+                                <form action="{{ route('attachments.store', ['project', $project->id]) }}" method="POST" enctype="multipart/form-data" class="border p-3 rounded bg-light">
+                                    @csrf
+                                    <input type="file" name="files[]" class="form-control mb-2 @error('files') is-invalid @enderror" multiple>
+                                    @error('files')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
+                                    <button type="submit" class="btn btn-success btn-sm">
+                                        <i class="fas fa-cloud-upload-alt me-1"></i> Subir al Espacio de Equipo
+                                    </button>
+                                </form>
                             </div>
 
                             @if($deliverables->count() > 0)

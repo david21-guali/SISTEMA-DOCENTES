@@ -23,17 +23,20 @@ class DashboardService
      */
     public function getGeneralStats(): array
     {
+        $user = auth()->user();
+
         return [
-            'total_projects'        => Project::count(),
-            'active_projects'       => Project::active()->count(),
-            'finished_projects'     => Project::finished()->count(),
-            'at_risk_projects'      => Project::atRisk()->count(),
-            'total_tasks'           => Task::count(),
-            'pending_tasks'         => Task::pending()->count(),
-            'completed_tasks'       => Task::completed()->count(),
-            'overdue_tasks'         => Task::overdue()->count(),
-            'total_innovations'     => Innovation::count(),
-            'completed_innovations' => Innovation::completed()->count(),
+            'total_projects'        => Project::forUser($user)->count(),
+            'active_projects'       => Project::forUser($user)->active()->count(),
+            'finished_projects'     => Project::forUser($user)->finished()->count(),
+            'at_risk_projects'      => Project::forUser($user)->atRisk()->count(),
+            'total_tasks'           => Task::forUser($user)->count(),
+            // Include 'en_progreso' as pending for stats purposes
+            'pending_tasks'         => Task::forUser($user)->whereIn('status', ['pendiente', 'en_progreso'])->count(),
+            'completed_tasks'       => Task::forUser($user)->completed()->count(),
+            'overdue_tasks'         => Task::forUser($user)->overdue()->count(),
+            'total_innovations'     => Innovation::forUser($user)->count(), // Assuming scopeForUser exists on Innovation
+            'completed_innovations' => Innovation::forUser($user)->completed()->count(),
         ];
     }
 
@@ -44,7 +47,8 @@ class DashboardService
      */
     public function getProjectsByCategory(): Collection
     {
-        return Project::select('categories.name', DB::raw('count(*) as total'))
+        return Project::forUser(auth()->user())
+            ->select('categories.name', DB::raw('count(*) as total'))
             ->join('categories', 'projects.category_id', '=', 'categories.id')
             ->groupBy('categories.name')
             ->toBase()
@@ -67,7 +71,7 @@ class DashboardService
                 DB::raw("CAST($expression AS UNSIGNED) as month"),
                 DB::raw('count(*) as total')
             )
-            ->whereYear('created_at', date('Y'))
+            ->whereDate('created_at', '>=', now()->subMonths(11)->startOfMonth())
             ->groupBy('month')
             ->toBase()
             ->pluck('total', 'month')

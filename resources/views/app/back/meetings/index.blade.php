@@ -241,11 +241,18 @@
                             <div class="d-flex align-items-center">
                                 <div class="avatar-group d-flex ps-2">
                                     @foreach($meeting->participants->take(4) as $p)
-                                        <div class="avatar-sm rounded-circle border border-2 border-white text-white d-flex align-items-center justify-content-center fw-bold shadow-sm transition-transform hover-scale"
-                                             style="width: 34px; height: 34px; margin-left: -12px; background: linear-gradient(45deg, {{ ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e'][rand(0,3)] }}, {{ ['#224abe', '#13855c', '#258391', '#d4a017'][rand(0,3)] }}); font-size: 0.75rem;" 
-                                             title="{{ $p->user->name }}">
-                                            {{ strtoupper(substr($p->user->name, 0, 1)) }}
-                                        </div>
+                                        @if($p->user->profile && $p->user->profile->avatar)
+                                            <img src="{{ asset('storage/' . $p->user->profile->avatar) }}" 
+                                                 class="rounded-circle border border-2 border-white shadow-sm" 
+                                                 style="width: 34px; height: 34px; margin-left: -12px; object-fit: cover;" 
+                                                 title="{{ $p->user->name }}">
+                                        @else
+                                            <div class="avatar-sm rounded-circle border border-2 border-white text-white d-flex align-items-center justify-content-center fw-bold shadow-sm transition-transform hover-scale"
+                                                 style="width: 34px; height: 34px; margin-left: -12px; background: linear-gradient(45deg, {{ ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e'][rand(0,3)] }}, {{ ['#224abe', '#13855c', '#258391', '#d4a017'][rand(0,3)] }}); font-size: 0.75rem;" 
+                                                 title="{{ $p->user->name }}">
+                                                {{ strtoupper(substr($p->user->name, 0, 1)) }}
+                                            </div>
+                                        @endif
                                     @endforeach
                                     @if($meeting->participants->count() > 4)
                                         <div class="avatar-sm rounded-circle bg-light text-muted border border-2 border-white d-flex align-items-center justify-content-center fw-bold shadow-sm"
