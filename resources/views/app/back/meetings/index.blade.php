@@ -141,7 +141,7 @@
                 <!-- Vibrant Event Card -->
                 <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden hover-lift transition-all position-relative active-glow-{{ $meeting->status_color }}" style="background: #fff;">
                     <!-- Top Gradient Accent -->
-                    <div class="position-absolute top-0 start-0 w-100 {{ $meeting->status == 'pendiente' ? 'bg-gradient-primary' : 'bg-'.$meeting->status_color }}" style="height: 6px;"></div>
+                    <div class="position-absolute top-0 start-0 w-100 {{ $meeting->status_color === 'primary' ? 'bg-gradient-primary' : 'bg-'.$meeting->status_color }}" style="height: 6px;"></div>
 
                     <div class="card-body p-4 d-flex flex-column position-relative z-1">
                         
@@ -151,7 +151,7 @@
                                 <!-- Gradient Date Box -->
                                 <div class="text-center rounded-4 shadow-sm overflow-hidden d-flex flex-column" 
                                      style="min-width: 65px; box-shadow: 0 .5rem 1rem rgba(0,0,0,.05)!important;">
-                                    <div class="{{ $meeting->status == 'pendiente' ? 'bg-primary' : 'bg-'.$meeting->status_color }} text-white py-1 small fw-bold text-uppercase" 
+                                    <div class="{{ $meeting->status_color === 'primary' ? 'bg-primary' : 'bg-'.$meeting->status_color }} text-white py-1 small fw-bold text-uppercase" 
                                          style="font-size: 0.7rem; letter-spacing: 1px;">
                                         {{ $meeting->meeting_date->translatedFormat('M') }}
                                     </div>
@@ -162,19 +162,18 @@
                                 </div>
 
                                 <!-- Status & Time -->
-                                <div>
-                                    @if($meeting->status == 'pendiente')
-                                        <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary px-3 py-1 mb-1 border border-primary border-opacity-10 shadow-sm">
-                                            <i class="fas fa-spinner fa-spin me-1 small"></i> {{ $meeting->status_label }}
-                                        </span>
-                                    @else
-                                        <span class="badge rounded-pill bg-{{ $meeting->status_color }} bg-opacity-10 text-{{ $meeting->status_color }} px-3 py-1 mb-1 border border-{{ $meeting->status_color }} border-opacity-10">
-                                            {{ $meeting->status_label }}
-                                        </span>
-                                    @endif
+                                 <div>
+                                    <span class="badge rounded-pill bg-{{ $meeting->status_color }} bg-opacity-10 text-{{ $meeting->status_color }} px-3 py-1 mb-1 border border-{{ $meeting->status_color }} border-opacity-10 shadow-sm">
+                                        @if($meeting->status === 'pendiente' && !$meeting->is_past)
+                                            <i class="fas fa-spinner fa-spin me-1 small"></i>
+                                        @elseif($meeting->status_color === 'success')
+                                            <i class="fas fa-check-circle me-1 small"></i>
+                                        @endif
+                                        {{ $meeting->status_label }}
+                                    </span>
                                     
                                     <div class="text-muted small fw-bold mt-1 d-flex align-items-center">
-                                        <div class="icon-shape icon-xxs {{ $meeting->status == 'pendiente' ? 'bg-primary text-primary' : 'bg-'.$meeting->status_color.' text-'.$meeting->status_color }} bg-opacity-10 rounded-circle me-1 d-flex align-items-center justify-content-center" style="width: 20px; height: 20px;">
+                                        <div class="icon-shape icon-xxs {{ $meeting->status_color === 'primary' ? 'bg-primary text-primary' : 'bg-'.$meeting->status_color.' text-'.$meeting->status_color }} bg-opacity-10 rounded-circle me-1 d-flex align-items-center justify-content-center" style="width: 20px; height: 20px;">
                                             <i class="far fa-clock" style="font-size: 0.7rem;"></i>
                                         </div>
                                         {{ $meeting->meeting_date->format('H:i') }} hrs

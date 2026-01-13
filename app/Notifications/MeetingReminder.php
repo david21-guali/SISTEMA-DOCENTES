@@ -3,13 +3,12 @@
 namespace App\Notifications;
 
 use App\Models\Meeting;
-use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 class MeetingReminder extends Notification
 {
-    use Queueable, \App\Traits\HasNotificationPreferences;
+    use \App\Traits\HasNotificationPreferences;
 
     public string $category = 'meetings';
 

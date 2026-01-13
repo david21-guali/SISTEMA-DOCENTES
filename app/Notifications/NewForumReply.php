@@ -3,14 +3,12 @@
 namespace App\Notifications;
 
 use App\Models\ForumPost;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 class NewForumReply extends Notification
 {
-    use Queueable, \App\Traits\HasNotificationPreferences;
+    use \App\Traits\HasNotificationPreferences;
 
     public string $category = 'forum';
 
@@ -25,9 +23,11 @@ class NewForumReply extends Notification
 
     public function toMail(object $notifiable): MailMessage
     {
+        $authorName = $this->post->profile->user->name ?? 'Un usuario';
+
         return (new MailMessage)
             ->subject('Nueva respuesta en foro: ' . $this->post->topic->title)
-            ->line("{$this->post->profile->user->name} ha respondido a tu tema en el foro.")
+            ->line("{$authorName} ha respondido a un tema en el foro.")
             ->line('Tema: ' . $this->post->topic->title)
             ->line('"' . \Illuminate\Support\Str::limit($this->post->content, 100) . '"')
             ->action('Ver Foro', route('forum.show', $this->post->topic_id))
@@ -39,13 +39,15 @@ class NewForumReply extends Notification
      */
     public function toArray(object $notifiable): array
     {
+        $authorName = $this->post->profile->user->name ?? 'Usuario';
+
         return [
             'type' => 'forum_reply', // Optional tag
             'reply_id' => $this->post->id,
             'topic_id' => $this->post->topic_id,
-            'user_name' => $this->post->profile->user->name ?? 'Usuario',
+            'user_name' => $authorName,
             'title' => 'Nueva respuesta en el foro',
-            'message' => "{$this->post->profile->user->name} respondió en el tema: " . $this->post->topic->title,
+            'message' => "{$authorName} respondió en el tema: " . $this->post->topic->title,
             'link' => route('forum.show', $this->post->topic_id),
             'content' => \Illuminate\Support\Str::limit($this->post->content, 50),
         ];

@@ -3,13 +3,12 @@
 namespace App\Notifications;
 
 use App\Models\Task;
-use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 class TaskStatusChanged extends Notification
 {
-    use Queueable, \App\Traits\HasNotificationPreferences;
+    use \App\Traits\HasNotificationPreferences;
 
     public string $category = 'tasks';
 

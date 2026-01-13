@@ -16,6 +16,14 @@ class ProjectObserver
      * @param Project $project
      * @return void
      */
+    public function created(Project $project): void
+    {
+        $project->team->pluck('user')
+            ->filter()
+            ->unique('id')
+            ->each->notify(new \App\Notifications\ProjectAssigned($project));
+    }
+
     public function updated(Project $project): void
     {
         if ($project->wasChanged('status')) {

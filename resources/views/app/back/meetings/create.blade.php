@@ -135,23 +135,12 @@
             <h5 class="fw-bold fs-5 mb-4 text-dark">Privacidad y Estado</h5>
             
             <div class="card border-0 shadow-sm rounded-4 mb-4">
-                <div class="card-body p-4">
-                    <!-- Estado -->
-                    <div class="mb-4">
-                        <div class="form-check mb-3 custom-radio">
-                            <input class="form-check-input md-radio" type="radio" name="status" id="status_pending" value="pendiente" checked>
-                            <label class="form-check-label" for="status_pending">
-                                <span class="d-block fw-bold text-dark">Pendiente</span>
-                                <span class="d-block small text-muted">La reunión está programada</span>
-                            </label>
-                        </div>
-                        <div class="form-check custom-radio">
-                            <input class="form-check-input md-radio" type="radio" name="status" id="status_completed" value="completada">
-                            <label class="form-check-label" for="status_completed">
-                                <span class="d-block fw-bold text-dark">Completada</span>
-                                <span class="d-block small text-muted">Marcar como ya realizada</span>
-                            </label>
-                        </div>
+                <div class="card-body p-4 text-center">
+                    <div class="mb-0">
+                        <input type="hidden" name="status" value="pendiente">
+                        <i class="fas fa-clock fa-3x text-primary opacity-25 mb-3"></i>
+                        <h6 class="fw-bold text-dark">Estado: Pendiente</h6>
+                        <p class="small text-muted mb-0">La reunión se programará como pendiente por defecto.</p>
                     </div>
                 </div>
             </div>

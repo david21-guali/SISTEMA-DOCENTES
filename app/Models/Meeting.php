@@ -27,7 +27,7 @@ use Carbon\Carbon;
 class Meeting extends Model
 {
     /** @use HasFactory<\Database\Factories\MeetingFactory> */
-    use HasFactory, HasCalendarEvents, \App\Traits\CleansNotifications;
+    use HasFactory, HasCalendarEvents, \App\Traits\CleansNotifications, \App\Traits\HasMeetingExpiration, \App\Traits\HasMeetingStatusColor, \App\Traits\HasMeetingStatusLabel, \App\Traits\HasMeetingIsUpcoming, \App\Traits\HasMeetingIsPast, \App\Traits\HandlesMeetingScopes;
 
     protected $fillable = [
         'project_id',
@@ -81,33 +81,9 @@ class Meeting extends Model
     /**
      * Atributos computados
      */
-    public function getStatusColorAttribute(): string
-    {
-        return match($this->status) {
-            'completada' => 'success',
-            'cancelada' => 'secondary',
-            default => 'primary',
-        };
-    }
-
     public function getFormattedDateAttribute(): ?string
     {
         return $this->meeting_date?->format('d/m/Y H:i');
-    }
-
-    public function getStatusLabelAttribute(): string
-    {
-        return ucfirst($this->status ?? 'pendiente');
-    }
-
-    public function getIsUpcomingAttribute(): bool
-    {
-        return $this->meeting_date > now() && $this->status === 'pendiente';
-    }
-
-    public function getIsPastAttribute(): bool
-    {
-        return $this->meeting_date < now();
     }
 
     protected function getCalendarUrl(): string { return route('meetings.show', $this->id); }
@@ -153,37 +129,5 @@ class Meeting extends Model
     public function scopeCompleted($query)
     {
         return $query->where('status', 'completada');
-    }
-
-    /**
-     * Scope meetings visible to a specific user.
-     * 
-     * @param \Illuminate\Database\Eloquent\Builder<Meeting> $query
-     * @param \App\Models\User|int $user
-     * @return \Illuminate\Database\Eloquent\Builder<Meeting>
-     */
-    public function scopeForUser($query, $user)
-    {
-        // Handle if only an ID is passed
-        if (is_numeric($user)) {
-            $user = \App\Models\User::find($user);
-        }
-
-        if (!$user) {
-            return $query;
-        }
-
-        if ($user->hasRole(['admin', 'coordinador'])) {
-            return $query;
-        }
-
-        $profileId = $user->profile?->id;
-
-        if (!$profileId) {
-            return $query->whereRaw('1 = 0'); // Return no results if no profile
-        }
-
-        return $query->where('created_by', $profileId)
-                     ->orWhereHas('participants', fn($q) => $q->where('profiles.id', $profileId));
     }
 }

@@ -18,3 +18,6 @@ Schedule::command('tasks:send-reminders')->dailyAt('08:00');
 
 // Send project deadline reminders daily at 9 AM (checks 7 days ahead)
 Schedule::command('projects:send-reminders')->dailyAt('09:00');
+
+// Finalize meetings that passed more than 24 hours ago
+Schedule::command('meetings:finalize')->daily();

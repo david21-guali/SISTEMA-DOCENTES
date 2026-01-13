@@ -40,6 +40,16 @@ class UpdateMeetingRequest extends FormRequest
                 'array',
                 'min:1',
                 function ($attribute, $value, $fail) {
+                    // All participants must be besides the creator (creator is always added anyway)
+                    // We check if there's someone else in the chosen array
+                    $creatorId = $this->route('meeting')->created_by ?? auth()->id();
+                    $creatorUserId = \App\Models\Profile::find($creatorId)->user_id ?? auth()->id();
+
+                    $otherParticipants = array_diff($value, [$creatorUserId]);
+                    if (empty($otherParticipants)) {
+                        $fail('Debe seleccionar al menos un participante adicional además del creador de la reunión.');
+                    }
+
                     // If project is selected, validate participants belong to it
                     if ($this->project_id) {
                         /** @var \App\Models\Project|null $project */

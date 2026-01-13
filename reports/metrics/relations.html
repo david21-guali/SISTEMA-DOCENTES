@@ -49,7 +49,7 @@
 <div class="page">
     <div class="content content-first">
         <div class="report-details">
-            Created at 2026-01-10 00:25:24        , with PHPMetrics v2.9.1 (<a href="https://twitter.com/Halleck45">Jean-François Lépine</a>).
+            Created at 2026-01-13 17:49:00        , with PHPMetrics v2.9.1 (<a href="https://twitter.com/Halleck45">Jean-François Lépine</a>).
         </div>
 
         
@@ -322,6 +322,15 @@
             "\\Illuminate\\Notifications\\Notification",
             "\\App\\Models\\Task",
             "\\Illuminate\\Notifications\\Messages\\MailMessage"
+        ]
+    },
+    {
+        "name": "\\App\\Console\\Commands\\UpdateExpiredMeetings",
+        "size": 3000,
+        "relations": [
+            "\\Illuminate\\Console\\Command",
+            "\\Carbon\\Carbon",
+            "\\App\\Models\\Meeting"
         ]
     },
     {
@@ -929,6 +938,7 @@
         "size": 3000,
         "relations": [
             "\\Illuminate\\Foundation\\Http\\FormRequest",
+            "\\App\\Models\\Profile",
             "\\App\\Models\\Project"
         ]
     },
@@ -1292,6 +1302,16 @@
         "relations": []
     },
     {
+        "name": "\\App\\Models\\Profile",
+        "size": 3000,
+        "relations": [
+            "\\Illuminate\\Database\\Eloquent\\Model",
+            "\\Illuminate\\Database\\Eloquent\\Relations\\BelongsTo",
+            "\\Illuminate\\Database\\Eloquent\\Relations\\HasMany",
+            "\\Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany"
+        ]
+    },
+    {
         "name": "\\Illuminate\\Database\\Eloquent\\Model",
         "size": 3000,
         "relations": []
@@ -1347,16 +1367,6 @@
         "name": "\\Illuminate\\Database\\Eloquent\\Relations\\Pivot",
         "size": 3000,
         "relations": []
-    },
-    {
-        "name": "\\App\\Models\\Profile",
-        "size": 3000,
-        "relations": [
-            "\\Illuminate\\Database\\Eloquent\\Model",
-            "\\Illuminate\\Database\\Eloquent\\Relations\\BelongsTo",
-            "\\Illuminate\\Database\\Eloquent\\Relations\\HasMany",
-            "\\Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany"
-        ]
     },
     {
         "name": "\\Illuminate\\Database\\Eloquent\\Relations\\HasOne",
@@ -1474,12 +1484,7 @@
     {
         "name": "\\App\\Notifications\\ProjectAssigned",
         "size": 3000,
-        "relations": [
-            "\\Illuminate\\Notifications\\Notification",
-            "\\App\\Models\\Project",
-            "\\Illuminate\\Notifications\\Messages\\MailMessage",
-            "\\Illuminate\\Support\\Str"
-        ]
+        "relations": []
     },
     {
         "name": "\\App\\Notifications\\ProjectDeadlineChanged",
@@ -1531,9 +1536,7 @@
         "name": "\\App\\Observers\\ForumObserver",
         "size": 3000,
         "relations": [
-            "\\App\\Models\\ForumTopic",
-            "\\App\\Models\\User",
-            "\\App\\Notifications\\NewForumTopic"
+            "\\App\\Models\\ForumTopic"
         ]
     },
     {
@@ -1575,6 +1578,7 @@
         "size": 3000,
         "relations": [
             "\\App\\Models\\Project",
+            "\\App\\Notifications\\ProjectAssigned",
             "\\App\\Notifications\\ProjectStatusChanged",
             "\\Illuminate\\Support\\Carbon",
             "\\App\\Notifications\\ProjectDeadlineChanged"
@@ -1754,6 +1758,13 @@
         "relations": []
     },
     {
+        "name": "\\App\\Traits\\HandlesMeetingScopes",
+        "size": 3000,
+        "relations": [
+            "\\App\\Models\\User"
+        ]
+    },
+    {
         "name": "\\App\\Traits\\HandlesNotifications",
         "size": 3000,
         "relations": [
@@ -1775,6 +1786,31 @@
         "relations": [
             "\\Carbon\\Carbon"
         ]
+    },
+    {
+        "name": "\\App\\Traits\\HasMeetingExpiration",
+        "size": 3000,
+        "relations": []
+    },
+    {
+        "name": "\\App\\Traits\\HasMeetingIsPast",
+        "size": 3000,
+        "relations": []
+    },
+    {
+        "name": "\\App\\Traits\\HasMeetingIsUpcoming",
+        "size": 3000,
+        "relations": []
+    },
+    {
+        "name": "\\App\\Traits\\HasMeetingStatusColor",
+        "size": 3000,
+        "relations": []
+    },
+    {
+        "name": "\\App\\Traits\\HasMeetingStatusLabel",
+        "size": 3000,
+        "relations": []
     },
     {
         "name": "\\App\\Traits\\HasNotificationPreferences",

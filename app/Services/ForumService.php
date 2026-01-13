@@ -55,6 +55,7 @@ class ForumService
     {
         $users = User::role(['admin', 'coordinador', 'docente'])
             ->where('id', '!=', Auth::id())
+            ->whereHas('profile', fn($q) => $q->where('profiles.is_active', true))
             ->get();
 
         foreach ($users as $user) {

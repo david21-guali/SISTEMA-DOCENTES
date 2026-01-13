@@ -27,7 +27,7 @@ class MeetingActionService
     public function createMeeting(array $data): Meeting
     {
         $data['created_by'] = Auth::user()->profile->id;
-        $data['status'] = 'pendiente';
+        $data['status'] = 'pendiente'; // Forzamos estado inicial siempre como pendiente
 
         $meeting = Meeting::create($data);
 

@@ -25,7 +25,7 @@
                     name="email" 
                     value="{{ old('email') }}" 
                     class="form-input @error('email') is-invalid @enderror"
-                    placeholder="tu@correo.com"
+                    placeholder="usuario@ejemplo.com"
                     autofocus 
                     autocomplete="username"
                 >
@@ -97,5 +97,24 @@
             @endif
         });
     </script>
+    <style>
+        .ls-1 { letter-spacing: 0.5px; }
+        
+        /* Compact adjustments for Mobile */
+        @media (max-width: 768px) {
+            .form-panel { padding: 25px 25px !important; }
+            .form-input { padding: 12px 15px !important; }
+            .form-header { margin-bottom: 20px !important; }
+            .form-header h2 { font-size: 24px !important; }
+            .form-group { margin-bottom: 15px !important; }
+            .login-container { min-height: auto !important; }
+            
+            @if($errors->any())
+                .form-group { margin-bottom: 10px !important; }
+                .error-message { margin-top: 4px !important; }
+                .form-header { margin-bottom: 10px !important; }
+            @endif
+        }
+    </style>
     @endpush
 </x-guest-layout>

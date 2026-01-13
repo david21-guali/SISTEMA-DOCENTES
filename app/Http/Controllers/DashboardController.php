@@ -61,7 +61,8 @@ class DashboardController extends Controller
      */
     private function getRecentProjects()
     {
-        return Project::with(['category', 'profile.user'])
+        return Project::forUser(auth()->user())
+            ->with(['category', 'profile.user'])
             ->latest()
             ->take(5)
             ->get();

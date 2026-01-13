@@ -67,7 +67,8 @@ class DashboardService
         $isSqlite = DB::getDriverName() === 'sqlite';
         $expression = $isSqlite ? "strftime('%m', created_at)" : "MONTH(created_at)";
 
-        $monthlyData = Project::select(
+        $monthlyData = Project::forUser(auth()->user())
+            ->select(
                 DB::raw("CAST($expression AS UNSIGNED) as month"),
                 DB::raw('count(*) as total')
             )
@@ -122,7 +123,8 @@ class DashboardService
     private function getRecentProjectsActivity(): Collection
     {
         /** @phpstan-ignore-next-line */
-        return Project::with('profile.user')
+        return Project::forUser(auth()->user())
+            ->with('profile.user')
             ->where('created_at', '>=', Carbon::now()->subDays(7))
             ->latest()
             ->take(5)
@@ -146,7 +148,8 @@ class DashboardService
     private function getCompletedTasksActivity(): Collection
     {
         /** @phpstan-ignore-next-line */
-        return Task::with(['project', 'assignedProfile.user'])
+        return Task::forUser(auth()->user())
+            ->with(['project', 'assignedProfile.user'])
             ->where('status', 'completada')
             ->where('updated_at', '>=', Carbon::now()->subDays(7))
             ->latest('updated_at')
@@ -171,7 +174,8 @@ class DashboardService
     private function getUpcomingMeetingsActivity(): Collection
     {
         /** @phpstan-ignore-next-line */
-        return Meeting::with('creator.user')
+        return Meeting::forUser(auth()->user())
+            ->with('creator.user')
             ->where('meeting_date', '>=', Carbon::now())
             ->where('meeting_date', '<=', Carbon::now()->addDays(7))
             ->orderBy('meeting_date')

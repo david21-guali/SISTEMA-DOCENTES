@@ -19,7 +19,7 @@ trait HasNotificationPreferences
         // @phpstan-ignore-next-line
         $category = property_exists($this, 'category') ? $this->category : 'general';
         
-        // Obtener las preferencias del usuario desde su perfil
+        // Obtener las preferencias del usuario desde su perfil (manejando posible nulo)
         $prefs = $notifiable->profile->notification_preferences ?? [];
 
         // 1. Si la categoría está desactivada explícitamente, no enviar nada

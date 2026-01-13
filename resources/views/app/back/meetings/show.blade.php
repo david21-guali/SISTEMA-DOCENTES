@@ -19,10 +19,15 @@
             <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
                 <div class="card-body p-0">
                     <!-- Header with Color Strip -->
-                    <div class="p-4 bg-white border-bottom border-light relative" style="border-top: 4px solid #4f46e5;">
+                    <div class="p-4 bg-white border-bottom border-light relative" style="border-top: 4px solid {{ $meeting->status_color === 'success' ? '#198754' : ($meeting->status_color === 'secondary' ? '#6c757d' : '#4f46e5') }};">
                         <!-- Status Badge (Floating Top Right) -->
                         <div class="d-flex justify-content-between align-items-start mb-3">
-                            <span class="badge rounded-pill px-3 py-2 fw-bold shadow-sm {{ $meeting->status === 'pendiente' ? 'bg-warning text-dark' : ($meeting->status === 'completada' ? 'bg-success text-white' : 'bg-secondary text-white') }}" style="font-size: 0.8rem; letter-spacing: 0.5px;">
+                            <span class="badge rounded-pill px-3 py-2 fw-bold shadow-sm bg-{{ $meeting->status_color }} {{ $meeting->status_color === 'success' || $meeting->status_color === 'secondary' ? 'text-white' : 'text-dark' }}" style="font-size: 0.8rem; letter-spacing: 0.5px;">
+                                @if($meeting->status === 'pendiente' && !$meeting->is_past)
+                                    <i class="fas fa-spinner fa-spin me-1 small"></i>
+                                @elseif($meeting->status_color === 'success')
+                                    <i class="fas fa-check-circle me-1 small"></i>
+                                @endif
                                 {{ strtoupper($meeting->status_label) }}
                             </span>
                             

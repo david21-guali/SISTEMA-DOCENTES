@@ -3,14 +3,12 @@
 namespace App\Notifications;
 
 use App\Models\User;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 class AdminPasswordResetRequest extends Notification
 {
-    use Queueable, \App\Traits\HasNotificationPreferences;
+    use \App\Traits\HasNotificationPreferences;
 
     public string $category = 'reminders';
 

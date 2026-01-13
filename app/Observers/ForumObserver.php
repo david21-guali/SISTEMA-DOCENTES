@@ -26,11 +26,8 @@ class ForumObserver
      */
     public function created(ForumTopic $forumTopic): void
     {
-        $authorId = $forumTopic->profile->id;
-        
-        User::whereHas('profile', fn($q) => $q->where('profiles.id', '!=', $authorId))
-            ->get()
-            ->each->notify(new NewForumTopic($forumTopic));
+        // La notificación se gestiona centralizadamente en ForumService::notifyNewTopic
+        // para evitar envíos duplicados y asegurar el filtrado correcto por roles.
     }
 
 }

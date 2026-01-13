@@ -40,6 +40,12 @@ class StoreMeetingRequest extends FormRequest
                 'array',
                 'min:1',
                 function ($attribute, $value, $fail) {
+                    // All participants must be besides the creator (or at least one of them must be)
+                    $otherParticipants = array_diff($value, [auth()->id()]);
+                    if (empty($otherParticipants)) {
+                        $fail('Debe seleccionar al menos un participante adicional además de usted mismo.');
+                    }
+
                     // If project is selected, validate participants belong to it
                     if ($this->project_id) {
                         /** @var \App\Models\Project|null $project */
