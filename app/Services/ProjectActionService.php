@@ -41,6 +41,8 @@ class ProjectActionService
 
             if (!empty($data['team_members'] ?? [])) {
                 $project->team()->sync($data['team_members']);
+                
+                $this->notifyProfiles($data['team_members'], new ProjectAssigned($project));
             }
             
             $this->attachmentService->handleUploads($project, $files);
@@ -105,4 +107,7 @@ class ProjectActionService
         $done = $project->tasks()->where('status', 'completada')->count();
         $project->update(['completion_percentage' => $total ? round(($done / $total) * 100) : 0]);
     }
+
+
+
 }

@@ -9,11 +9,7 @@ use Illuminate\Support\Facades\Notification;
 
 class MeetingObserver
 {
-    public function created(Meeting $meeting): void
-    {
-        $participants = $meeting->participants->pluck('user');
-        Notification::send($participants, new MeetingInvitation($meeting));
-    }
+
 
     public function updated(Meeting $meeting): void
     {

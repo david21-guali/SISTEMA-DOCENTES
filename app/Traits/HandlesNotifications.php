@@ -34,4 +34,13 @@ trait HandlesNotifications
     {
         return User::whereHas('profile', fn($q) => $q->whereIn('id', $profileIds))->get();
     }
+    /**
+     * Notify users associated with specific profile IDs.
+     * @param array<int> $profileIds
+     */
+    protected function notifyProfiles(array $profileIds, \Illuminate\Notifications\Notification $notification): void
+    {
+        $users = User::whereHas('profile', fn($q) => $q->whereIn('id', $profileIds))->with('profile')->get(); // Optimization: Eager load profile if needed, or just users.
+        $this->notifyUsers($users, $notification);
+    }
 }

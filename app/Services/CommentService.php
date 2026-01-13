@@ -31,7 +31,7 @@ class CommentService
             'commentable_id'   => $commentable->id,
         ]);
 
-        $this->notifyOwner($commentable, $comment);
+
         
         if ($comment->parent_id) {
             $this->notifyThreadParticipants($comment);
@@ -40,19 +40,7 @@ class CommentService
         return $comment;
     }
 
-    /**
-     * Notify the owner of the commentable item.
-     * 
-     * @param Project|Innovation $commentable
-     * @param Comment $comment
-     */
-    private function notifyOwner(object $commentable, Comment $comment): void
-    {
-        $ownerProfile = $commentable->profile;
-        if ($ownerProfile && $ownerProfile->user && $ownerProfile->user->id !== Auth::id()) {
-            $ownerProfile->user->notify(new NewCommentAdded($comment));
-        }
-    }
+
 
     /**
      * Notify all participants in the thread when a reply is posted.

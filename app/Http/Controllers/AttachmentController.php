@@ -38,7 +38,7 @@ class AttachmentController extends Controller
         $attachable = $this->getAttachable($type, $id);
         $uploaded = $this->attachmentService->handleUploads($attachable, $request->file('files'));
 
-        $this->notificationService->notifyUpload($attachable, $uploaded);
+
 
         return $this->formatResponse(
             count($uploaded) . ' archivo(s) subido(s) correctamente.',

@@ -42,6 +42,8 @@ class TaskActionService
             $task = Task::create(array_merge($taskData, ['assigned_to' => $profiles[0] ?? null, 'status' => 'pendiente']));
 
             $task->assignees()->sync($profiles);
+
+            $this->notifyProfiles($profiles, new TaskAssigned($task));
             $this->attachmentService->handleUploads($task, $files);
             $this->attachmentService->handleTemporaryFiles($task, $data['temp_attachments'] ?? []);
 
@@ -63,6 +65,8 @@ class TaskActionService
 
             $task->update(array_merge(\Illuminate\Support\Arr::except($data, ['temp_attachments', 'assignees']), ['assigned_to' => $profiles[0] ?? null]));
             $task->assignees()->sync($profiles);
+
+            $this->notifyProfiles($profiles, new TaskAssigned($task));
 
             $this->attachmentService->handleTemporaryFiles($task, $data['temp_attachments'] ?? []);
         });
@@ -108,4 +112,6 @@ class TaskActionService
     {
         return User::whereIn('id', $userIds)->with('profile')->get()->pluck('profile.id')->toArray();
     }
+
+
 }
