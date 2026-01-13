@@ -22,6 +22,21 @@ class MeetingControllerTest extends TestCase
         $this->project = Project::factory()->create(['profile_id' => $this->profile->id]);
     }
 
+    public function test_user_can_view_upcoming_meetings()
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $upcoming = Meeting::factory()->create([
+            'meeting_date' => now()->addDays(5),
+            'status' => 'pendiente',
+            'created_by' => $user->profile->id
+        ]);
+
+        $this->assertTrue($upcoming->is_upcoming);
+        $this->assertFalse($upcoming->is_past);
+    }
+
     public function test_user_can_view_meetings_index()
     {
         $this->actingAs($this->user);
