@@ -52,6 +52,14 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->trustProxies(at: '*');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->render(function (\Illuminate\Http\Exceptions\PostTooLargeException $e, $request) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'El archivo es demasiado grande para el servidor (Límite POST excedido).'
+                ], 413);
+            }
+            return back()->with('error', 'El archivo que intentas subir es demasiado grande. Por favor, intenta con uno más pequeño.');
+        });
     })->create();
 
