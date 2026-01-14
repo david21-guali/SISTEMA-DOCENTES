@@ -567,52 +567,74 @@
         @if(isset($distributionData) && $distributionData->count() > 0)
         const ctx = document.getElementById('resourceDistributionChart');
         if (ctx) {
-            const chartData = @json($distributionData);
-            
-            // Generate vibrant colors
-            const colors = [
-                '#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b',
-                '#858796', '#5a5c69', '#2e59d9', '#17a673', '#2c9faf',
-                '#dda20a', '#be2617', '#6c757d', '#fd7e14', '#6610f2'
-            ];
-            
-            new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: chartData.map(item => item.label),
-                    datasets: [{
-                        data: chartData.map(item => item.count),
-                        backgroundColor: colors.slice(0, chartData.length),
-                        borderWidth: 2,
-                        borderColor: '#fff'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'right',
-                            labels: {
-                                boxWidth: 12,
-                                padding: 10,
-                                font: { size: 11 }
-                            }
+            try {
+                // CORRECCIÓN: Usamos Object.values() porque Laravel puede enviar un Objeto en lugar de Array
+                // si los índices no son consecutivos (por el uso de filter).
+                const rawData = @json($distributionData);
+                const chartData = Object.values(rawData);
+                
+                console.log('Chart Data (Raw):', rawData); 
+                console.log('Chart Data (Array):', chartData);
+                
+                // Verificar que Chart.js esté cargado
+                if (typeof Chart === 'undefined') {
+                    console.error('Chart.js no está cargado. Verifica que el CDN esté accesible.');
+                    ctx.parentElement.innerHTML = '<div class="alert alert-warning">Error: Chart.js no se pudo cargar. Verifica tu conexión a internet.</div>';
+                } else if (!chartData || chartData.length === 0) {
+                    console.warn('No hay datos para el gráfico');
+                    ctx.parentElement.innerHTML = '<div class="alert alert-info">No hay datos suficientes para mostrar el gráfico.</div>';
+                } else {
+                    // Generate vibrant colors
+                    const colors = [
+                        '#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b',
+                        '#858796', '#5a5c69', '#2e59d9', '#17a673', '#2c9faf',
+                        '#dda20a', '#be2617', '#6c757d', '#fd7e14', '#6610f2'
+                    ];
+                    
+                    new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: chartData.map(item => item.label),
+                            datasets: [{
+                                data: chartData.map(item => item.count),
+                                backgroundColor: colors.slice(0, chartData.length),
+                                borderWidth: 2,
+                                borderColor: '#fff'
+                            }]
                         },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    const label = context.label || '';
-                                    const value = context.parsed || 0;
-                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                    const percentage = ((value / total) * 100).toFixed(1);
-                                    return `${label}: ${value} (${percentage}%)`;
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'right',
+                                    labels: {
+                                        boxWidth: 12,
+                                        padding: 10,
+                                        font: { size: 11 }
+                                    }
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            const label = context.label || '';
+                                            const value = context.parsed || 0;
+                                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                            const percentage = ((value / total) * 100).toFixed(1);
+                                            return `${label}: ${value} (${percentage}%)`;
+                                        }
+                                    }
                                 }
                             }
                         }
-                    }
+                    });
+                    
+                    console.log('Gráfico creado exitosamente');
                 }
-            });
+            } catch (error) {
+                console.error('Error al crear el gráfico:', error);
+                ctx.parentElement.innerHTML = '<div class="alert alert-danger">Error al crear el gráfico. Revisa la consola para más detalles.</div>';
+            }
         }
         @endif
     });
