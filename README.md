@@ -39,11 +39,12 @@ Siga estos pasos para desplegar el proyecto en un entorno de desarrollo (ej. Lar
    ```
    *Edite el archivo `.env` con sus credenciales de base de datos (`DB_DATABASE`, `DB_USERNAME`, etc.).*
 
-4. **Base de Datos y Seeders**
+4. **Base de Datos y Almacenamiento**
    ```bash
    php artisan migrate --seed
+   php artisan storage:link
    ```
-   *Esto creará las tablas y usuarios iniciales (Admin, Docentes de prueba).*
+   *Esto creará las tablas, usuarios iniciales y el enlace simbólico para archivos cargados.*
 
 5. **Iniciar servidor**
    ```bash
@@ -52,27 +53,33 @@ Siga estos pasos para desplegar el proyecto en un entorno de desarrollo (ej. Lar
    php artisan serve
    ```
 
-## Calidad y Pruebas (Instrucciones)
+## Arquitectura de Seguridad y Calidad
 
-Este proyecto cuenta con un plan de aseguramiento de calidad automatizado.
+Este proyecto implementa un modelo de seguridad robusto y escalable:
+
+- **Políticas de Laravel (Policies):** El control de acceso a Proyectos, Tareas y Reuniones está centralizado en clases Policy, garantizando una gestión de permisos granular.
+- **Autorización en FormRequests:** La seguridad se valida antes de la lógica del controlador, bloqueando usuarios no autorizados antes de procesar cualquier entrada.
+- **Observadores (Observers):** Lógica automatizada para notificaciones y recalibración de métricas (ej. progreso de proyectos) gatillada por eventos del modelo.
+
+## Calidad y Pruebas
 
 ### Ejecutar Pruebas Automatizadas
-Para verificar la funcionalidad (Login, CRUD Proyectos, Innovaciones, Roles):
+Para verificar funcionalidad y seguridad (Roles, Políticas, CRUD):
 ```bash
 php artisan test
 ```
 
-### Análisis Estático de Código
-Para medir la complejidad y detectar errores sin ejecutar la app (Nivel 5):
+### Análisis Estático de Código (PHPStan)
+El proyecto mantiene un estricto estándar de calidad (Nivel 7):
 ```bash
-./vendor/bin/phpstan analyse --memory-limit=2G
+vendor\bin\phpstan analyze
 ```
 
 ## Integración Continua (CI/CD)
-El proyecto incluye un pipeline en `.github/workflows/ci.yml` que ejecuta automáticamente:
+El proyecto incluye un pipeline en `.github/workflows/ci.yml` que ejecuta:
 1.  Linter (Laravel Pint).
-2.  Tests Unitarios y de Integración (PHPUnit).
-3.  Análisis Estático (Larastan).
+2.  Análisis Estático (Larastan/PHPStan Nivel 7).
+3.  Pruebas de Seguridad y Funcionalidad.
 
 Cualquier Pull Request fallará si no cumple con estos estándares.
 
