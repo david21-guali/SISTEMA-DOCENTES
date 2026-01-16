@@ -103,16 +103,6 @@
                             </div>
                         </div>
 
-                        <!-- Impacto -->
-                        <div class="mb-3">
-                            <label for="impact_score" class="form-label">Puntuación de Impacto (1-10) *</label>
-                            <input type="number" min="1" max="10" class="form-control @error('impact_score') is-invalid @enderror" 
-                                   id="impact_score" name="impact_score" value="{{ old('impact_score', $innovation->impact_score) }}">
-                            @error('impact_score')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
                         <!-- Archivos Existentes -->
                         @if($innovation->attachments->count() > 0)
                         <div class="mb-4">

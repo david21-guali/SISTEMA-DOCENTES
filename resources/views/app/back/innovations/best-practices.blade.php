@@ -78,7 +78,9 @@
             <h4 class="alert-heading"><i class="fas fa-info-circle"></i> No hay registros aún</h4>
             <p>Aún no se han documentado experiencias exitosas con alto impacto. ¡Sé el primero en registrar una innovación exitosa!</p>
             <hr>
+            @if(Auth::user()->hasRole('docente') || Auth::user()->hasRole('admin') || Auth::user()->hasRole('coordinador'))
             <a href="{{ route('innovations.create') }}" class="btn btn-primary btn-sm">Nueva Innovación</a>
+            @endif
         </div>
     @endif
 </div>

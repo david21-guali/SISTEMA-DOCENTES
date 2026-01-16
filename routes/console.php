@@ -21,3 +21,7 @@ Schedule::command('projects:send-reminders')->dailyAt('09:00');
 
 // Finalize meetings that passed more than 24 hours ago
 Schedule::command('meetings:finalize')->daily();
+
+// Close expired innovation reviews every hour
+Schedule::command('innovations:close-expired-reviews')->hourly();
+

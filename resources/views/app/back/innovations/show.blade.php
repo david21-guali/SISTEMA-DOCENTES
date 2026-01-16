@@ -46,6 +46,16 @@
                             </div>
                         </div>
                         <div class="card-body">
+                            @if($innovation->status === 'en_revision' && $innovation->review_deadline)
+                            <div class="alert alert-info border-0 shadow-sm mb-4 d-flex align-items-center">
+                                <i class="fas fa-clock fa-2x me-3 opacity-50"></i>
+                                <div>
+                                    <h6 class="alert-heading fw-bold mb-1">Periodo de Validación Comunitaria</h6>
+                                    <p class="mb-0 small">Esta innovación está siendo evaluada por la comunidad académica. El plazo finaliza el <strong>{{ $innovation->review_deadline->format('d/m/Y H:i') }}</strong> ({{ $innovation->review_deadline->diffForHumans() }}).</p>
+                                </div>
+                            </div>
+                            @endif
+
                             <div class="mb-4">
                                 <h6 class="text-muted">Descripción</h6>
                                 <p>{{ $innovation->description }}</p>
@@ -279,6 +289,77 @@
                         </div>
                     </div>
 
+                    <!-- Panel de Validación Comunitaria (Solo Admin o cuando terminó el plazo) -->
+                    @if(auth()->user()->hasRole('admin') || ($innovation->status === 'aprobada' && $innovation->total_votes > 0))
+                    <div class="card shadow mb-4 border-info">
+                        <div class="card-header bg-info text-white">
+                            <h6 class="mb-0"><i class="fas fa-chart-pie me-2"></i>Validación Comunitaria Anónima</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row align-items-center mb-4">
+                                <div class="col-md-4 text-center border-end">
+                                    <div class="h2 fw-bold text-info mb-0">{{ round($innovation->community_score ?? 0) }}%</div>
+                                    <div class="text-muted small uppercase fw-bold">Aprobación</div>
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="ps-md-3">
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <span class="small fw-bold">Consenso Académico</span>
+                                            <span class="small text-muted">{{ $innovation->total_votes }} votos totales</span>
+                                        </div>
+                                        <div class="progress" style="height: 12px;">
+                                            <div class="progress-bar bg-info shadow-sm" role="progressbar" 
+                                                 style="width: {{ $innovation->community_score ?? 0 }}%"></div>
+                                        </div>
+                                        <div class="d-flex justify-content-between mt-2 small">
+                                            <span class="text-success"><i class="fas fa-check-circle me-1"></i>{{ $innovation->reviews->where('vote', 'approved')->count() }} Favor</span>
+                                            <span class="text-danger"><i class="fas fa-times-circle me-1"></i>{{ $innovation->reviews->where('vote', 'rejected')->count() }} Contra</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            @if(auth()->user()->hasRole('admin') && $reviews->count() > 0)
+                            <h6 class="fw-bold mb-3 mt-4"><i class="fas fa-comments me-2 text-info"></i>Comentarios de la Comunidad (Anónimos)</h6>
+                            <div class="reviews-container" style="max-height: 400px; overflow-y: auto;">
+                                @foreach($reviews as $review)
+                                <div class="review-item p-3 mb-3 bg-light rounded border-start border-4 border-{{ $review->vote === 'approved' ? 'success' : 'danger' }}">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span class="badge bg-{{ $review->vote === 'approved' ? 'success' : 'danger' }} small">
+                                            <i class="fas fa-{{ $review->vote === 'approved' ? 'check' : 'times' }}-circle"></i> {{ $review->vote === 'approved' ? 'Aprobado' : 'No Aprobado' }}
+                                        </span>
+                                        <small class="text-muted">{{ $review->created_at->diffForHumans() }}</small>
+                                    </div>
+                                    <p class="mb-0 small text-dark">{{ $review->comment }}</p>
+                                </div>
+                                @endforeach
+                            </div>
+                            @endif
+                        </div>
+                    </div>
+                    @endif
+
+                    @if($canVote)
+                    <div class="card shadow mb-4 border-info bg-info text-white">
+                        <div class="card-body text-center p-4">
+                            <i class="fas fa-vote-yea fa-3x mb-3 opacity-50"></i>
+                            <h4>Tu opinión es importante</h4>
+                            <p>Esta innovación está en periodo de validación. Tu voto ayuda a certificar las mejores prácticas institucionales.</p>
+                            <a href="{{ route('innovations.review', $innovation) }}" class="btn btn-light fw-bold px-4 py-2 mt-2 shadow-sm text-info">
+                                <i class="fas fa-user-secret me-2"></i>Votar de forma Anónima
+                            </a>
+                        </div>
+                    </div>
+                    @elseif($hasVoted)
+                    <div class="card shadow mb-4 bg-light border-0">
+                        <div class="card-body text-center p-4">
+                            <i class="fas fa-check-double fa-2x text-success mb-2"></i>
+                            <h6 class="fw-bold text-success mb-1">¡Voto Registrado!</h6>
+                            <p class="small text-muted mb-0">Ya has participado en la validación anónima de esta innovación. Gracias por tu contribución profesional.</p>
+                        </div>
+                    </div>
+                    @endif
+
                     <!-- Panel de Aprobación (Solo Admins en estado en_revision o completada) -->
                     @if(auth()->user()->hasRole('admin') && ($innovation->status === 'en_revision' || $innovation->status === 'completada'))
                     <div class="card shadow mb-4 border-warning">
@@ -293,20 +374,35 @@
                             
                             <form action="{{ route('innovations.approve', $innovation) }}" method="POST" class="mb-3">
                                 @csrf
-                                <textarea name="review_notes" class="form-control form-control-sm mb-2" rows="2" 
-                                          placeholder="Notas de aprobación (opcional)"></textarea>
-                                <button type="submit" class="btn btn-success btn-sm w-100">
-                                    <i class="fas fa-check me-1"></i>Aprobar como Mejor Práctica
+                                
+                                <div class="mb-3">
+                                    <label for="impact_score" class="form-label small fw-bold">
+                                        <i class="fas fa-star text-warning me-1"></i>Puntuación de Impacto (1-10)
+                                    </label>
+                                    <input type="number" 
+                                           name="impact_score" 
+                                           id="impact_score"
+                                           class="form-control form-control-sm @error('impact_score') is-invalid @enderror" 
+                                           min="1" 
+                                           max="10" 
+                                           value="{{ old('impact_score', $innovation->impact_score ?? 5) }}"
+                                           required>
+                                    <small class="text-muted">
+                                        <i class="fas fa-info-circle"></i> 
+                                        Puntaje ≥4 aparecerá en Buenas Prácticas
+                                    </small>
+                                    @error('impact_score')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+
+                                <button type="submit" class="btn btn-success btn-sm w-100 mb-2">
+                                    <i class="fas fa-check-circle me-1"></i>Enviar a Buenas Prácticas
                                 </button>
-                            </form>
-                            
-                            <form action="{{ route('innovations.reject', $innovation) }}" method="POST">
-                                @csrf
-                                <textarea name="review_notes" class="form-control form-control-sm mb-2" rows="2" 
-                                          placeholder="Razón del rechazo (requerido)" required></textarea>
-                                <button type="submit" class="btn btn-danger btn-sm w-100">
-                                    <i class="fas fa-times me-1"></i>Rechazar
-                                </button>
+                                <a href="{{ route('innovations.index') }}" class="btn btn-outline-secondary btn-sm w-100">
+                                    <i class="fas fa-times me-1"></i>Cancelar
+                                </a>
                             </form>
                         </div>
                     </div>

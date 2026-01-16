@@ -105,6 +105,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('innovations/{innovation}/reject', [InnovationController::class, 'reject'])
         ->name('innovations.reject')
         ->middleware('role:admin');
+    Route::get('innovations/{innovation}/review', [InnovationController::class, 'review'])
+        ->name('innovations.review');
+    Route::post('innovations/{innovation}/review', [InnovationController::class, 'storeReview'])
+        ->name('innovations.review.store');
     
     // Innovation types management (Admin/Coordinator)
     Route::get('innovation-types', [\App\Http\Controllers\InnovationTypeController::class, 'index'])->name('innovation-types.index');

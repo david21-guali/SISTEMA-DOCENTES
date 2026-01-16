@@ -55,7 +55,6 @@ class InnovationControllerTest extends TestCase
             'methodology' => 'Metodología Ágil',
             'expected_results' => 'Resultados esperados altos',
             'actual_results' => 'Resultados obtenidos satisfactorios',
-            'impact_score' => 8,
             'innovation_type_id' => $type->id,
             'status' => 'en_proceso',
             'files' => [$file], // This might need to be 'evidence_files' based on controller, checking...
@@ -83,6 +82,7 @@ class InnovationControllerTest extends TestCase
         ]);
 
         $response = $this->actingAs($user)->post(route('innovations.approve', $innovation), [
+            'impact_score' => 6,
             'review_notes' => 'Buen trabajo'
         ]);
 
@@ -90,6 +90,7 @@ class InnovationControllerTest extends TestCase
         $this->assertDatabaseHas('innovations', [
             'id' => $innovation->id,
             'status' => 'aprobada',
+            'impact_score' => 6,
             'review_notes' => 'Buen trabajo'
         ]);
     }
@@ -107,5 +108,37 @@ class InnovationControllerTest extends TestCase
 
         $response->assertRedirect(route('innovations.index'));
         $this->assertDatabaseMissing('innovations', ['id' => $innovation->id]);
+    }
+
+    public function test_best_practices_view_filters_correctly()
+    {
+        $user = User::factory()->create();
+        
+        // 1. Innovación aprobada con score 6 (Debe verse)
+        Innovation::factory()->create([
+            'title' => 'Buena Practica 1',
+            'status' => 'aprobada',
+            'impact_score' => 6
+        ]);
+
+        // 2. Innovación aprobada con score 3 (NO debe verse)
+        Innovation::factory()->create([
+            'title' => 'Innovacion Normal',
+            'status' => 'aprobada',
+            'impact_score' => 3
+        ]);
+
+        // 3. Innovación en revisión (NO debe verse)
+        Innovation::factory()->create([
+            'title' => 'En Revision',
+            'status' => 'en_revision'
+        ]);
+
+        $response = $this->actingAs($user)->get(route('innovations.best-practices'));
+
+        $response->assertStatus(200);
+        $response->assertSee('Buena Practica 1');
+        $response->assertDontSee('Innovacion Normal');
+        $response->assertDontSee('En Revision');
     }
 }

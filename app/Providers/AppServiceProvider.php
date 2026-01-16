@@ -33,6 +33,8 @@ class AppServiceProvider extends ServiceProvider
         // Registrar Policies explícitamente
         \Illuminate\Support\Facades\Gate::policy(\App\Models\Innovation::class, \App\Policies\InnovationPolicy::class);
         \Illuminate\Support\Facades\Gate::policy(\App\Models\Project::class, \App\Policies\ProjectPolicy::class);
+        \Illuminate\Support\Facades\Gate::policy(\App\Models\Task::class, \App\Policies\TaskPolicy::class);
+        \Illuminate\Support\Facades\Gate::policy(\App\Models\Meeting::class, \App\Policies\MeetingPolicy::class);
 
         // Registrar Observers
         \App\Models\Task::observe(\App\Observers\TaskObserver::class);

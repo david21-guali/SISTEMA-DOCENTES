@@ -38,6 +38,7 @@ class Project extends Model
         'budget',
         'impact_description',
         'completion_percentage',
+        'final_report',
     ];
 
     protected $casts = [

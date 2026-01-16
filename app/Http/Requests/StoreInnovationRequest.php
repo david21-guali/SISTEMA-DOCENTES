@@ -34,7 +34,6 @@ class StoreInnovationRequest extends FormRequest
             'methodology'        => 'required|string',
             'expected_results'   => 'required|string',
             'actual_results'     => 'required|string',
-            'impact_score'       => 'required|integer|min:1|max:10',
             'evidence_files.*'   => $this->getEvidenceFileRules(),
         ];
     }
@@ -53,7 +52,6 @@ class StoreInnovationRequest extends FormRequest
             'methodology'        => 'metodología',
             'expected_results'   => 'resultados esperados',
             'actual_results'     => 'resultados obtenidos',
-            'impact_score'       => 'puntuación de impacto',
         ];
     }
 

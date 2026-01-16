@@ -85,7 +85,10 @@ class AttachmentController extends Controller
             abort(404, 'Archivo no encontrado');
         }
 
-        return response()->file($fullPath);
+        return response()->file($fullPath, [
+        'X-Frame-Options' => 'SAMEORIGIN',
+        'Content-Security-Policy' => "frame-ancestors 'self'",
+    ]);
     }
 
     /**
@@ -93,9 +96,15 @@ class AttachmentController extends Controller
      */
     private function validatePath(string $path): void
     {
-        if (!str_starts_with($path, 'attachments/') && !str_starts_with($path, 'temp/')) {
-            abort(403, 'Acceso no permitido');
+        $allowedPrefixes = ['attachments/', 'temp/', 'innovations/', 'reports/'];
+        
+        foreach ($allowedPrefixes as $prefix) {
+            if (str_starts_with($path, $prefix)) {
+                return;
+            }
         }
+
+        abort(403, 'Acceso no permitido');
     }
 
 }

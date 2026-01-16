@@ -85,14 +85,11 @@ class ProjectPolicy
     }
 
     /**
-     * Determine whether the user can upload final report.
+     * Determine whether the user can upload a final report.
      */
     public function uploadFinalReport(User $user, Project $project): bool
     {
-        if ($user->hasRole(['admin', 'coordinador'])) {
-            return true;
-        }
-        
-        return $user->profile->id === $project->profile_id;
+        return $user->hasRole(['admin', 'coordinador']) || 
+               ($user->profile && $user->profile->id === $project->profile_id);
     }
 }

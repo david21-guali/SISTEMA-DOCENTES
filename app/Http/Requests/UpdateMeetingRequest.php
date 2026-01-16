@@ -18,7 +18,8 @@ class UpdateMeetingRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        $meeting = $this->route('meeting');
+        return $meeting instanceof \App\Models\Meeting && $this->user()->can('update', $meeting);
     }
 
     /**

@@ -11,9 +11,10 @@ class CommentFactory extends Factory
     public function definition(): array
     {
         return [
-            'project_id' => Project::factory(),
             'profile_id' => Profile::factory(),
             'content' => $this->faker->paragraph(),
+            'commentable_type' => Project::class,
+            'commentable_id' => Project::factory(),
         ];
     }
 }

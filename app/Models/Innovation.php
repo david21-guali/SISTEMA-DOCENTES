@@ -44,10 +44,14 @@ class Innovation extends Model
         'reviewed_by',
         'review_notes',
         'reviewed_at',
+        'community_score',
+        'total_votes',
+        'review_deadline',
     ];
 
     protected $casts = [
         'reviewed_at' => 'datetime',
+        'review_deadline' => 'datetime',
     ];
 
     /**
@@ -83,6 +87,14 @@ class Innovation extends Model
     public function comments(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(Comment::class, 'commentable')->latest();
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\InnovationReview, $this>
+     */
+    public function reviews(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(InnovationReview::class);
     }
 
     /**

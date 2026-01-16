@@ -10,7 +10,7 @@
             <h5 class="mb-0 text-dark"><i class="fas fa-lightbulb me-2 text-primary"></i>Innovaciones Pedagógicas</h5>
             <p class="text-muted mb-0 small">Explora y gestiona las iniciativas de innovación educativa</p>
         </div>
-        @if(Auth::user()->hasRole('docente') || Auth::user()->hasRole('admin'))
+        @if(Auth::user()->hasRole('docente') || Auth::user()->hasRole('admin') || Auth::user()->hasRole('coordinador'))
         <a href="{{ route('innovations.create') }}" class="btn btn-primary">
             <i class="fas fa-plus me-1"></i> Nueva Innovación
         </a>
@@ -304,9 +304,11 @@
             <div class="card-body text-center py-5">
                 <i class="fas fa-lightbulb fa-3x text-muted mb-3 d-block"></i>
                 <p class="text-muted mb-3">No hay innovaciones registradas</p>
+                @if(Auth::user()->hasRole('docente') || Auth::user()->hasRole('admin') || Auth::user()->hasRole('coordinador'))
                 <a href="{{ route('innovations.create') }}" class="btn btn-primary shadow-sm px-4">
                     <i class="fas fa-plus me-1"></i> Crear Primera Innovación
                 </a>
+                @endif
             </div>
         </div>
     @endif

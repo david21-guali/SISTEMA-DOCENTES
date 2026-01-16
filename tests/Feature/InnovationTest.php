@@ -27,7 +27,6 @@ class InnovationTest extends TestCase
             'methodology' => 'Aprendizaje Basado en Proyectos',
             'expected_results' => 'Mejorar retención',
             'actual_results' => 'En proceso',
-            'impact_score' => 8,
         ]);
 
         // 3. Assert
@@ -47,6 +46,6 @@ class InnovationTest extends TestCase
 
         $response = $this->post(route('innovations.store'), []);
 
-        $response->assertSessionHasErrors(['title', 'innovation_type_id', 'impact_score']);
+        $response->assertSessionHasErrors(['title', 'innovation_type_id']);
     }
 }

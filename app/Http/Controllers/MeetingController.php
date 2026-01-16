@@ -85,7 +85,7 @@ class MeetingController extends Controller
      */
     public function edit(Meeting $meeting): \Illuminate\View\View
     {
-        abort_unless($meeting->created_by === Auth::user()->profile->id || Auth::user()->hasRole('admin'), 403, 'Sin permiso');
+        $this->authorize('update', $meeting);
         return view('app.back.meetings.edit', [
             'meeting'  => $meeting,
             'projects' => $this->queryService->getProjects()->load('team.user'),
@@ -95,14 +95,13 @@ class MeetingController extends Controller
 
     public function update(\App\Http\Requests\UpdateMeetingRequest $request, Meeting $meeting): \Illuminate\Http\RedirectResponse
     {
-        abort_unless($meeting->created_by === Auth::user()->profile->id || Auth::user()->hasRole('admin'), 403, 'Sin permiso');
         $this->actionService->updateMeeting($meeting, $request->validated());
         return redirect()->route('meetings.show', $meeting)->with('success', 'Actualizada.');
     }
 
     public function destroy(Meeting $meeting): \Illuminate\Http\RedirectResponse
     {
-        abort_unless($meeting->created_by === Auth::user()->profile->id || Auth::user()->hasRole('admin'), 403, 'Sin permiso');
+        $this->authorize('delete', $meeting);
         $meeting->delete();
         return redirect()->route('meetings.index')->with('success', 'Eliminada.');
     }
@@ -118,7 +117,7 @@ class MeetingController extends Controller
 
     public function complete(Request $request, Meeting $meeting): \Illuminate\Http\RedirectResponse
     {
-        abort_unless($meeting->created_by === Auth::user()->profile->id || Auth::user()->hasRole('admin'), 403, 'Sin permiso');
+        $this->authorize('update', $meeting);
         $this->actionService->completeMeeting($meeting, $request->validate([
             'notes'      => 'nullable|string',
             'attended'   => 'nullable|array',
@@ -129,14 +128,14 @@ class MeetingController extends Controller
 
     public function sendReminders(Meeting $meeting): \Illuminate\Http\RedirectResponse
     {
-        abort_unless($meeting->created_by === Auth::user()->profile->id || Auth::user()->hasRole('admin'), 403, 'Sin permiso');
+        $this->authorize('update', $meeting);
         $this->actionService->sendReminders($meeting);
         return back()->with('success', 'Recordatorios enviados.');
     }
 
     public function cancel(Request $request, Meeting $meeting): \Illuminate\Http\RedirectResponse
     {
-        abort_unless($meeting->created_by === Auth::user()->profile->id || Auth::user()->hasRole('admin'), 403, 'Sin permiso');
+        $this->authorize('update', $meeting);
         $this->actionService->cancelMeeting($meeting, $request->validate(['cancellation_reason' => 'required|string|max:1000'])['cancellation_reason']);
         return redirect()->route('meetings.show', $meeting)->with('success', 'Cancelada.');
     }

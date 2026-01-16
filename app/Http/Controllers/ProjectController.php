@@ -121,7 +121,7 @@ class ProjectController extends Controller
 
     public function uploadFinalReport(Request $request, Project $project): \Illuminate\Http\RedirectResponse
     {
-        abort_unless(Auth::user()->profile->id === $project->profile_id || Auth::user()->hasRole('admin'), 403, 'Sin permiso');
+        $this->authorize('uploadFinalReport', $project);
         $this->actionService->uploadFinalReport($project, $request->validate(['file' => 'required|file|mimes:pdf|max:10240'])['file']);
         return back()->with('success', 'Reporte subido.');
     }

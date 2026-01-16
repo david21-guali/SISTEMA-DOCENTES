@@ -25,7 +25,12 @@ class InnovationObserver
         if (!$innovation->wasChanged('status')) return;
 
         match ($innovation->status) {
-            'en_revision' => Notification::send(User::role(['admin', 'coordinador'])->get(), new InnovationReviewRequested($innovation)),
+            'en_revision' => Notification::send(
+                User::role(['admin', 'docente', 'coordinador'])
+                    ->where('id', '!=', auth()->id())
+                    ->get(), 
+                new InnovationReviewRequested($innovation)
+            ),
             'aprobada', 'rechazada' => $innovation->profile->user->notify(new InnovationStatusChanged($innovation)),
             default => null
         };

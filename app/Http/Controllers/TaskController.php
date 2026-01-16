@@ -84,6 +84,7 @@ class TaskController extends Controller
      */
     public function show(Task $task): \Illuminate\View\View
     {
+        $this->authorize('view', $task);
         $task->load(['project', 'assignedProfile.user', 'assignees.user']);
         return view('app.back.tasks.show', compact('task'));
     }
@@ -96,6 +97,7 @@ class TaskController extends Controller
      */
     public function edit(Task $task): \Illuminate\View\View
     {
+        $this->authorize('update', $task);
         $projects = $this->queryService->getProjectsForUser(Auth::user());
         $users = User::whereHas('profile', function($q) {
             /** @phpstan-ignore-next-line */
@@ -124,12 +126,14 @@ class TaskController extends Controller
 
     public function destroy(Task $task): \Illuminate\Http\RedirectResponse
     {
+        $this->authorize('delete', $task);
         $this->actionService->deleteTask($task);
         return redirect()->route('tasks.index')->with('success', 'Tarea eliminada exitosamente.');
     }
 
     public function complete(Task $task): \Illuminate\Http\RedirectResponse
     {
+        $this->authorize('complete', $task);
         $this->actionService->completeTask($task);
         return back()->with('success', 'Tarea marcada como completada.');
     }
