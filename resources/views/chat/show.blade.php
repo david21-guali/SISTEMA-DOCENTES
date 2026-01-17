@@ -86,13 +86,7 @@
 </div>
 
 @section('scripts')
-<script>
-    // Scroll al fondo
-    const chatBox = document.getElementById('chatBox');
-    if (chatBox) {
-        chatBox.scrollTop = chatBox.scrollHeight;
-    }
-</script>
+@vite(['resources/js/pages/chat-index.js'])
 @endsection
 
 @endsection

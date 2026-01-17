@@ -7,84 +7,102 @@ use App\Models\InnovationReview;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * Service to handle community reviews for pedagogical innovations.
+ * Target: Maintainability Index >= 65, Cyclomatic Complexity < 10.
+ */
 class InnovationReviewService
 {
     /**
-     * Submit an anonymous review for an innovation.
-     * 
+     * Submit an anonymous review record and update innovation stats.
+     *
      * @param Innovation $innovation
-     * @param User $reviewer
+     * @param User $user
      * @param array<string, mixed> $data
      * @return InnovationReview
      */
-    public function submitReview(Innovation $innovation, User $reviewer, array $data): InnovationReview
+    public function submitReview(Innovation $innovation, User $user, array $data): InnovationReview
     {
-        // 1. Validar que no sea admin
-        if ($reviewer->hasRole('admin')) {
-            throw new \Exception('Los administradores no pueden votar.');
-        }
+        $this->validateReview($innovation, $user);
 
-        // 2. Validar que no sea el creador
-        if ($innovation->profile->user_id === $reviewer->id) {
-            throw new \Exception('No puedes votar tu propia innovación.');
-        }
-
-        // 3. Validar que esté dentro del plazo
-        if ($innovation->review_deadline && now()->isAfter($innovation->review_deadline)) {
-            throw new \Exception('El período de votación ha finalizado.');
-        }
-
-        // 4. Validar que no haya votado ya
-        $exists = InnovationReview::where('innovation_id', $innovation->id)
-            ->where('reviewer_id', $reviewer->id)
-            ->exists();
-
-        if ($exists) {
-            throw new \Exception('Ya has votado esta innovación.');
-        }
-
-        return DB::transaction(function () use ($innovation, $reviewer, $data) {
-            // Guardar voto
-            $review = InnovationReview::create([
+        return DB::transaction(function () use ($innovation, $user, $data) {
+            $params = array_merge($data, [
                 'innovation_id' => $innovation->id,
-                'reviewer_id'   => $reviewer->id,
-                'vote'          => $data['vote'],
-                'comment'       => $data['comment']
+                'reviewer_id'   => $user->id,
             ]);
 
-            // Actualizar estadísticas en la innovación
-            $this->updateInnovationStats($innovation);
-
-            // Notificar al creador
+            $review = InnovationReview::create($params);
+            
+            $innovation->recalculateCommunityStats();
             $innovation->profile->user->notify(new \App\Notifications\InnovationVoted($innovation));
-
+            
             return $review;
         });
     }
 
     /**
-     * Update the community score and total votes for an innovation.
-     * 
+     * Validate if a user is eligible to vote based on roles, ownership and deadlines.
+     *
      * @param Innovation $innovation
-     * @return void
+     * @param User $user
+     * @throws \Exception
      */
-    public function updateInnovationStats(Innovation $innovation): void
+    public function validateReview(Innovation $innovation, User $user): void
     {
-        $total = $innovation->reviews()->count();
-        if ($total === 0) {
-            $innovation->update([
-                'community_score' => null,
-                'total_votes'     => 0
-            ]);
-            return;
+        $this->ensureUserCanVote($user);
+        $this->ensureInnovationIsVoteable($innovation, $user);
+    }
+
+    /**
+     * Check role-based permissions for voting.
+     */
+    private function ensureUserCanVote(User $user): void
+    {
+        if ($user->hasRole('admin')) {
+             throw new \Exception('Los administradores no pueden votar.');
         }
 
-        $approvedCount = $innovation->reviews()->where('vote', 'approved')->count();
-        $score = round(($approvedCount / $total) * 100, 2);
+        if (!$user->hasRole(['docente', 'coordinador'])) {
+            throw new \Exception('Solo docentes y coordinadores pueden votar.');
+        }
+    }
 
-        $innovation->update([
-            'community_score' => $score,
-            'total_votes'     => $total
-        ]);
+    /**
+     * Check innovation state, ownership and deadline constraints.
+     */
+    private function ensureInnovationIsVoteable(Innovation $innovation, User $user): void
+    {
+        if ($innovation->status !== 'en_revision') {
+            throw new \Exception('No está en período de revisión.');
+        }
+
+        if ($innovation->isCreator($user)) {
+            throw new \Exception('No puedes votar tu propia innovación.');
+        }
+
+        if ($innovation->hasVotedBy($user)) {
+             throw new \Exception('Ya has votado esta innovación.');
+        }
+
+        if ($innovation->isDeadlinePassed()) {
+            throw new \Exception('El período de votación ha finalizado.');
+        }
+    }
+
+    /**
+     * Determine if a user can review a specific innovation (boolean version).
+     */
+    public function canUserReview(Innovation $innovation, ?User $user): bool
+    {
+        if (!$user) {
+            return false;
+        }
+
+        try {
+            $this->validateReview($innovation, $user);
+            return true;
+        } catch (\Exception) {
+            return false;
+        }
     }
 }

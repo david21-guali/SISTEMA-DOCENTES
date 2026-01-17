@@ -21,12 +21,9 @@ class ProjectPolicy
      */
     public function view(User $user, Project $project): bool
     {
-        if ($user->hasRole(['admin', 'coordinador'])) {
-            return true;
-        }
+        if ($user->hasRole(['admin', 'coordinador'])) return true;
 
-        return $user->hasPermissionTo('view-projects') &&
-               ($user->profile->id === $project->profile_id || $project->team->contains('user_id', $user->id));
+        return $user->hasPermissionTo('view-projects') && $this->isMemberOrOwner($user, $project);
     }
 
     /**
@@ -42,18 +39,9 @@ class ProjectPolicy
      */
     public function update(User $user, Project $project): bool
     {
-        // Admins and Coordinators can update any project
-        if ($user->hasRole(['admin', 'coordinador'])) {
-            return true;
-        }
+        if ($user->hasRole(['admin', 'coordinador'])) return true;
 
-        // Owners can update their own projects if they have the permission
-        // Or team members if we want to allow that? Role docente usually has edit-projects.
-        // User request specifically said docentes shouldn't CREATE, but they can edit their own/assigned?
-        // RolePermissionSeeder says docente has edit-projects.
-        
-        return $user->hasPermissionTo('edit-projects') && 
-               ($user->profile->id === $project->profile_id || $project->team->contains('user_id', $user->id));
+        return $user->hasPermissionTo('edit-projects') && $this->isMemberOrOwner($user, $project);
     }
 
     /**
@@ -89,7 +77,15 @@ class ProjectPolicy
      */
     public function uploadFinalReport(User $user, Project $project): bool
     {
-        return $user->hasRole(['admin', 'coordinador']) || 
-               ($user->profile && $user->profile->id === $project->profile_id);
+        return $user->hasRole(['admin', 'coordinador']) || $this->isMemberOrOwner($user, $project);
+    }
+
+    /**
+     * Check if user is the owner or a team member.
+     */
+    private function isMemberOrOwner(User $user, Project $project): bool
+    {
+        if (!$user->profile) return false;
+        return $user->profile->id === $project->profile_id || $project->team->contains('user_id', $user->id);
     }
 }

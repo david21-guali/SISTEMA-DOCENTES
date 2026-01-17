@@ -105,24 +105,6 @@
                             @enderror
                         </div>
 
-                        <script>
-                        function filterUsers() {
-                            const input = document.getElementById('user_search');
-                            const filter = input.value.toLowerCase();
-                            const list = document.getElementById('user_list');
-                            const items = list.getElementsByClassName('user-item');
-
-                            for (let i = 0; i < items.length; i++) {
-                                const label = items[i].getElementsByTagName('label')[0];
-                                const txtValue = label.textContent || label.innerText;
-                                if (txtValue.toLowerCase().indexOf(filter) > -1) {
-                                    items[i].style.display = "";
-                                } else {
-                                    items[i].style.display = "none";
-                                }
-                            }
-                        }
-                        </script>
 
                         <!-- Descripción -->
                         <div class="mb-3">
@@ -194,21 +176,6 @@
                             </div>
                         </div>
 
-                        <script>
-                        function toggleBudget() {
-                            const checkBox = document.getElementById('project_needs_budget');
-                            const container = document.getElementById('budget_container');
-                            const input = document.getElementById('budget');
-                            
-                            if (checkBox.checked) {
-                                container.style.display = 'block';
-                                input.focus();
-                            } else {
-                                container.style.display = 'none';
-                                input.value = ''; // Limpiar si se desmarca
-                            }
-                        }
-                        </script>
 
                         <!-- Descripción de Impacto -->
                         <div class="mb-3">
@@ -309,422 +276,41 @@
 @endsection
 
 @section('scripts')
+@php
+    $oldFiles = [];
+    if(old('temp_attachments')) {
+        foreach(old('temp_attachments') as $value) {
+            $data = json_decode($value, true);
+            if ($data) {
+                $oldFiles[] = [
+                    'id' => $data['id'] ?? basename($data['path']),
+                    'name' => $data['name'], 
+                    'path' => $data['path'],
+                    'type' => $data['type'] ?? 'other',
+                    'size' => $data['size']
+                ];
+            }
+        }
+    }
+@endphp
+
 <script>
-function saveCategory() {
-    const name = document.getElementById('new_cat_name').value;
-    const color = document.getElementById('new_cat_color').value;
-    const desc = document.getElementById('new_cat_desc').value;
-
-    if(!name) {
-        Swal.fire('Error', 'El nombre es obligatorio', 'error');
-        return;
-    }
-
-    fetch('{{ route("categories.store") }}', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+    window.AppConfig = {
+        csrfToken: '{{ csrf_token() }}',
+        formId: 'projectForm',
+        routes: {
+            tempUpload: '{{ route("temp.upload") }}',
+            tempDelete: '{{ route("temp.delete") }}',
+            categoriesStore: '{{ route("categories.store") }}'
         },
-        body: JSON.stringify({ name: name, color: color, description: desc })
-    })
-    .then(response => {
-        if (!response.ok) {
-            return response.json().then(err => Promise.reject(err));
+        urls: {
+            storagePreview: '{{ url("storage-preview") }}'
         }
-        return response.json();
-    })
-    .then(data => {
-        if(data.success) {
-            // Agregar al select
-            const select = document.getElementById('category_id');
-            const option = new Option(data.category.name, data.category.id);
-            select.add(option);
-            select.value = data.category.id;
-            
-            // Cerrar modal
-            const modal = bootstrap.Modal.getInstance(document.getElementById('createCategoryModal'));
-            modal.hide();
-            
-            // Limpiar inputs
-            document.getElementById('new_cat_name').value = '';
-            document.getElementById('new_cat_desc').value = '';
-            
-            Swal.fire('Éxito', 'Categoría creada correctamente', 'success');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        let errorMessage = 'Ocurrió un error al guardar';
-        
-        // Si hay errores de validación de Laravel
-        if (error.errors) {
-            const errors = Object.values(error.errors).flat();
-            errorMessage = errors.join('\n');
-        } else if (error.message) {
-            errorMessage = error.message;
-        }
-        
-        Swal.fire('Error', errorMessage, 'error');
-    });
-}
-
-// Función para eliminar categoría
-function deleteCategory(categoryId, categoryName, projectCount) {
-    if (projectCount > 0) {
-        Swal.fire({
-            title: 'No se puede eliminar',
-            text: `La categoría "${categoryName}" tiene ${projectCount} proyecto(s) asociado(s). Elimina o cambia la categoría de esos proyectos primero.`,
-            icon: 'warning',
-            confirmButtonColor: '#4e73df',
-            confirmButtonText: 'Entendido'
-        });
-        return;
-    }
-
-    Swal.fire({
-        title: `¿Eliminar categoría "${categoryName}"?`,
-        text: "Esta acción no se puede deshacer.",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#e74a3b',
-        cancelButtonColor: '#858796',
-        confirmButtonText: 'Sí, eliminar',
-        cancelButtonText: 'Cancelar'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            const token = document.querySelector('input[name="_token"]').value;
-            
-            fetch(`/categories/${categoryId}`, {
-                method: 'DELETE',
-                headers: {
-                    'X-CSRF-TOKEN': token,
-                    'Accept': 'application/json'
-                }
-            })
-            .then(response => {
-                 if (!response.ok) {
-                    return response.json().then(err => Promise.reject(err));
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    // Remover del select de manera visual si existe
-                    const select = document.getElementById('category_id');
-                    const option = select.querySelector(`option[value="${categoryId}"]`);
-                    if (option) option.remove();
-                    
-                    Swal.fire('Eliminado', data.message, 'success').then(() => {
-                        window.location.reload(); // Recargar para actualizar la lista de gestión
-                    });
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                const errorMessage = error.message || 'Error al eliminar la categoría';
-                Swal.fire('Error', errorMessage, 'error');
-            });
-        }
-    });
-}
-
-// File Upload AJAX with Preview and Persistence
-document.addEventListener('DOMContentLoaded', function() {
-    const dropZone = document.getElementById('createDropZone');
-    const fileInput = document.getElementById('createFileInput');
-    const fileListContainer = document.getElementById('createFileList');
-    const tempInputsContainer = document.getElementById('tempFileInputs');
-    let selectedFiles = []; // Format: { id, name, path, type, size }
-
-
-    if (dropZone && fileInput) {
-        dropZone.addEventListener('click', () => fileInput.click());
-
-        dropZone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            dropZone.style.borderColor = '#4e73df';
-            dropZone.style.backgroundColor = '#e3f2fd';
-        });
-
-        dropZone.addEventListener('dragleave', () => {
-            dropZone.style.borderColor = '#dee2e6';
-            dropZone.style.backgroundColor = '';
-        });
-
-        dropZone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dropZone.style.borderColor = '#dee2e6';
-            dropZone.style.backgroundColor = '';
-            handleFiles(e.dataTransfer.files);
-        });
-
-        fileInput.addEventListener('change', () => {
-            handleFiles(fileInput.files);
-        });
-
-        function handleFiles(files) {
-            for (let i = 0; i < files.length; i++) {
-                uploadFile(files[i]);
-            }
-        }
-
-        function uploadFile(file) {
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('_token', '{{ csrf_token() }}');
-
-            // Show loading state in list maybe?
-            const tempId = Math.random().toString(36).substring(7);
-            addLoadingPlaceholder(tempId, file.name);
-
-            fetch('{{ route("temp.upload") }}', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                removeLoadingPlaceholder(tempId);
-                if (data.success) {
-                    selectedFiles.push({
-                        id: data.id,
-                        name: data.name,
-                        path: data.path,
-                        type: getFileType(file),
-                        size: (file.size / 1024 / 1024).toFixed(2)
-                    });
-                    updateFileList();
-                    updateHiddenInputs();
-                } else {
-                    Swal.fire('Error', data.message || 'Error al subir archivo', 'error');
-                }
-            })
-            .catch(error => {
-                removeLoadingPlaceholder(tempId);
-                console.error('Error:', error);
-                Swal.fire('Error', 'Error de conexión al subir el archivo', 'error');
-            });
-        }
-
-        function addLoadingPlaceholder(id, name) {
-            const div = document.createElement('div');
-            div.id = 'loading-' + id;
-            div.className = 'alert alert-info py-1 px-2 mb-1 small d-flex justify-content-between align-items-center';
-            div.innerHTML = `<span><i class="fas fa-spinner fa-spin me-2"></i> Subiendo ${name}...</span>`;
-            fileListContainer.appendChild(div);
-        }
-
-        function removeLoadingPlaceholder(id) {
-            const el = document.getElementById('loading-' + id);
-            if (el) el.remove();
-        }
-
-        function removeFile(index) {
-            const file = selectedFiles[index];
-            
-            Swal.fire({
-                title: '¿Quitar archivo?',
-                text: "El archivo se eliminará del servidor temporal.",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#e74a3b',
-                cancelButtonColor: '#858796',
-                confirmButtonText: 'Sí, quitar',
-                cancelButtonText: 'Cancelar'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Call server to delete temp file
-                    fetch('{{ route("temp.delete") }}', {
-                        method: 'DELETE',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
-                        body: JSON.stringify({ path: file.path })
-                    });
-
-                    selectedFiles.splice(index, 1);
-                    updateFileList();
-                    updateHiddenInputs();
-                }
-            });
-        }
-
-        function updateHiddenInputs() {
-            tempInputsContainer.innerHTML = '';
-            selectedFiles.forEach(file => {
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = 'temp_attachments[]';
-                // Store metadata as JSON to preserve name/size across validation errors
-                input.value = JSON.stringify({
-                    path: file.path,
-                    name: file.name,
-                    size: file.size,
-                    type: file.type
-                });
-                tempInputsContainer.appendChild(input);
-            });
-        }
-
-        function getFileType(file) {
-            const fileName = file.name || file.path || '';
-            const extension = fileName.split('.').pop().toLowerCase();
-            if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(extension)) return 'image';
-            if (extension === 'pdf') return 'pdf';
-            if (['doc', 'docx'].includes(extension)) return 'word';
-            if (['xls', 'xlsx', 'csv'].includes(extension)) return 'excel';
-            return 'other';
-        }
-
-        function getFileIcon(type) {
-            switch(type) {
-                case 'image': return 'fas fa-file-image text-success';
-                case 'pdf': return 'fas fa-file-pdf text-danger';
-                case 'word': return 'fas fa-file-word text-primary';
-                case 'excel': return 'fas fa-file-excel text-success';
-                default: return 'fas fa-file text-secondary';
-            }
-        }
-
-        function updateFileList() {
-            fileListContainer.innerHTML = '';
-            if (selectedFiles.length === 0) return;
-
-            const row = document.createElement('div');
-            row.className = 'row g-2';
-
-            selectedFiles.forEach((file, index) => {
-                const col = document.createElement('div');
-                col.className = 'col-6 col-md-4 col-lg-3';
-                
-                const card = document.createElement('div');
-                card.className = 'card h-100 border shadow-sm';
-                
-                const type = file.type;
-                const isPreviewable = (type === 'image' || type === 'pdf');
-
-                let previewHtml = '';
-                const storageUrl = '{{ url("storage-preview") }}/' + file.path;
-                
-                const onclickAction = isPreviewable ? `onclick="openGlobalPreview('${storageUrl}', '${file.name}', '${type}')" style="cursor:pointer;"` : '';
-
-                if (type === 'image') {
-                    previewHtml = `<div class="preview-area d-flex align-items-center justify-content-center bg-light" style="height:80px; overflow:hidden;" ${onclickAction}>
-                                        <img class="img-fluid" style="width:100%; height:100%; object-fit:cover;" src="${storageUrl}">
-                                   </div>`;
-                } else {
-                    const icon = getFileIcon(type);
-                    previewHtml = `<div class="preview-area d-flex align-items-center justify-content-center bg-light" style="height:80px;" ${onclickAction}>
-                                        <i class="${icon} fa-2x"></i>
-                                   </div>`;
-                }
-
-                card.innerHTML = `
-                    ${previewHtml}
-                    <div class="card-body p-2 text-center overflow-hidden">
-                        <p class="mb-1 small text-truncate fw-bold" title="${file.name}">${file.name}</p>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <small class="text-muted">${file.size} MB</small>
-                            <div class="d-flex gap-1">
-                                ${isPreviewable ? `
-                                <button type="button" class="btn btn-sm btn-outline-info p-0 js-preview-btn" style="width:28px; height:28px;" title="Vista Previa">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                ` : ''}
-                                <button type="button" class="btn btn-sm btn-outline-danger p-0 remove-btn" style="width:28px; height:28px;" title="Quitar">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                
-                if (isPreviewable) {
-                    card.querySelector('.js-preview-btn').addEventListener('click', () => {
-                        openGlobalPreview(storageUrl, file.name, type);
-                    });
-                }
-                
-                col.appendChild(card);
-                row.appendChild(col);
-
-                card.querySelector('.remove-btn').addEventListener('click', () => removeFile(index));
-            });
-
-            fileListContainer.appendChild(row);
-        }
-        
-        // Recover old files if any (placed after function definitions)
-        @if(old('temp_attachments'))
-            @php
-                $oldFiles = [];
-                foreach(old('temp_attachments') as $value) {
-                    $data = json_decode($value, true);
-                    if ($data) {
-                        $oldFiles[] = [
-                            'id' => $data['id'] ?? basename($data['path']),
-                            'name' => $data['name'], 
-                            'path' => $data['path'],
-                            'type' => $data['type'] ?? 'other',
-                            'size' => $data['size']
-                        ];
-                    } else {
-                        // Fallback for plain paths if any
-                        $oldFiles[] = [
-                            'id' => basename($value),
-                            'name' => basename($value), 
-                            'path' => $value,
-                            'type' => \Illuminate\Support\Str::endsWith($value, ['.jpg', '.jpeg', '.png', '.gif']) ? 'image' : (\Illuminate\Support\Str::endsWith($value, '.pdf') ? 'pdf' : 'other'),
-                            'size' => '?'
-                        ];
-                    }
-                }
-            @endphp
-            selectedFiles = {!! json_encode($oldFiles) !!};
-            updateFileList();
-            updateHiddenInputs();
-        @endif
-    }
-
-    // 3. Lógica del Modal de Vista Previa
-    const globalModal = new bootstrap.Modal(document.getElementById('globalPreviewModal'));
-    const previewTitle = document.getElementById('previewTitle');
-    const previewContent = document.getElementById('previewContent');
-
-    window.openGlobalPreview = function(url, name, type) {
-        previewTitle.textContent = name;
-        previewContent.innerHTML = '';
-
-        if (type === 'image') {
-            const img = document.createElement('img');
-            img.src = url;
-            img.className = 'img-fluid';
-            img.style.maxHeight = '80vh';
-            previewContent.appendChild(img);
-        } else if (type === 'pdf') {
-            const iframe = document.createElement('iframe');
-            iframe.src = url;
-            iframe.style.width = '100%';
-            iframe.style.height = '80vh';
-            iframe.style.border = 'none';
-            previewContent.appendChild(iframe);
-        }
-
-        globalModal.show();
     };
-});
 
-// Double submission protection
-document.getElementById('projectForm').addEventListener('submit', function() {
-    const btn = document.getElementById('submitBtn');
-    const text = btn.querySelector('.btn-text');
-    const spinner = btn.querySelector('.spinner-border');
-    
-    btn.disabled = true;
-    text.textContent = 'Guardando...';
-    spinner.classList.remove('d-none');
-});
+    window.FileUploadConfig = {
+        initialFiles: {!! json_encode($oldFiles) !!}
+    };
 </script>
+@vite(['resources/js/pages/projects-form.js'])
 @endsection

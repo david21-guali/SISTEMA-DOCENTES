@@ -88,34 +88,17 @@ class InnovationController extends Controller
     public function show(Innovation $innovation): \Illuminate\View\View
     {
         $innovation->load(['profile.user', 'innovationType', 'attachments']);
+        $user = auth()->user();
         
-        $data = [
+        $hasVoted = $user && $innovation->hasVotedBy($user);
+        $canVote = $this->reviewService->canUserReview($innovation, $user) && !$hasVoted;
+
+        return view('app.back.innovations.show', [
             'innovation' => $innovation,
-            'hasVoted' => false,
-            'canVote' => false,
-            'reviews' => collect(),
-        ];
-
-        if (Auth::check()) {
-            $user = Auth::user();
-            
-            // Si es admin, cargar revisiones anónimas
-            if ($user->hasRole('admin')) {
-                $data['reviews'] = $innovation->reviews()->latest()->get();
-            }
-
-            // Verificar si puede votar
-            if ($user->hasRole(['docente', 'coordinador']) && 
-                $innovation->status === 'en_revision' && 
-                $innovation->profile->user_id !== $user->id &&
-                (!$innovation->review_deadline || now()->isBefore($innovation->review_deadline))) {
-                
-                $data['hasVoted'] = $innovation->reviews()->where('reviewer_id', $user->id)->exists();
-                $data['canVote'] = !$data['hasVoted'];
-            }
-        }
-
-        return view('app.back.innovations.show', $data);
+            'hasVoted'   => $hasVoted,
+            'canVote'    => $canVote,
+            'reviews'    => $user?->hasRole('admin') ? $innovation->reviews()->latest()->get() : collect(),
+        ]);
     }
 
     /**
@@ -203,13 +186,7 @@ class InnovationController extends Controller
             'review_notes' => 'nullable|string|max:1000'
         ]);
 
-        $innovation->update([
-            'status'       => 'aprobada',
-            'impact_score' => $validated['impact_score'],
-            'review_notes' => $request->review_notes,
-            'reviewed_by'  => auth()->id(),
-            'reviewed_at'  => now()
-        ]);
+        $this->innovationService->approve($innovation, $validated);
 
         $message = $validated['impact_score'] >= 4 
             ? 'Innovación aprobada y agregada a Buenas Prácticas.'
@@ -244,27 +221,18 @@ class InnovationController extends Controller
      */
     public function review(Innovation $innovation): \Illuminate\View\View|\Illuminate\Http\RedirectResponse
     {
-        // Solo docentes/coordinadores pueden votar (admin NO)
-        if (!auth()->user()->hasRole(['docente', 'coordinador'])) {
-            abort(403, 'Solo docentes y coordinadores pueden votar.');
+        $user = auth()->user();
+
+        if ($user->hasRole('admin')) abort(403, 'Los administradores no pueden votar.');
+
+        try {
+            $this->reviewService->validateReview($innovation, $user);
+        } catch (\Exception $e) {
+            return redirect()->route('innovations.show', $innovation)->with('error', $e->getMessage());
         }
 
-        // Verificar que no haya expirado el plazo
-        if ($innovation->review_deadline && now()->isAfter($innovation->review_deadline)) {
-            return redirect()->route('innovations.show', $innovation)
-                ->with('error', 'El período de votación ha finalizado.');
-        }
-
-        // No puede votar si ya votó
-        if ($innovation->reviews()->where('reviewer_id', auth()->id())->exists()) {
-            return redirect()->route('innovations.show', $innovation)
-                ->with('info', 'Ya has votado esta innovación.');
-        }
-
-        // No puede votar su propia innovación
-        if ($innovation->profile->user_id === auth()->id()) {
-            return redirect()->route('innovations.show', $innovation)
-                ->with('error', 'No puedes votar tu propia innovación.');
+        if ($innovation->hasVotedBy($user)) {
+            return redirect()->route('innovations.show', $innovation)->with('info', 'Ya has votado esta innovación.');
         }
 
         return view('app.back.innovations.review', compact('innovation'));

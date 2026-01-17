@@ -221,4 +221,42 @@ class Innovation extends Model
 
         return $query->where('profile_id', $profileId);
     }
+
+    /**
+     * Check if a user has already voted for this innovation.
+     */
+    public function hasVotedBy(User $user): bool
+    {
+        return $this->reviews()->where('reviewer_id', $user->id)->exists();
+    }
+
+    /**
+     * Check if the current user is the author.
+     */
+    public function isCreator(User $user): bool
+    {
+        return $this->profile->user_id === $user->id;
+    }
+
+    /**
+     * Check if the review deadline has passed.
+     */
+    public function isDeadlinePassed(): bool
+    {
+        return $this->review_deadline?->isPast() ?? false;
+    }
+
+    /**
+     * Recalculate community score and total votes.
+     */
+    public function recalculateCommunityStats(): void
+    {
+        $total = $this->reviews()->count();
+        $approvedCount = $this->reviews()->where('vote', 'approved')->count();
+        
+        $this->update([
+            'total_votes'     => $total,
+            'community_score' => $total > 0 ? round(($approvedCount / $total) * 100, 2) : null
+        ]);
+    }
 }

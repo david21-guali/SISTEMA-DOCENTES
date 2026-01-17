@@ -49,7 +49,7 @@
 <div class="page">
     <div class="content content-first">
         <div class="report-details">
-            Created at 2026-01-13 18:39:39        , with PHPMetrics v2.9.1 (<a href="https://twitter.com/Halleck45">Jean-François Lépine</a>).
+            Created at 2026-01-17 00:10:52        , with PHPMetrics v2.9.1 (<a href="https://twitter.com/Halleck45">Jean-François Lépine</a>).
         </div>
 
         
@@ -247,6 +247,46 @@
 
     var relations = [
     {
+        "name": "\\App\\Console\\Commands\\CloseExpiredReviews",
+        "size": 3000,
+        "relations": [
+            "\\Illuminate\\Console\\Command",
+            "\\App\\Models\\Innovation",
+            "\\App\\Models\\User",
+            "\\App\\Notifications\\InnovationReviewCompleted",
+            "\\Illuminate\\Support\\Facades\\Notification"
+        ]
+    },
+    {
+        "name": "\\Illuminate\\Console\\Command",
+        "size": 3000,
+        "relations": []
+    },
+    {
+        "name": "\\App\\Models\\Innovation",
+        "size": 3000,
+        "relations": []
+    },
+    {
+        "name": "\\App\\Models\\User",
+        "size": 3000,
+        "relations": []
+    },
+    {
+        "name": "\\App\\Notifications\\InnovationReviewCompleted",
+        "size": 3000,
+        "relations": [
+            "\\Illuminate\\Notifications\\Notification",
+            "\\App\\Models\\Innovation",
+            "\\Illuminate\\Notifications\\Messages\\MailMessage"
+        ]
+    },
+    {
+        "name": "\\Illuminate\\Support\\Facades\\Notification",
+        "size": 3000,
+        "relations": []
+    },
+    {
         "name": "\\App\\Console\\Commands\\SendMeetingReminders",
         "size": 3000,
         "relations": [
@@ -255,11 +295,6 @@
             "\\App\\Models\\Meeting",
             "\\App\\Notifications\\MeetingReminder"
         ]
-    },
-    {
-        "name": "\\Illuminate\\Console\\Command",
-        "size": 3000,
-        "relations": []
     },
     {
         "name": "\\Carbon\\Carbon",
@@ -365,11 +400,6 @@
     },
     {
         "name": "\\App\\Exports\\InnovationsExport",
-        "size": 3000,
-        "relations": []
-    },
-    {
-        "name": "\\App\\Models\\Innovation",
         "size": 3000,
         "relations": []
     },
@@ -589,11 +619,6 @@
             "\\Illuminate\\Auth\\Events\\Registered",
             "\\Illuminate\\Support\\Facades\\Auth"
         ]
-    },
-    {
-        "name": "\\App\\Models\\User",
-        "size": 3000,
-        "relations": []
     },
     {
         "name": "\\Illuminate\\Auth\\Events\\Registered",
@@ -816,14 +841,19 @@
         ]
     },
     {
-        "name": "\\App\\Http\\Controllers\\InnovationActionController",
+        "name": "\\App\\Http\\Controllers\\InnovationController",
         "size": 3000,
         "relations": [
             "\\App\\Http\\Controllers\\Controller",
             "\\App\\Services\\InnovationService",
-            "\\Illuminate\\Http\\RedirectResponse",
+            "\\App\\Services\\InnovationReviewService",
+            "\\Illuminate\\View\\View",
             "\\Illuminate\\Http\\Request",
-            "\\App\\Models\\Innovation"
+            "\\App\\Models\\Innovation",
+            "\\App\\Models\\InnovationType",
+            "\\Illuminate\\Http\\RedirectResponse",
+            "\\App\\Http\\Requests\\StoreInnovationRequest",
+            "\\App\\Http\\Requests\\UpdateInnovationRequest"
         ]
     },
     {
@@ -836,18 +866,15 @@
         ]
     },
     {
-        "name": "\\App\\Http\\Controllers\\InnovationController",
+        "name": "\\App\\Services\\InnovationReviewService",
         "size": 3000,
         "relations": [
-            "\\App\\Http\\Controllers\\Controller",
-            "\\App\\Services\\InnovationService",
-            "\\Illuminate\\View\\View",
-            "\\Illuminate\\Http\\Request",
+            "\\App\\Models\\InnovationReview",
             "\\App\\Models\\Innovation",
-            "\\App\\Models\\InnovationType",
-            "\\Illuminate\\Http\\RedirectResponse",
-            "\\App\\Http\\Requests\\StoreInnovationRequest",
-            "\\App\\Http\\Requests\\UpdateInnovationRequest"
+            "\\App\\Models\\User",
+            "\\App\\Notifications\\InnovationVoted",
+            "\\Illuminate\\Support\\Facades\\DB",
+            "\\Exception"
         ]
     },
     {
@@ -897,7 +924,6 @@
             "\\Illuminate\\Http\\RedirectResponse",
             "\\App\\Http\\Requests\\StoreMeetingRequest",
             "\\App\\Models\\Meeting",
-            "\\Illuminate\\Support\\Facades\\Auth",
             "\\App\\Http\\Requests\\UpdateMeetingRequest"
         ]
     },
@@ -992,8 +1018,7 @@
             "\\Illuminate\\Http\\RedirectResponse",
             "\\App\\Http\\Requests\\StoreProjectRequest",
             "\\App\\Models\\Project",
-            "\\App\\Http\\Requests\\UpdateProjectRequest",
-            "\\Illuminate\\Support\\Facades\\Auth"
+            "\\App\\Http\\Requests\\UpdateProjectRequest"
         ]
     },
     {
@@ -1353,6 +1378,11 @@
         "relations": []
     },
     {
+        "name": "\\App\\Models\\InnovationReview",
+        "size": 3000,
+        "relations": []
+    },
+    {
         "name": "\\Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany",
         "size": 3000,
         "relations": []
@@ -1430,6 +1460,11 @@
     },
     {
         "name": "\\App\\Notifications\\InnovationStatusChanged",
+        "size": 3000,
+        "relations": []
+    },
+    {
+        "name": "\\App\\Notifications\\InnovationVoted",
         "size": 3000,
         "relations": []
     },
@@ -1552,11 +1587,6 @@
         ]
     },
     {
-        "name": "\\Illuminate\\Support\\Facades\\Notification",
-        "size": 3000,
-        "relations": []
-    },
-    {
         "name": "\\App\\Observers\\MeetingObserver",
         "size": 3000,
         "relations": [
@@ -1615,11 +1645,27 @@
         ]
     },
     {
+        "name": "\\App\\Policies\\MeetingPolicy",
+        "size": 3000,
+        "relations": [
+            "\\App\\Models\\User",
+            "\\App\\Models\\Meeting"
+        ]
+    },
+    {
         "name": "\\App\\Policies\\ProjectPolicy",
         "size": 3000,
         "relations": [
             "\\App\\Models\\User",
             "\\App\\Models\\Project"
+        ]
+    },
+    {
+        "name": "\\App\\Policies\\TaskPolicy",
+        "size": 3000,
+        "relations": [
+            "\\App\\Models\\User",
+            "\\App\\Models\\Task"
         ]
     },
     {
@@ -1669,6 +1715,11 @@
         "relations": []
     },
     {
+        "name": "\\Exception",
+        "size": 3000,
+        "relations": []
+    },
+    {
         "name": "\\App\\Services\\MeetingAttendanceService",
         "size": 3000,
         "relations": [
@@ -1709,11 +1760,6 @@
     },
     {
         "name": "\\Illuminate\\Support\\Arr",
-        "size": 3000,
-        "relations": []
-    },
-    {
-        "name": "\\Exception",
         "size": 3000,
         "relations": []
     },

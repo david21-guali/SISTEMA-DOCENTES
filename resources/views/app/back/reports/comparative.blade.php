@@ -500,64 +500,12 @@
 
 @section('scripts')
 <script>
-    // Gráfico de Tendencias
-    const trendsCtx = document.getElementById('trendsChart').getContext('2d');
-    new Chart(trendsCtx, {
-        type: 'line',
-        data: {
-            labels: {!! json_encode(array_keys($projectsByMonth)) !!},
-            datasets: [
-                {
-                    label: 'Proyectos',
-                    data: {!! json_encode(array_values($projectsByMonth)) !!},
-                    borderColor: '#3b82f6',
-                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                    tension: 0.3,
-                    fill: true
-                },
-                {
-                    label: 'Tareas',
-                    data: {!! json_encode(array_values($tasksByMonth)) !!},
-                    borderColor: '#f59e0b',
-                    backgroundColor: 'rgba(245, 158, 11, 0.1)',
-                    tension: 0.3,
-                    fill: true
-                },
-                {
-                    label: 'Innovaciones',
-                    data: {!! json_encode(array_values($innovationsByMonth)) !!},
-                    borderColor: '#06b6d4',
-                    backgroundColor: 'rgba(6, 182, 212, 0.1)',
-                    tension: 0.3,
-                    fill: true
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'top',
-                },
-                tooltip: {
-                    mode: 'index',
-                    intersect: false,
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        stepSize: 1
-                    }
-                }
-            },
-            interaction: {
-                mode: 'nearest',
-                axis: 'x',
-                intersect: false
-            }
-        }
-    });
+    window.TrendsConfig = {
+        labels: {!! json_encode(array_keys($projectsByMonth)) !!},
+        projectsData: {!! json_encode(array_values($projectsByMonth)) !!},
+        tasksData: {!! json_encode(array_values($tasksByMonth)) !!},
+        innovationsData: {!! json_encode(array_values($innovationsByMonth)) !!}
+    };
 </script>
+@vite(['resources/js/pages/reports-comparative.js'])
 @endsection

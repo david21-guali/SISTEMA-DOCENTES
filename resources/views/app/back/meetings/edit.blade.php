@@ -226,67 +226,17 @@
 @endpush
 @endsection
 
-@section('scripts')
 <script>
-    // Project members mapping
-    const projectMembers = {
-        @foreach($projects as $project)
-            {{ $project->id }}: [
-                @foreach($project->team as $member)
-                    {{ $member->user->id }},
-                @endforeach
-            ],
-        @endforeach
+    window.MeetingConfig = {
+        projectMembers: {
+            @foreach($projects as $project)
+                {{ $project->id }}: [
+                    @foreach($project->team as $member)
+                        {{ $member->user->id }},
+                    @endforeach
+                ],
+            @endforeach
+        }
     };
-
-    const projectSelect = document.querySelector('select[name="project_id"]');
-    const participantItems = document.querySelectorAll('.participant-item');
-    const searchInput = document.getElementById('searchParticipants');
-
-    // Filter participants by project
-    function filterByProject() {
-        const selectedProjectId = parseInt(projectSelect.value);
-        
-        participantItems.forEach(function(item) {
-            const checkbox = item.querySelector('input[type="checkbox"]');
-            const userId = parseInt(checkbox.value);
-            const wasChecked = checkbox.checked;
-            
-            // If no project selected, show all
-            if (!selectedProjectId) {
-                item.style.display = 'block';
-                return;
-            }
-            
-            // Show only if user is in selected project
-            if (projectMembers[selectedProjectId] && projectMembers[selectedProjectId].includes(userId)) {
-                item.style.display = 'block';
-            } else {
-                item.style.display = 'none';
-                // Only uncheck if not previously selected
-                if (!wasChecked) {
-                    checkbox.checked = false;
-                }
-            }
-        });
-    }
-
-    // Search functionality
-    searchInput.addEventListener('input', function() {
-        const search = this.value.toLowerCase();
-        participantItems.forEach(function(item) {
-            // Only search within visible items
-            if (item.style.display === 'none') return;
-            
-            const text = item.textContent.toLowerCase();
-            item.style.display = text.includes(search) ? 'block' : 'none';
-        });
-    });
-
-    // Listen to project selection changes
-    projectSelect.addEventListener('change', filterByProject);
-
-    // Initial filter on page load
-    filterByProject();
 </script>
-@endsection
+@vite(['resources/js/pages/meetings-form.js'])

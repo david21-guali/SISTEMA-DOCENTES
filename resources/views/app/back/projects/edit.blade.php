@@ -584,81 +584,25 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         };
 
-        // Recover old files if any (placed after function definitions)
-        @if(old('temp_attachments'))
-            @php
-                $oldFiles = [];
-                foreach(old('temp_attachments') as $value) {
-                    $data = json_decode($value, true);
-                    if ($data) {
-                        $oldFiles[] = [
-                            'id' => $data['id'] ?? basename($data['path']),
-                            'name' => $data['name'], 
-                            'path' => $data['path'],
-                            'type' => $data['type'] ?? 'other',
-                            'size' => $data['size']
-                        ];
-                    } else {
-                        $oldFiles[] = [
-                            'id' => basename($value),
-                            'name' => basename($value), 
-                            'path' => $value,
-                            'type' => \Illuminate\Support\Str::endsWith($value, ['.jpg', '.jpeg', '.png', '.gif']) ? 'image' : (\Illuminate\Support\Str::endsWith($value, '.pdf') ? 'pdf' : 'other'),
-                            'size' => '?'
-                        ];
-                    }
-                }
-            @endphp
-            selectedFiles = {!! json_encode($oldFiles) !!};
-            updateFileList();
-            updateHiddenInputs();
-        @endif
-    }
-
-    // 3. Lógica del Modal de Vista Previa
-    const globalModal = new bootstrap.Modal(document.getElementById('globalPreviewModal'));
-    const previewTitle = document.getElementById('previewTitle');
-    const previewContent = document.getElementById('previewContent');
-
-    window.openGlobalPreview = function(url, name, type) {
-        previewTitle.textContent = name;
-        previewContent.innerHTML = '';
-
-        if (type === 'image') {
-            const img = document.createElement('img');
-            img.src = url;
-            img.className = 'img-fluid';
-            img.style.maxHeight = '80vh';
-            previewContent.appendChild(img);
-        } else if (type === 'pdf') {
-            const iframe = document.createElement('iframe');
-            iframe.src = url;
-            iframe.style.width = '100%';
-            iframe.style.height = '80vh';
-            iframe.style.border = 'none';
-            previewContent.appendChild(iframe);
+<script>
+    window.AppConfig = {
+        csrfToken: '{{ csrf_token() }}',
+        formId: 'projectForm',
+        routes: {
+            tempUpload: '{{ route("temp.upload") }}',
+            tempDelete: '{{ route("temp.delete") }}',
+            attachmentsBase: '{{ url("/attachments") }}'
+        },
+        urls: {
+            storagePreview: '{{ url("storage-preview") }}'
         }
-
-        globalModal.show();
     };
-
-    // Registrar clicks para adjuntos EXISTENTES
-    document.querySelectorAll('.js-preview-attachment').forEach(btn => {
-        btn.addEventListener('click', function() {
-            openGlobalPreview(this.dataset.url, this.dataset.name, this.dataset.type);
-        });
-    });
-});
-
-// Double submission protection
-document.getElementById('projectForm').addEventListener('submit', function() {
-    const btn = document.getElementById('submitBtn');
-    const text = btn.querySelector('.btn-text');
-    const spinner = btn.querySelector('.spinner-border');
-    
-    btn.disabled = true;
-    text.textContent = 'Actualizando...';
-    spinner.classList.remove('d-none');
-});
+    window.FileUploadConfig = {
+        dropZoneId: 'editDropZone',
+        fileInputId: 'editFileInput',
+        fileListContainerId: 'editFileList',
+        initialFiles: {!! json_encode($oldFiles ?? []) !!}
+    };
 </script>
+@vite(['resources/js/pages/projects-form.js'])
 @endsection

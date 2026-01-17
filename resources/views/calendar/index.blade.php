@@ -114,112 +114,11 @@
 
 @section('scripts')
 <script>
-    var calendar;
-
-    document.addEventListener('DOMContentLoaded', function() {
-        var calendarEl = document.getElementById('calendar');
-        var titleEl = document.getElementById('calendarTitle');
-        var dayEl = document.getElementById('headerDay');
-        var dateEl = document.getElementById('headerDate');
-        
-        calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'dayGridMonth',
-            headerToolbar: false, // We use custom toolbar
-            locale: 'es',
-            allDayText: 'Todo el día',
-            noEventsText: 'No hay eventos para mostrar',
-            slotLabelFormat: {
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false
-            },
-            slotLabelInterval: '01:00', // Frequency of labels
-            events: '{{ route("calendar.events") }}',
-            editable: false,
-            selectable: true,
-            themeSystem: 'bootstrap5',
-            dayMaxEvents: true, // allow "more" link when too many events
-            loading: function(isLoading) {
-                const btn = document.querySelector('button[onclick="calendar.refetchEvents()"]');
-                if (btn) {
-                    const icon = btn.querySelector('i');
-                    if (isLoading) {
-                        icon.classList.add('fa-spin');
-                        btn.disabled = true;
-                    } else {
-                        icon.classList.remove('fa-spin');
-                        btn.disabled = false;
-                    }
-                }
-            },
-            
-            // Callbacks
-            datesSet: function(info) {
-                // Update Central Title (Month Year)
-                var viewTitle = info.view.title;
-                // Capitalize first letter because locale 'es' might return lowercase
-                titleEl.innerText = viewTitle.charAt(0).toUpperCase() + viewTitle.slice(1);
-            },
-            
-            eventClick: function(info) {
-                if (info.event.url) {
-                    window.location.href = info.event.url;
-                    info.jsEvent.preventDefault(); // prevents browser from following link in current tab
-                }
-            }
-        });
-
-        calendar.render();
-        
-        // Active button selection logic
-        if (calendar.view.type === 'dayGridMonth') {
-            document.getElementById('btnMonth').classList.add('active');
-            document.getElementById('btnWeek').classList.remove('active');
+    window.AppConfig = {
+        routes: {
+            calendarEvents: '{{ route("calendar.events") }}'
         }
-
-        // Update top header time dynamically
-        setInterval(() => {
-            const now = new Date();
-            const optionsDay = { weekday: 'long' };
-            const optionsDate = { day: 'numeric', month: 'short', year: 'numeric' };
-            
-            // Format example: Sunday
-            let dayStr = now.toLocaleDateString('es-ES', optionsDay);
-            dayStr = dayStr.charAt(0).toUpperCase() + dayStr.slice(1);
-            
-            // Format example: 14 Dec, 2025
-            let dateStr = now.toLocaleDateString('es-ES', optionsDate);
-            
-            dayEl.innerText = dayStr.charAt(0).toUpperCase() + dayStr.slice(1); // Ensure capitalized
-            dateEl.innerText = dateStr;
-        }, 1000 * 60); // Update every minute
-    });
-
-    function changeView(viewName) {
-        calendar.changeView(viewName);
-        updateButtons(viewName);
-    }
-    
-    function handleWeekView() {
-        // Check if mobile
-        if (window.innerWidth < 768) {
-            calendar.changeView('listWeek'); // List view for mobile
-            updateButtons('listWeek');
-        } else {
-            calendar.changeView('timeGridWeek'); // Grid view for desktop
-            updateButtons('timeGridWeek');
-        }
-    }
-
-    function updateButtons(viewName) {
-        document.getElementById('btnMonth').classList.remove('active');
-        document.getElementById('btnWeek').classList.remove('active');
-        
-        if(viewName === 'dayGridMonth') {
-            document.getElementById('btnMonth').classList.add('active');
-        } else { // Covers both timeGridWeek and listWeek
-            document.getElementById('btnWeek').classList.add('active');
-        }
-    }
+    };
 </script>
+@vite(['resources/js/pages/calendar-index.js'])
 @endsection
